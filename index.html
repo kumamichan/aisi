@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AISI 札幌サロン診断</title>
+<meta name="description" content="AISIがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
+<meta property="og:title" content="AISI 札幌サロン診断">
+<meta property="og:description" content="質問に答えるだけ。AISIが札幌であなたに合う美容室と担当者を見つけます。">
+<meta property="og:image" content="img/aisi_point.webp">
+<meta name="theme-color" content="#141a26">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: アキネーター型。左にAISIの立ち姿、右に吹き出しと回答ボタン。スマホでは縦積み。夜の札幌をイメージした単一テーマ */
+:root{
+  --night:#141a26;
+  --night-2:#1e2738;
+  --mist:#2c3850;
+  --glow:#9fb6d9;
+  --paper:#f3f1ec;
+  --ink:#1b2130;
+  --ink-soft:#5a6274;
+  --silver:#c9ced8;
+  --accent:#d9b77a;
+  --accent-ink:#2a2112;
+  --ok:#6fc49a;
+  --warn:#e3a157;
+  --line:rgba(201,206,216,.18);
+  --font-voice:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --font-ui:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  margin:0;background:var(--night);color:var(--paper);font-family:var(--font-ui);line-height:1.7;
+  background-image:
+    radial-gradient(ellipse 60% 70% at 22% 55%, rgba(159,182,217,.22), transparent 70%),
+    radial-gradient(ellipse 80% 50% at 80% 0%, rgba(217,183,122,.08), transparent 70%),
+    linear-gradient(180deg,var(--night-2),var(--night));
+  background-attachment:fixed;
+}
+button{font:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+.top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  max-width:1180px;margin:0 auto;
+}
+.logo{display:flex;align-items:baseline;gap:10px;background:none;border:0;color:var(--paper);padding:0}
+.logo b{font-family:var(--font-voice);font-size:1.7rem;letter-spacing:.32em;font-weight:700}
+.logo span{font-size:.72rem;letter-spacing:.18em;color:var(--accent);border:1px solid var(--accent);padding:1px 8px;border-radius:3px}
+.top-r{display:flex;gap:8px}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--silver);border-radius:999px;padding:5px 14px;font-size:.78rem}
+.ghost:hover{border-color:var(--silver)}
+
+.stage{
+  max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:center;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 40px;
+  min-height:calc(100% - 70px);
+}
+.aisi{position:relative;display:flex;justify-content:center;align-items:flex-end;min-width:0;height:min(78vh,720px)}
+.aisi::before{content:"";position:absolute;inset:12% 8% 4%;border-radius:50%;background:radial-gradient(closest-side,rgba(159,182,217,.35),transparent);filter:blur(8px)}
+.aisi img{position:relative;max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));transition:opacity .35s ease}
+.aisi img.fade{opacity:0}
+.aisi .ph{position:relative;width:70%;aspect-ratio:3/5;border-radius:40% 40% 8px 8px;background:linear-gradient(180deg,#2a3346,#151b27);display:grid;place-items:center;font-family:var(--font-voice);letter-spacing:.4em;color:var(--silver)}
+
+.panel{display:flex;flex-direction:column;gap:18px;min-width:0}
+.meter{display:grid;gap:6px;max-width:520px}
+.meter-h{display:flex;justify-content:space-between;font-size:.76rem;letter-spacing:.12em;color:var(--silver);font-variant-numeric:tabular-nums}
+.bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--glow),var(--accent));transition:width .6s ease}
+
+.bubble{
+  position:relative;background:var(--paper);color:var(--ink);border-radius:6px;padding:26px 28px;max-width:560px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35)
+}
+.bubble::before{content:"";position:absolute;left:-18px;top:34px;border:10px solid transparent;border-right:18px solid var(--paper);border-left:0}
+.qno{font-size:.75rem;letter-spacing:.2em;color:var(--ink-soft);margin:0 0 6px}
+.aside{font-family:var(--font-voice);font-size:.92rem;color:var(--ink-soft);margin:0 0 6px}
+.voice{font-family:var(--font-voice);font-size:clamp(1.2rem,2.4vw,1.55rem);line-height:1.65;margin:0;text-wrap:balance;font-weight:500}
+.choices{display:grid;gap:10px;max-width:420px;margin-left:24px}
+.choice{
+  background:rgba(243,241,236,.92);color:var(--ink);border:0;border-radius:4px;padding:13px 18px;font-size:1rem;font-weight:500;text-align:center;
+  box-shadow:0 3px 0 rgba(0,0,0,.25);transition:transform .12s ease,background .12s
+}
+.filebtn{cursor:pointer;display:block}
+.photo-prev{position:relative;max-width:260px;margin-left:24px;border-radius:8px;overflow:hidden}
+.photo-prev img{display:block;width:100%}
+.scan{position:absolute;left:0;right:0;height:3px;background:var(--accent);box-shadow:0 0 12px var(--accent);animation:scan 1.4s ease-in-out infinite alternate}
+@keyframes scan{from{top:0}to{top:calc(100% - 3px)}}
+@media (max-width:860px){.photo-prev{margin-left:0}}
+.choice.soon{background:rgba(243,241,236,.18);color:rgba(243,241,236,.55);box-shadow:none;cursor:not-allowed;display:flex;justify-content:center;align-items:center;gap:10px}
+.choice.soon:hover{background:rgba(243,241,236,.18);transform:none}
+.choice.soon span{font-size:.62rem;letter-spacing:.16em;border:1px solid rgba(217,183,122,.6);color:var(--accent);border-radius:999px;padding:1px 8px}
+.choice:hover{background:#fff;transform:translateY(-1px)}
+.choice.primary{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.back{background:none;border:0;color:var(--silver);font-size:.82rem;padding:4px 0;margin-left:24px;text-align:left;width:max-content}
+.back[disabled]{opacity:.3;cursor:default}
+.note{font-size:.75rem;color:var(--silver);margin:0 0 0 24px;max-width:460px}
+
+/* results */
+.results{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px;display:grid;gap:18px}
+.reveal{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,8fr);gap:20px;align-items:center}
+.reveal .aisi{height:min(46vh,420px)}
+.warnbox{background:rgba(227,161,87,.12);border:1px solid rgba(227,161,87,.4);color:#f2d3ac;border-radius:6px;padding:10px 14px;font-size:.85rem;max-width:560px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--paper);color:var(--ink);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card.first{outline:2px solid var(--accent)}
+.card-h{padding:16px 18px 12px;display:grid;gap:4px;border-bottom:1px solid #e2ded5}
+.rank{display:flex;justify-content:space-between;align-items:baseline;font-size:.75rem;letter-spacing:.16em;color:var(--ink-soft)}
+.pct{font-family:var(--font-voice);font-size:1.9rem;font-weight:700;color:var(--ink);letter-spacing:0;font-variant-numeric:tabular-nums}
+.pct small{font-size:.9rem}
+.pct.low{color:#a0611f}
+.name{font-family:var(--font-voice);font-size:1.25rem;font-weight:700;margin:0}
+.area{font-size:.8rem;color:var(--ink-soft)}
+.sample{font-size:.66rem;border:1px solid #b9b3a6;color:#7b7466;border-radius:3px;padding:0 6px;margin-left:6px;vertical-align:2px;letter-spacing:.08em}
+.card-b{padding:14px 18px;display:grid;gap:10px;font-size:.88rem;flex:1}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:.72rem;background:#e8e4da;border-radius:999px;padding:2px 9px;color:#4a4436}
+.say{font-family:var(--font-voice);background:#ebe8e0;border-radius:6px;padding:10px 12px;margin:0;font-size:.9rem}
+.say::before{content:"AISI ";font-family:var(--font-ui);font-size:.68rem;letter-spacing:.2em;color:var(--ink-soft);display:block}
+.staff{border-top:1px dashed #d4cfc4;padding-top:12px;display:grid;gap:6px}
+.staff-h{display:flex;align-items:center;gap:10px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--mist);color:var(--paper);display:grid;place-items:center;font-weight:700;flex:none}
+.staff-h b{display:block;font-size:.98rem}
+.staff-h small{color:var(--ink-soft);font-size:.75rem}
+.card-f{padding:0 18px 18px;display:grid;gap:8px}
+.btn{border:0;border-radius:4px;padding:11px 14px;font-weight:700;font-size:.92rem}
+.btn.book{background:var(--ink);color:var(--paper)}
+.btn.book:hover{background:#000}
+.btn.more{background:transparent;border:1px solid #cfc9bd;color:var(--ink);font-weight:500}
+.details{font-size:.82rem;color:var(--ink-soft);display:grid;gap:4px}
+.after{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding-top:6px}
+.after .choice{min-width:200px}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(8,10,16,.7);display:grid;place-items:center;z-index:30;padding:max(16px,env(safe-area-inset-left,0px))}
+/* 予約まわり */
+.mview{display:grid;gap:12px}
+.mt{font-family:var(--font-voice);font-size:1.15rem}
+.perkbox{background:#2a2112;color:#f6e3bd;border-radius:6px;padding:10px 12px;font-size:.9rem;line-height:1.6}
+.perkbox b{color:var(--accent)}
+.linkbtn{text-align:center;text-decoration:none;display:block}
+.fine{font-size:.76rem;color:#5a6274;margin:0}
+.modal-c label{display:grid;gap:4px;font-size:.82rem;color:#3b4252}
+.modal-c input,.modal-c select,.modal-c textarea{font:inherit;font-size:1rem;border:1px solid #cfc9bd;border-radius:4px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
+.two-in{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.modal-c label.agree{display:flex;gap:8px;align-items:flex-start;font-size:.8rem}
+.modal-c label.agree input{width:auto;margin-top:3px}
+.ferr{color:#b23b2a;font-size:.82rem;margin:0}
+.btn.line{background:#06c755;color:#fff;font-weight:700}
+.btn.line:hover{background:#05b34c}
+.btn.more.hot{border-color:#b8913f;color:#7a5a1e;font-weight:700}
+.availb{font-size:.75rem;font-weight:700;color:#fff;background:#2e8b57;border-radius:4px;padding:2px 8px;justify-self:start}
+.menus{display:grid;gap:6px;background:#f6f3ec;border-radius:6px;padding:10px 12px}
+.menus>b{font-size:.78rem;letter-spacing:.08em;color:var(--ink-soft)}
+.mi{display:grid;gap:2px}
+.mi.hit{background:#fff;border:1.5px solid var(--accent);border-radius:6px;padding:6px 8px;margin:0 -4px}
+.mi .hitb{display:inline-block;font-size:.68rem;font-weight:700;color:#fff;background:var(--accent);border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.cond-g.must{border-left:3px solid var(--accent);padding-left:10px}
+.mi-h{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:.86rem}
+.mi-h em{font-style:normal;white-space:nowrap;color:#7a5a1e}
+.mi small{font-size:.74rem;color:var(--ink-soft)}
+.shop-ph{aspect-ratio:16/9;overflow:hidden;background:#d9d4c8}
+.shop-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar{overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.more-ph{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.more-ph img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px}
+.concept{font-family:var(--font-voice);font-size:.92rem;margin:0;line-height:1.7}
+.why{background:#f6f3ec;border-radius:6px;padding:8px 12px;font-size:.8rem}
+.why b{font-size:.74rem;letter-spacing:.06em;color:var(--ink-soft)}
+.why ul{margin:4px 0 0;padding-left:1.2em}
+.prof{display:flex;flex-wrap:wrap;gap:4px}
+.prof span{font-size:.7rem;border:1px solid #d4cfc4;border-radius:999px;padding:1px 8px;color:#4a4436}
+.chips.aff .chip{background:rgba(243,241,236,.92);color:var(--ink);border-color:transparent;padding:9px 16px;font-size:.92rem}
+.chips.aff .chip.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.details b{color:var(--ink)}
+.perk{font-size:.78rem;color:#7a5a1e;background:#f6ecd8;border-radius:4px;padding:3px 8px;justify-self:start}
+.modal-c{max-height:calc(100vh - 32px);overflow-y:auto;background:var(--paper);color:var(--ink);border-radius:8px;max-width:440px;width:100%;padding:24px;display:grid;gap:12px}
+.code{font-family:var(--font-voice);font-size:2rem;letter-spacing:.14em;text-align:center;background:#ebe8e0;border-radius:6px;padding:10px;font-variant-numeric:tabular-nums}
+.modal-c p{margin:0;font-size:.9rem}
+.modal-c .row{display:flex;gap:8px;flex-wrap:wrap}
+.modal-c .row .btn{flex:1}
+
+/* admin */
+.admin{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 60px;display:grid;gap:22px}
+.admin h2{font-family:var(--font-voice);font-size:1.4rem;margin:0}
+.admin h3{font-size:1rem;margin:0 0 10px;letter-spacing:.06em}
+.admin .sub{color:var(--silver);font-size:.85rem;margin:4px 0 0}
+.box{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;padding:18px;min-width:0}
+.funnel{display:grid;gap:10px}
+.f-row{display:grid;grid-template-columns:150px minmax(0,1fr) 120px;gap:12px;align-items:center;font-size:.85rem;font-variant-numeric:tabular-nums}
+.f-bar{height:22px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.f-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--glow),var(--accent))}
+.f-row em{font-style:normal;color:var(--silver);text-align:right}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;padding:14px}
+.kpi small{display:block;color:var(--silver);font-size:.74rem;letter-spacing:.08em}
+.kpi b{font-size:1.6rem;font-variant-numeric:tabular-nums;font-family:var(--font-voice)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.82rem;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--silver);font-weight:500;font-size:.75rem}
+.pill{display:inline-block;font-size:.7rem;border-radius:999px;padding:1px 8px}
+.pill.ok{background:rgba(111,196,154,.18);color:var(--ok)}
+.pill.wait{background:rgba(201,206,216,.12);color:var(--silver)}
+.pill.lo{background:rgba(227,161,87,.16);color:var(--warn)}
+.mini{background:transparent;border:1px solid var(--line);color:var(--paper);border-radius:4px;padding:3px 9px;font-size:.75rem}
+.mini:hover{border-color:var(--accent);color:var(--accent)}
+.report{display:grid;gap:10px}
+.report select{font:inherit;background:var(--night-2);color:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 10px;max-width:100%}
+.report pre{white-space:pre-wrap;word-break:break-word;background:var(--paper);color:var(--ink);border-radius:6px;padding:16px;margin:0;font-family:var(--font-ui);font-size:.85rem;line-height:1.8}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.cond{display:grid;gap:14px;max-width:560px}
+.cond-g{display:grid;gap:6px}
+.cond-g b{font-size:.92rem;letter-spacing:.06em}
+.cond-g small{color:var(--silver);font-size:.74rem;margin-top:-4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:transparent;border:1px solid rgba(243,241,236,.35);color:var(--paper);border-radius:999px;padding:6px 14px;font-size:.85rem}
+.chip:hover{border-color:var(--paper)}
+.chip.on{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:700}
+.datel{display:flex;align-items:center;gap:10px;font-size:.8rem;color:var(--silver)}
+.datel input{font:inherit;background:var(--night-2);color:var(--paper);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
+.offcond{font-size:.75rem;color:#a0611f;background:#f6e9d6;border-radius:4px;padding:3px 8px;justify-self:start}
+.filters{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem;color:var(--silver)}
+.filters label{display:flex;align-items:center;gap:8px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{background:transparent;border:1px solid var(--line);color:var(--silver);border-radius:999px;padding:5px 12px;font-size:.78rem}
+.tab.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.report pre.tsv{white-space:pre;overflow-x:auto;word-break:normal;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.76rem;tab-size:14;max-height:360px}
+.report pre{max-height:420px;overflow-y:auto}
+.row-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.mini.strong{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700;padding:6px 14px;font-size:.82rem}
+.mini.strong:hover{color:var(--accent-ink)}
+.empty{color:var(--silver);font-size:.88rem;padding:8px 0}
+.status{font-size:.75rem;color:var(--silver)}
+
+@media (max-width:860px){
+  .stage{grid-template-columns:1fr;gap:6px;align-items:start}
+  .aisi{height:34vh;min-height:220px}
+  .bubble::before{left:40px;top:-16px;border:10px solid transparent;border-bottom:16px solid var(--paper);border-top:0}
+  .choices,.back,.note{margin-left:0}
+  .choices{max-width:none}
+  .cards{grid-template-columns:1fr}
+  .reveal{grid-template-columns:1fr}
+  .reveal .aisi{height:30vh}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two{grid-template-columns:1fr}
+  .f-row{grid-template-columns:96px minmax(0,1fr) 92px;font-size:.78rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="logo" id="home" type="button" aria-label="トップへ"><b>AISI</b><span>SAPPORO</span></button>
+</header>
+
+<main id="app"></main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <!-- コード表示 -->
+    <div id="vCode" class="mview">
+      <b id="mTitle" class="mt">あなたのAISI診断コード</b>
+      <div class="code" id="mCode">AISI-0000</div>
+      <div class="perkbox" id="mPerk" hidden></div>
+      <p id="mText"></p>
+      <a class="btn line linkbtn" id="mLine" href="#" target="_blank" rel="noopener">LINEで予約する（おすすめ）</a>
+      <p class="fine" id="mLineNote">LINEが開いたら、画面上の「追加」で友だち追加してから送信してください。お店からの返事がLINEに届きます。</p>
+      <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
+      <button class="btn more" id="mReq" type="button">メールで予約する</button>
+      <a class="btn more linkbtn" id="mLink" href="#" target="_blank" rel="noopener">ホットペッパーで予約する（要望欄にコードを入力）</a>
+      <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、AISIからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
+      <div class="row">
+        <button class="btn more" id="mCopy" type="button">コードをコピー</button>
+        <button class="btn more" data-close type="button">閉じる</button>
+      </div>
+    </div>
+    <!-- 予約リクエスト -->
+    <form id="vForm" class="mview" hidden novalidate>
+      <b class="mt" id="fTitle">予約リクエスト</b>
+      <p class="fine" id="fSalon"></p>
+      <label for="fMenu">メニュー<select id="fMenu"></select></label>
+      <label for="fName">お名前<input id="fName" autocomplete="name" required maxlength="40"></label>
+      <label for="fTel">電話番号<input id="fTel" type="tel" autocomplete="tel" required inputmode="tel" placeholder="090-1234-5678"></label>
+      <label for="fMail">メールアドレス（お店からの返信が届きます）<input id="fMail" type="email" autocomplete="email" required></label>
+      <div class="two-in">
+        <label for="fD1">第1希望の日<input id="fD1" type="date" required></label>
+        <label for="fT1">時間<select id="fT1" required></select></label>
+      </div>
+      <div class="two-in">
+        <label for="fD2">第2希望の日（任意）<input id="fD2" type="date"></label>
+        <label for="fT2">時間<select id="fT2"></select></label>
+      </div>
+      <div class="two-in">
+        <label for="fD3">第3希望の日（任意）<input id="fD3" type="date"></label>
+        <label for="fT3">時間<select id="fT3"></select></label>
+      </div>
+      <p class="fine" id="fSoon" hidden>今日・明日は埋まっていることが多いので、候補を2〜3個出すと取りやすくなります。</p>
+      <label class="agree" for="fOmk"><input type="checkbox" id="fOmk" checked> 指名のスタイリストが埋まっていたら、同じお店の別のスタイリストでもOK</label>
+      <label for="fNote">ご要望（任意）<textarea id="fNote" rows="3" maxlength="300" placeholder="例：前髪は短めにしたい"></textarea></label>
+      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することを了解しました</label>
+      <p class="ferr" id="fErr" hidden></p>
+      <button class="btn book" type="submit" id="fSend">リクエストを送る</button>
+      <button class="btn more" type="button" id="fBack">戻る</button>
+    </form>
+    <!-- 送信完了 -->
+    <div id="vDone" class="mview" hidden>
+      <b class="mt">リクエストを送りました</b>
+      <p id="dText"></p>
+      <p class="fine">まだ予約は確定していません。お店から返信メールが届くまでお待ちください。届かない場合は迷惑メールフォルダもご確認ください。</p>
+      <div class="row"><button class="btn book" data-close type="button">閉じる</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   設定 — ここだけ書き換えればOK
+   GAS_URL：GASを「ウェブアプリ」としてデプロイしたときのURL（https://script.google.com/macros/s/……/exec）
+            空のままだと、サンプルの店舗データで動き、記録は送りません。
+   PHOTO  ：写真の切り札を使うか（true / false）
+   LINE_ID：AISI公式LINEのID（@から始まる）
+   ===================================================================== */
+const CONFIG = {
+  GAS_URL: "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec",
+  PHOTO: true,
+  LINE_ID: "@933trlwv",  /* AISI公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
+  PERK: "施術料金から500円引き"   /* AISIコードの共通特典（サンプル表示用。本番は設定シートの値が使われます） */
+};
+
+/* ============ AISI 画像 ============ */
+const POSES = {
+  shrug:"img/aisi_shrug.webp", open:"img/aisi_open.webp", pocket:"img/aisi_pocket.webp", think:"img/aisi_think.webp",
+  peace:"img/aisi_peace.webp", thumb:"img/aisi_thumb.webp", point:"img/aisi_point.webp"
+};
+const QPOSES = ["open","think","pocket","think","peace","open","think","thumb","pocket","think","open","think","peace","pocket","think","open","thumb","think","pocket","think"];
+Object.values(POSES).forEach(u=>{ const i=new Image(); i.src=u; });
+
+/* サンプル店舗（GASにつながると、スプレッドシートの店舗に置き換わります） */
+let SALONS = [
+ {id:"s1",name:"Lumo",area:"大通",price:"カット¥5,500〜",tags:["透明感カラー","トレンド","夜21時まで"],
+  f:{a_center:1,a_station:.3,a_west:0,a_suburb:0,parking:0,color:1,design:.8,straight:.4,trend:.9,care:.3,treat:.5,quiet:.2,private:.2,lux:.4,cheap:.6,night:1,weekend:.8,fast:.5},
+  staff:[{id:"s1a",name:"ユウナ",years:5,male:0,young:1,veteran:0,talk:.9,propose:.7,spec:"透明感カラー・韓国風レイヤー",line:"トレンドを一緒に楽しめるタイプ。会話も弾むよ"},
+         {id:"s1b",name:"ケイタ",years:12,male:1,young:0,veteran:1,talk:.5,propose:.9,spec:"骨格補正カット・メンズ",line:"迷ったら任せていい。似合わせの精度が高い"}]},
+ {id:"s2",name:"atelier Shizuku",area:"大通西",price:"カット¥6,600〜",tags:["髪質改善","縮毛矯正","マンツーマン"],
+  f:{a_center:.9,a_station:.3,a_west:.3,a_suburb:0,parking:0,color:.6,design:.2,straight:1,trend:.3,care:.6,treat:1,quiet:1,private:1,lux:.6,cheap:.3,night:.3,weekend:.7,fast:.2},
+  staff:[{id:"s2a",name:"ミサキ",years:14,male:0,young:0,veteran:1,talk:.2,propose:.8,spec:"縮毛矯正・髪質改善",line:"静かに任せたい人の扱いが上手い。くせの相談はこの人に"},
+         {id:"s2b",name:"ハルト",years:6,male:1,young:1,veteran:0,talk:.4,propose:.6,spec:"酸性ストレート・ダメージケア",line:"同世代で話しやすい。でも施術中は静かにできる"}]},
+ {id:"s3",name:"HAKU",area:"札幌駅前",price:"カット¥4,400〜",tags:["駅チカ","時短","平日夜OK"],
+  f:{a_center:.3,a_station:1,a_west:0,a_suburb:0,parking:.2,color:.7,design:.3,straight:.5,trend:.5,care:.3,treat:.4,quiet:.4,private:.2,lux:.2,cheap:.9,night:1,weekend:1,fast:1},
+  staff:[{id:"s3a",name:"リョウ",years:8,male:1,young:.5,veteran:.5,talk:.6,propose:.6,spec:"時短カット・白髪ぼかし",line:"仕事帰りでもサッと整える。手際がいい"},
+         {id:"s3b",name:"アヤ",years:3,male:0,young:1,veteran:0,talk:.8,propose:.5,spec:"ナチュラルカラー・前髪カット",line:"気軽に話せる。初めての店でも緊張しないよ"}]},
+ {id:"s4",name:"Maru Hair",area:"円山",price:"カット¥6,050〜",tags:["ナチュラル","落ち着いた空間","駐車場あり"],
+  f:{a_center:.2,a_station:0,a_west:1,a_suburb:.3,parking:.7,color:.7,design:.2,straight:.6,trend:.3,care:.7,treat:.7,quiet:.7,private:.7,lux:.7,cheap:.4,night:.3,weekend:.8,fast:.3},
+  staff:[{id:"s4a",name:"サトミ",years:16,male:0,young:0,veteran:1,talk:.5,propose:.7,spec:"大人のショート・白髪染め",line:"大人の髪の悩みを知り尽くしてる。安心感が違う"},
+         {id:"s4b",name:"ソウタ",years:7,male:1,young:.6,veteran:.3,talk:.4,propose:.8,spec:"ナチュラルパーマ・メンズ",line:"自然体の似合わせが得意。多くを語らなくても伝わる"}]},
+ {id:"s5",name:"Nordlicht",area:"すすきの",price:"カット¥5,500〜",tags:["デザインカラー","ハイトーン","夜22時まで"],
+  f:{a_center:1,a_station:.2,a_west:0,a_suburb:0,parking:0,color:1,design:1,straight:.2,trend:1,care:.2,treat:.5,quiet:.2,private:.3,lux:.4,cheap:.5,night:1,weekend:.7,fast:.3},
+  staff:[{id:"s5a",name:"レン",years:6,male:1,young:1,veteran:0,talk:.8,propose:1,spec:"ハイトーン・インナーカラー",line:"攻めたいなら彼。想像の一歩先を出してくる"},
+         {id:"s5b",name:"マオ",years:4,male:0,young:1,veteran:0,talk:.7,propose:.8,spec:"ブリーチなしデザインカラー",line:"ダメージを抑えて色で遊びたい人向け"}]},
+ {id:"s6",name:"Hinata",area:"琴似",price:"カット¥3,960〜",tags:["駐車場4台","リーズナブル","家族で通える"],
+  f:{a_center:0,a_station:0,a_west:.5,a_suburb:1,parking:1,color:.7,design:.3,straight:.6,trend:.3,care:.4,treat:.5,quiet:.3,private:.4,lux:.1,cheap:1,night:.4,weekend:1,fast:.6},
+  staff:[{id:"s6a",name:"タクミ",years:10,male:1,young:.3,veteran:.7,talk:.8,propose:.6,spec:"キッズ・メンズ・ファミリー",line:"話しやすさは札幌でも上位。家族ごと任せられる"},
+         {id:"s6b",name:"チヒロ",years:5,male:0,young:1,veteran:0,talk:.6,propose:.5,spec:"縮毛矯正・ショート",line:"コスパ重視でも仕上がりに妥協しない"}]},
+ {id:"s7",name:"Sora",area:"円山",price:"カット¥8,800〜",tags:["上質空間","提案力","ベテラン"],
+  f:{a_center:.2,a_station:0,a_west:1,a_suburb:0,parking:.5,color:.8,design:.4,straight:.5,trend:.6,care:.6,treat:.8,quiet:.6,private:.8,lux:1,cheap:.1,night:.4,weekend:.6,fast:.2},
+  staff:[{id:"s7a",name:"カズマ",years:18,male:1,young:0,veteran:1,talk:.5,propose:1,spec:"似合わせ提案・大人カット",line:"君が言葉にできないものを形にする人"},
+         {id:"s7b",name:"エリ",years:11,male:0,young:0,veteran:1,talk:.4,propose:.9,spec:"上質カラー・トリートメント",line:"ツヤにこだわるならこの人。仕上がりが品よくまとまる"}]},
+ {id:"s8",name:"Fuwari",area:"大通",price:"スパ60分¥7,700〜",tags:["ヘッドスパ専門","個室風","眠れる"],
+  f:{a_center:1,a_station:.3,a_west:.2,a_suburb:0,parking:0,color:.3,design:0,straight:.2,trend:.1,care:1,treat:.8,quiet:1,private:.9,lux:.7,cheap:.4,night:.6,weekend:.8,fast:.1},
+  staff:[{id:"s8a",name:"ノゾミ",years:9,male:0,young:.4,veteran:.6,talk:.1,propose:.5,spec:"ドライヘッドスパ・頭皮診断",line:"話さなくていい。ただ委ねればいい"},
+         {id:"s8b",name:"イツキ",years:4,male:1,young:1,veteran:0,talk:.3,propose:.5,spec:"炭酸スパ・眼精疲労ケア",line:"男性の頭のコリにも強い。手が大きくて圧がちょうどいい"}]},
+ {id:"s9",name:"LINO",area:"札幌駅北口",price:"カット¥5,280〜",tags:["縮毛矯正","髪質改善","駅徒歩3分"],
+  f:{a_center:.3,a_station:1,a_west:0,a_suburb:0,parking:.2,color:.6,design:.2,straight:1,trend:.3,care:.5,treat:.9,quiet:.6,private:.5,lux:.4,cheap:.6,night:.7,weekend:.9,fast:.3},
+  staff:[{id:"s9a",name:"ナツキ",years:9,male:0,young:.5,veteran:.5,talk:.5,propose:.6,spec:"縮毛矯正・前髪ストレート",line:"くせの扱いは職人級。自然なストレートが作れる"},
+         {id:"s9b",name:"シュン",years:13,male:1,young:0,veteran:1,talk:.3,propose:.7,spec:"髪質改善・ダメージ毛",line:"ボロボロの髪でも諦めない人"}]},
+ {id:"s10",name:"Kirari",area:"平岸",price:"カット¥4,180〜",tags:["駐車場あり","カラー豊富","20時まで"],
+  f:{a_center:0,a_station:0,a_west:0,a_suburb:1,parking:1,color:.8,design:.6,straight:.4,trend:.6,care:.3,treat:.5,quiet:.3,private:.3,lux:.2,cheap:.9,night:.6,weekend:1,fast:.5},
+  staff:[{id:"s10a",name:"ミユ",years:3,male:0,young:1,veteran:0,talk:.9,propose:.6,spec:"インナーカラー・ヘアアレンジ",line:"一緒に盛り上がりたいならこの子"},
+         {id:"s10b",name:"ダイキ",years:11,male:1,young:0,veteran:.8,talk:.6,propose:.7,spec:"パーマ・メンズ",line:"手堅い。何度通っても安定してる"}]},
+ {id:"s11",name:"Rin",area:"大通西",price:"カット¥7,700〜",tags:["完全予約制","大人の隠れ家","提案型"],
+  f:{a_center:.9,a_station:.4,a_west:.4,a_suburb:0,parking:0,color:.8,design:.3,straight:.6,trend:.5,care:.6,treat:.8,quiet:.8,private:1,lux:.9,cheap:.2,night:.5,weekend:.5,fast:.2},
+  staff:[{id:"s11a",name:"ジュン",years:20,male:1,young:0,veteran:1,talk:.4,propose:1,spec:"大人の似合わせ・白髪ぼかし",line:"一軒家みたいな静けさで、黙って最適解を出す"},
+         {id:"s11b",name:"カナ",years:8,male:0,young:.5,veteran:.5,talk:.5,propose:.8,spec:"ショートボブ・艶カラー",line:"ボブの形にこだわるなら外せない"}]},
+ {id:"s12",name:"Tsumugi",area:"新札幌",price:"カット¥4,950〜",tags:["ナチュラル","ヘッドスパ","駐車場あり"],
+  f:{a_center:0,a_station:0,a_west:0,a_suburb:1,parking:1,color:.6,design:.1,straight:.5,trend:.2,care:.8,treat:.7,quiet:.7,private:.6,lux:.4,cheap:.7,night:.3,weekend:1,fast:.3},
+  staff:[{id:"s12a",name:"アカネ",years:12,male:0,young:0,veteran:.9,talk:.5,propose:.6,spec:"ヘッドスパ・グレイカラー",line:"郊外で落ち着いて通いたいなら、ここで決まり"},
+         {id:"s12b",name:"ユウキ",years:5,male:1,young:1,veteran:0,talk:.6,propose:.6,spec:"ナチュラルカット・メンズ",line:"肩の力を抜いて話せる同世代"}]}
+];
+
+/* 店舗の追加情報（サンプル）。zone=エリア, open/close=受付時間, closed=定休曜日(0=日〜6=土) */
+const EXTRA = {
+ s1:{zone:"center",open:11,close:21,closed:[2],f:{short:.8,perm:.6,gray:.3,gentle:.4,casual:.9,kids:.3,mens:.6,walkin:.7}},
+ s2:{zone:"center",open:10,close:19,closed:[1,2],f:{short:.5,perm:.3,gray:.6,gentle:.9,casual:.5,kids:.1,mens:.3,walkin:.2}},
+ s3:{zone:"station",open:10,close:21,closed:[],f:{short:.6,perm:.5,gray:.8,gentle:.4,casual:.9,kids:.4,mens:.8,walkin:1}},
+ s4:{zone:"west",open:9,close:18,closed:[2],f:{short:.8,perm:.7,gray:.9,gentle:.8,casual:.6,kids:.6,mens:.6,walkin:.4}},
+ s5:{zone:"center",open:12,close:22,closed:[3],f:{short:.6,perm:.5,gray:.1,gentle:.3,casual:.8,kids:.1,mens:.7,walkin:.6}},
+ s6:{zone:"west",open:9,close:19,closed:[2],f:{short:.7,perm:.6,gray:.7,gentle:.5,casual:1,kids:1,mens:.8,walkin:.8}},
+ s7:{zone:"west",open:10,close:19,closed:[1],f:{short:.7,perm:.7,gray:.7,gentle:.8,casual:.3,kids:.2,mens:.5,walkin:.2}},
+ s8:{zone:"center",open:10,close:20,closed:[3],f:{short:.1,perm:.1,gray:.3,gentle:1,casual:.6,kids:.1,mens:.7,walkin:.4}},
+ s9:{zone:"station",open:10,close:20,closed:[2],f:{short:.6,perm:.3,gray:.6,gentle:.8,casual:.6,kids:.3,mens:.5,walkin:.5}},
+ s10:{zone:"south",open:9,close:20,closed:[2],f:{short:.6,perm:.8,gray:.6,gentle:.4,casual:.9,kids:.8,mens:.7,walkin:.8}},
+ s11:{zone:"center",open:11,close:20,closed:[1],f:{short:1,perm:.5,gray:.8,gentle:.7,casual:.2,kids:0,mens:.4,walkin:.1}},
+ s12:{zone:"east",open:9,close:18,closed:[2],f:{short:.6,perm:.6,gray:.9,gentle:.9,casual:.8,kids:.9,mens:.6,walkin:.6}}
+};
+const SAMPLE_MENUS = {"s1": [{"name": "カット＋透明感カラー", "price": "9,900円〜", "desc": "似合わせカットと、透明感のあるダブルカラーなしのワンカラー", "min": 120}, {"name": "韓国風レイヤーカット", "price": "5,500円", "desc": "顔まわりのレイヤーで小顔に見せるカット", "min": 60}, {"name": "インナーカラー（ブリーチ1回込み）", "price": "12,100円〜", "desc": "内側だけ明るくして、さりげなく遊べるデザインカラー", "min": 150}], "s2": [{"name": "髪質改善ストレート", "price": "16,500円〜", "desc": "くせを伸ばしながら、ツヤと手触りを取り戻す縮毛矯正", "min": 180}, {"name": "酸性ストレート＋カット", "price": "19,800円〜", "desc": "ダメージを抑えて自然に伸ばす酸性ストレート", "min": 200}, {"name": "髪質改善トリートメント", "price": "8,800円", "desc": "内側から補修する集中トリートメント", "min": 75}], "s3": [{"name": "時短カット", "price": "4,400円", "desc": "シャンプー込み45分で仕上げるカット", "min": 45}, {"name": "白髪ぼかしカラー", "price": "7,700円〜", "desc": "白髪をなじませるハイライト系カラー", "min": 90}, {"name": "カット＋カラー", "price": "9,350円〜", "desc": "仕事帰りにも通いやすいセットメニュー", "min": 105}], "s4": [{"name": "大人のショートカット", "price": "6,050円", "desc": "骨格に合わせて扱いやすく仕上げるショート", "min": 60}, {"name": "オーガニックカラー＋カット", "price": "11,000円〜", "desc": "頭皮にやさしい薬剤を使ったカラー", "min": 120}, {"name": "ナチュラルパーマ", "price": "12,100円〜", "desc": "乾かすだけでまとまる、ゆるいパーマ", "min": 120}], "s5": [{"name": "ハイトーンカラー（ブリーチ込み）", "price": "15,400円〜", "desc": "ケアブリーチで透け感のあるハイトーンに", "min": 180}, {"name": "インナーカラー＋カット", "price": "13,200円〜", "desc": "内側に色を入れて、結んでもかわいいデザイン", "min": 150}, {"name": "ブリーチなしデザインカラー", "price": "9,900円〜", "desc": "ダメージを抑えて色で遊ぶカラー", "min": 120}], "s6": [{"name": "カット", "price": "3,960円", "desc": "家族みんなで通いやすいカット", "min": 45}, {"name": "縮毛矯正（前髪）", "price": "5,500円", "desc": "前髪だけのくせを自然に伸ばす", "min": 60}, {"name": "カット＋カラー", "price": "8,800円〜", "desc": "リーズナブルな定番セット", "min": 105}], "s7": [{"name": "似合わせカット＋提案カラー", "price": "15,400円〜", "desc": "ベテランが骨格と雰囲気から最適なスタイルを提案", "min": 150}, {"name": "上質トリートメント", "price": "8,800円", "desc": "ツヤにこだわる集中ケア", "min": 60}, {"name": "大人のエイジングケアカラー", "price": "12,100円〜", "desc": "ハリ・コシを保ちながら白髪もカバー", "min": 120}], "s8": [{"name": "ドライヘッドスパ60分", "price": "7,700円", "desc": "眠ってしまう人が多い、頭の疲れをほぐすスパ", "min": 60}, {"name": "炭酸ヘッドスパ＋眼精疲労ケア", "price": "9,900円", "desc": "目のまわりの疲れまでケアする90分コース", "min": 90}, {"name": "頭皮診断＋スパ", "price": "6,600円", "desc": "マイクロスコープで頭皮をチェックしてからスパ", "min": 60}], "s9": [{"name": "縮毛矯正＋カット", "price": "15,400円〜", "desc": "自然なストレートに仕上げる駅近の縮毛矯正", "min": 180}, {"name": "前髪ストレート", "price": "4,400円", "desc": "前髪だけのくせを伸ばす", "min": 45}, {"name": "髪質改善トリートメント", "price": "6,600円", "desc": "ダメージ毛の手触りを改善", "min": 60}], "s10": [{"name": "インナーカラー", "price": "7,700円〜", "desc": "手軽にイメチェンできるデザインカラー", "min": 90}, {"name": "デジタルパーマ", "price": "11,000円〜", "desc": "朝のスタイリングが楽になるパーマ", "min": 150}, {"name": "カット＋カラー", "price": "8,580円〜", "desc": "駐車場ありで通いやすい定番セット", "min": 105}], "s11": [{"name": "ショートボブ似合わせカット", "price": "7,700円", "desc": "ボブの形に徹底的にこだわるカット", "min": 60}, {"name": "艶カラー＋カット", "price": "14,300円〜", "desc": "大人の髪にツヤを出すカラー", "min": 120}, {"name": "白髪ぼかしハイライト", "price": "16,500円〜", "desc": "白髪を活かしておしゃれに見せる", "min": 150}], "s12": [{"name": "ヘッドスパ＋カット", "price": "8,800円", "desc": "郊外でゆっくり過ごせるスパ付きカット", "min": 90}, {"name": "グレイカラー", "price": "6,600円〜", "desc": "白髪をしっかり染めるカラー", "min": 90}, {"name": "ナチュラルカット", "price": "4,950円", "desc": "自然体で扱いやすいカット", "min": 50}]};
+const SAMPLE_PROFILES = {"s1a": {"tech": ["透明感カラー", "レイヤーカット"], "age": "20代後半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アイドル", "oshi": "（例）STARRY BOYS", "club": "ダンス部", "pets": ["猫"], "hobbies": ["カフェ巡り", "推し活"], "holiday": ["カフェ巡り", "ショッピング"], "music": ["K-POP", "J-POP"]}, "s1b": {"tech": ["骨格補正カット", "メンズカット"], "age": "30代", "home": "北海道（札幌以外）", "homeDetail": "旭川", "oshiGenre": "スポーツ", "oshi": "（例）北海道のプロ野球チーム", "club": "野球部", "pets": ["犬"], "hobbies": ["キャンプ・アウトドア", "釣り"], "holiday": ["アウトドア"], "music": ["ロック"]}, "s2a": {"tech": ["縮毛矯正", "髪質改善"], "age": "30代", "home": "北海道（札幌以外）", "homeDetail": "函館", "oshiGenre": "俳優", "oshi": "（例）俳優のAさん", "club": "吹奏楽部", "pets": ["猫"], "hobbies": ["読書", "映画・ドラマ"], "holiday": ["家でゆっくり"], "music": ["クラシック", "J-POP"]}, "s2b": {"tech": ["酸性ストレート", "ダメージケア"], "age": "20代後半", "home": "東北", "homeDetail": "仙台", "oshiGenre": "アニメ・ゲーム", "oshi": "（例）人気RPGシリーズ", "club": "バスケ部", "pets": ["いない"], "hobbies": ["ゲーム", "筋トレ・ジム"], "holiday": ["家でゆっくり", "ジム・運動"], "music": ["アニソン", "ヒップホップ"]}, "s3a": {"tech": ["時短カット", "白髪ぼかし"], "age": "30代", "home": "札幌市", "homeDetail": "", "oshiGenre": "スポーツ", "oshi": "（例）北海道のサッカーチーム", "club": "サッカー部", "pets": ["犬"], "hobbies": ["サウナ・温泉", "ランニング"], "holiday": ["スポーツ観戦", "温泉・サウナ"], "music": ["J-POP"]}, "s3b": {"tech": ["ナチュラルカラー", "前髪カット"], "age": "20代前半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アイドル", "oshi": "（例）SUNNY GIRLS", "club": "テニス部", "pets": ["うさぎ"], "hobbies": ["カフェ巡り", "写真"], "holiday": ["カフェ巡り"], "music": ["J-POP", "K-POP"]}, "s4a": {"tech": ["大人ショート", "白髪染め"], "age": "40代", "home": "北海道（札幌以外）", "homeDetail": "小樽", "oshiGenre": "アーティスト・バンド", "oshi": "（例）90年代のロックバンド", "club": "バレー部", "pets": ["犬"], "hobbies": ["ガーデニング", "料理"], "holiday": ["家でゆっくり"], "music": ["ロック", "J-POP"]}, "s4b": {"tech": ["ナチュラルパーマ", "メンズ"], "age": "20代後半", "home": "関東", "homeDetail": "東京", "oshiGenre": "アーティスト・バンド", "oshi": "（例）インディーバンドB", "club": "軽音部", "pets": ["猫"], "hobbies": ["ファッション・古着", "ライブ・フェス"], "holiday": ["ショッピング", "ライブ・推し活"], "music": ["ロック", "洋楽"]}, "s5a": {"tech": ["ハイトーン", "インナーカラー"], "age": "20代後半", "home": "関東", "homeDetail": "横浜", "oshiGenre": "アーティスト・バンド", "oshi": "（例）ヒップホップアーティストC", "club": "ダンス部", "pets": ["いない"], "hobbies": ["ファッション・古着", "ライブ・フェス"], "holiday": ["ショッピング", "ライブ・推し活"], "music": ["ヒップホップ", "K-POP"]}, "s5b": {"tech": ["ブリーチなしデザインカラー"], "age": "20代前半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アイドル", "oshi": "（例）STARRY BOYS", "club": "美術部", "pets": ["猫"], "hobbies": ["アニメ・マンガ", "カフェ巡り"], "holiday": ["カフェ巡り", "ライブ・推し活"], "music": ["K-POP"]}, "s6a": {"tech": ["キッズカット", "メンズ"], "age": "30代", "home": "北海道（札幌以外）", "homeDetail": "帯広", "oshiGenre": "スポーツ", "oshi": "（例）北海道のプロ野球チーム", "club": "野球部", "pets": ["犬"], "hobbies": ["キャンプ・アウトドア"], "holiday": ["アウトドア", "家族と過ごす"], "music": ["J-POP"]}, "s6b": {"tech": ["縮毛矯正", "ショート"], "age": "20代後半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アニメ・ゲーム", "oshi": "（例）人気アニメD", "club": "バスケ部", "pets": ["猫"], "hobbies": ["アニメ・マンガ", "ゲーム"], "holiday": ["家でゆっくり"], "music": ["アニソン"]}, "s7a": {"tech": ["似合わせカット", "大人カット"], "age": "40代", "home": "近畿", "homeDetail": "大阪", "oshiGenre": "いない", "oshi": "", "club": "陸上部", "pets": ["いない"], "hobbies": ["お酒・ワイン", "ゴルフ"], "holiday": ["ジム・運動"], "music": ["洋楽", "ジャズ"]}, "s7b": {"tech": ["上質カラー", "トリートメント"], "age": "30代", "home": "札幌市", "homeDetail": "", "oshiGenre": "俳優", "oshi": "（例）俳優のAさん", "club": "茶道部", "pets": ["犬"], "hobbies": ["ヨガ", "カフェ巡り"], "holiday": ["ジム・運動", "カフェ巡り"], "music": ["J-POP", "クラシック"]}, "s8a": {"tech": ["ドライヘッドスパ", "頭皮診断"], "age": "30代", "home": "北海道（札幌以外）", "homeDetail": "釧路", "oshiGenre": "いない", "oshi": "", "club": "吹奏楽部", "pets": ["猫"], "hobbies": ["ヨガ", "サウナ・温泉"], "holiday": ["温泉・サウナ", "家でゆっくり"], "music": ["クラシック"]}, "s8b": {"tech": ["炭酸スパ", "眼精疲労ケア"], "age": "20代前半", "home": "札幌市", "homeDetail": "", "oshiGenre": "スポーツ", "oshi": "（例）北海道のサッカーチーム", "club": "サッカー部", "pets": ["いない"], "hobbies": ["サウナ・温泉", "筋トレ・ジム"], "holiday": ["温泉・サウナ", "ジム・運動"], "music": ["ヒップホップ"]}, "s9a": {"tech": ["縮毛矯正", "前髪ストレート"], "age": "20代後半", "home": "東北", "homeDetail": "青森", "oshiGenre": "アイドル", "oshi": "（例）SUNNY GIRLS", "club": "テニス部", "pets": ["うさぎ"], "hobbies": ["旅行", "写真"], "holiday": ["旅行"], "music": ["J-POP"]}, "s9b": {"tech": ["髪質改善", "ダメージ毛"], "age": "30代", "home": "札幌市", "homeDetail": "", "oshiGenre": "アニメ・ゲーム", "oshi": "（例）人気RPGシリーズ", "club": "バスケ部", "pets": ["犬"], "hobbies": ["ゲーム", "料理"], "holiday": ["家でゆっくり"], "music": ["アニソン", "ロック"]}, "s10a": {"tech": ["インナーカラー", "ヘアアレンジ"], "age": "20代前半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アイドル", "oshi": "（例）STARRY BOYS", "club": "チアリーディング部", "pets": ["犬"], "hobbies": ["推し活", "カラオケ"], "holiday": ["ライブ・推し活", "ショッピング"], "music": ["K-POP", "J-POP"]}, "s10b": {"tech": ["パーマ", "メンズ"], "age": "30代", "home": "北海道（札幌以外）", "homeDetail": "苫小牧", "oshiGenre": "スポーツ", "oshi": "（例）北海道のプロ野球チーム", "club": "野球部", "pets": ["猫"], "hobbies": ["釣り", "車・バイク"], "holiday": ["アウトドア"], "music": ["ロック"]}, "s11a": {"tech": ["大人の似合わせ", "白髪ぼかし"], "age": "40代", "home": "関東", "homeDetail": "東京", "oshiGenre": "アーティスト・バンド", "oshi": "（例）90年代のロックバンド", "club": "サッカー部", "pets": ["犬"], "hobbies": ["お酒・ワイン", "料理"], "holiday": ["家でゆっくり"], "music": ["洋楽", "ロック"]}, "s11b": {"tech": ["ショートボブ", "艶カラー"], "age": "30代", "home": "札幌市", "homeDetail": "", "oshiGenre": "俳優", "oshi": "（例）俳優のEさん", "club": "ダンス部", "pets": ["猫"], "hobbies": ["映画・ドラマ", "カフェ巡り"], "holiday": ["家でゆっくり", "カフェ巡り"], "music": ["J-POP", "洋楽"]}, "s12a": {"tech": ["ヘッドスパ", "グレイカラー"], "age": "40代", "home": "北海道（札幌以外）", "homeDetail": "江別", "oshiGenre": "いない", "oshi": "", "club": "バレー部", "pets": ["犬"], "hobbies": ["ガーデニング", "サウナ・温泉"], "holiday": ["温泉・サウナ"], "music": ["J-POP"]}, "s12b": {"tech": ["ナチュラルカット", "メンズ"], "age": "20代前半", "home": "札幌市", "homeDetail": "", "oshiGenre": "アニメ・ゲーム", "oshi": "（例）人気アニメD", "club": "バスケ部", "pets": ["いない"], "hobbies": ["ゲーム", "スノーボード・スキー"], "holiday": ["アウトドア", "家でゆっくり"], "music": ["アニソン", "J-POP"]}};
+const SAMPLE_HAIR = {"s1": {"volume": 0.6, "thin": 0.5, "bangs": 0.9, "easy": 0.7, "long": 0.6}, "s2": {"volume": 0.9, "thin": 0.6, "bangs": 0.5, "easy": 0.9, "long": 0.8}, "s3": {"volume": 0.6, "thin": 0.4, "bangs": 0.7, "easy": 0.8, "long": 0.4}, "s4": {"volume": 0.7, "thin": 0.8, "bangs": 0.6, "easy": 0.9, "long": 0.5}, "s5": {"volume": 0.4, "thin": 0.3, "bangs": 0.7, "easy": 0.4, "long": 0.7}, "s6": {"volume": 0.6, "thin": 0.5, "bangs": 0.8, "easy": 0.7, "long": 0.3}, "s7": {"volume": 0.8, "thin": 0.8, "bangs": 0.6, "easy": 0.9, "long": 0.8}, "s8": {"volume": 0.3, "thin": 0.7, "bangs": 0.1, "easy": 0.3, "long": 0.6}, "s9": {"volume": 0.9, "thin": 0.5, "bangs": 0.9, "easy": 0.8, "long": 0.7}, "s10": {"volume": 0.6, "thin": 0.4, "bangs": 0.8, "easy": 0.6, "long": 0.6}, "s11": {"volume": 0.7, "thin": 0.9, "bangs": 0.8, "easy": 1, "long": 0.4}, "s12": {"volume": 0.5, "thin": 0.8, "bangs": 0.4, "easy": 0.8, "long": 0.6}};
+/* お店独自の特典の例（今は使っていません。共通の500円引きに足すときに） */
+const SAMPLE_PERKS = ["初回カラー20%オフ", "髪質改善トリートメント無料", "炭酸スパ無料", "初回トリートメント無料", "ケアブリーチ無料", "子ども前髪カット無料", "ヘッドスパ10分延長", "炭酸泉無料", "ホームケアサンプル付き", "カラー500円オフ", "オーダーメイドトリートメント無料", "ヘッドスパ10分延長"];
+SALONS.forEach((s,i)=>{ s.sample=true; s.bookUrl=""; s.perk=CONFIG.PERK; s.menus=SAMPLE_MENUS[s.id]||[]; s.staff.forEach(st=>st.p=SAMPLE_PROFILES[st.id]||{}); Object.assign(s.f, SAMPLE_HAIR[s.id]||{}); const e=EXTRA[s.id]; Object.assign(s.f, e.f); s.zone=e.zone; s.open=e.open; s.close=e.close; s.closed=e.closed; });
+
+/* ============ 場所・日にち・時間（最初にお客様が選ぶ条件） ============ */
+const ZONES = [["center","大通・すすきの"],["station","札幌駅周辺"],["west","円山・西区・琴似"],["south","豊平・平岸・南区"],["east","白石・厚別・新札幌"],["north","北区・東区"]];
+const DAYS = ["日","月","火","水","木","金","土"];
+const SLOTS = [["am","午前（〜12時）",9,12],["noon","昼（12〜15時）",12,15],["eve","夕方（15〜18時）",15,18],["night","夜（18時〜）",18,22]];
+const WHENS = [["soon","今日・明日"],["week","今週中"],["next","来週くらい"],["someday","日にちは決まってない"]];
+function whenLabel(k){ return (WHENS.find(x=>x[0]===k)||[,""])[1]; }
+function ymdLocal(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+/* お店が「AISI サロン窓口」で登録した空き日（今週・来週） */
+function mdLabel(ymd){ const d=new Date(ymd+"T12:00"); return (d.getMonth()+1)+"/"+d.getDate()+"("+DAYS[d.getDay()]+")"; }
+function availMatch(s){
+  const a=(s.avail||[]).filter(d=>d>=ymdLocal(new Date())); if (!a.length || !COND) return "";
+  if (COND.date) return a.includes(COND.date) ? COND.date : "";
+  if (COND.days && COND.days.length) return a.find(d=>COND.days.includes(new Date(d+"T12:00").getDay())) || "";
+  return "";
+}
+function availOf(s){
+  const t=ymdLocal(new Date()), m=ymdLocal(new Date(Date.now()+86400000));
+  const a=(s.avail||[]).filter(d=>d>=t).sort(); if (!a.length) return "";
+  const hit = availMatch(s);
+  if (hit) return (hit===t ? "本日" : hit===m ? "明日" : mdLabel(hit)) + " 空きあり";
+  if (a.includes(t)) return "本日空きあり";
+  if (a.includes(m)) return "明日空きあり";
+  return "空きあり：" + a.slice(0,3).map(mdLabel).join("・");
+}
+let COND = null; /* {zones:[], days:[], slots:[], date:""} */
+function condDays(c){ if (c.date) return [new Date(c.date+"T12:00").getDay()]; if (c.days.length) return c.days; if (c.when==="soon"){ const d=new Date().getDay(); return [d,(d+1)%7]; } return []; }
+/* ============ 今回やりたいメニュー ============ */
+const MENU_CATS = [["cut","カット",/カット/],["color","カラー",/カラー|ハイライト|ブリーチ|白髪|グレイ/],["perm","パーマ",/パーマ|カール/],
+  ["straight","縮毛矯正・ストレート",/縮毛|ストレート|矯正/],["treat","トリートメント・髪質改善",/トリートメント|髪質改善/],["spa","ヘッドスパ",/スパ|頭皮/]];
+function catLabel(k){ return (MENU_CATS.find(x=>x[0]===k)||[,""])[1]; }
+function menuCats(m){ return Array.isArray(m.cats)&&m.cats.length ? m.cats : MENU_CATS.filter(c=>c[2].test(m.name||"")).map(c=>c[0]); }
+/* お店の一押しメニューが、やりたいメニューをどれだけ含むか。cov=1なら1つのメニューで全部できる */
+function menuMatch(s, want){
+  if (!want || !want.length) return {cov:1, idx:-1, missing:[]};
+  const ms = (s.menus||[]).map(menuCats);
+  let idx=-1, cov=0;
+  ms.forEach((c,i)=>{ const v = want.filter(k=>c.includes(k)).length/want.length; if (v>cov || (v===cov && idx>=0 && c.length<ms[idx].length)){ cov=v; idx=i; } });
+  const all = new Set(ms.flat());
+  const missing = want.filter(k=>!all.has(k));
+  if (cov<1 && !missing.length) cov = .9;          /* 別々のメニューなら全部ある */
+  return {cov, idx: cov>0 ? idx : -1, missing};
+}
+function condIssues(s, c){
+  if (!c) return [];
+  const out=[];
+  if (c.menus && c.menus.length){ const mm = menuMatch(s, c.menus); if (mm.missing.length) out.push("一押しメニューに「"+mm.missing.map(catLabel).join("・")+"」がない"); }
+  if (c.zones.length && !c.zones.includes(s.zone)) out.push("エリア");
+  const days = condDays(c);
+  if (days.length && !days.some(d=>!s.closed.includes(d))) out.push("曜日");
+  if (c.slots.length && !c.slots.some(k=>{ const sl=SLOTS.find(x=>x[0]===k); return s.open < sl[3] && s.close > sl[2]+1; })) out.push("時間帯");
+  return out;
+}
+function zoneLabel(z){ return (ZONES.find(x=>x[0]===z)||[,""])[1]; }
+function condText(c){
+  if (!c) return "";
+  const z = c.zones.length ? c.zones.map(zoneLabel).join("・") : "エリアこだわらない";
+  const d = c.date ? c.date.replace(/-/g,"/")+"（"+DAYS[new Date(c.date+"T12:00").getDay()]+"）" : (c.days.length ? c.days.map(x=>DAYS[x]).join("") + "曜" : "曜日こだわらない");
+  const w = c.when ? whenLabel(c.when)+" / " : "";
+  const t = c.slots.length ? c.slots.map(k=>SLOTS.find(x=>x[0]===k)[1].replace(/（.*）/,"")).join("・") : "時間こだわらない";
+  const m = c.menus && c.menus.length ? c.menus.map(catLabel).join("・")+" / " : "";
+  return `${m}${w}${z} / ${d} / ${t}`;
+}
+
+/* ============ 質問プール ============
+ sf=店舗の特徴, tf=スタッフの特徴, inv=逆向き, w=重み, hard=外れると大きく減点, req=出す条件 */
+const QUESTIONS = [
+ {id:"q_car",t:"車で行けて、駐車場があるほうがいい？",sf:"parking",w:2.2,hard:1,label:"駐車場"},
+ {id:"q_budget",t:"1回の予算は、1万円以内に抑えたい？",sf:"cheap",w:2.5,hard:1,label:"予算1万円以内"},
+ {id:"q_color",t:"今回、カラーもしたい？",sf:"color",w:2,label:"カラー"},
+ {id:"q_design",t:"ハイトーンやインナーカラー、ちょっと攻めた色に興味ある？",sf:"design",w:1.8,req:{q_color:.5},label:"デザインカラー"},
+ {id:"q_gray",t:"白髪、少し気になり始めてる？",sf:"gray",w:1.6,label:"白髪ケア"},
+ {id:"q_kusege",t:"くせやうねり、気になってる？",sf:"straight",w:2,label:"くせ・うねり"},
+ {id:"q_change",sym:1,t:"今回は、ガラッと変わりたい気分？",sf:"trend",w:2,label:"イメチェン"},
+ {id:"q_short",t:"ショートやボブにしたい？",sf:"short",w:1.6,label:"ショート・ボブ",skipIf:{q_long:v=>v>=.75}},
+ {id:"q_perm",t:"パーマやゆるいカール、気になってる？",sf:"perm",w:1.5,label:"パーマ"},
+ {id:"q_damage",t:"髪のダメージ、気になってる？",sf:"treat",w:1.5,label:"ダメージケア"},
+ {id:"q_volume",t:"髪の量が多くて、広がりやすい？",sf:"volume",w:1.5,label:"広がり・毛量"},
+ {id:"q_thin",t:"髪が細くて、ぺたんとしやすい？",sf:"thin",w:1.5,label:"ボリュームアップ",skipIf:{q_volume:v=>v>=.75}},
+ {id:"q_bangs",t:"前髪の形には、こだわりがある？",sf:"bangs",w:1.3,label:"前髪"},
+ {id:"q_easy",t:"朝は、乾かすだけで決まる髪型がいい？",sf:"easy",w:1.5,label:"乾かすだけで決まる"},
+ {id:"q_long",t:"長さはあまり変えずに、ロングを保ちたい？",sf:"long",w:1.4,label:"ロングを保つ",skipIf:{q_short:v=>v>=.75}},
+ {id:"q_care",t:"頭皮ケアやヘッドスパにも、興味ある？",sf:"care",w:1.6,label:"頭皮ケア・スパ"},
+ {id:"q_gentle",t:"頭皮が敏感で、薬剤のしみが心配？",sf:"gentle",w:1.4,label:"低刺激の薬剤"},
+ {id:"q_quiet",sym:1,t:"施術中は、静かに過ごしたいほう？",sf:"quiet",tf:"talk",tinv:1,w:1.6,label:"静かに過ごしたい"},
+ {id:"q_casual",sym:1,t:"美容室って、ちょっと緊張するほう？",sf:"casual",w:1.3,label:"入りやすさ"},
+ {id:"q_private",sym:1,t:"少人数の、隠れ家みたいなお店が落ち着く？",sf:"private",w:1.4,label:"隠れ家"},
+ {id:"q_lux",sym:1,t:"たまには贅沢な空間で、ゆっくり過ごしたい？",sf:"lux",w:1.3,label:"上質な空間"},
+ {id:"q_fast",t:"施術時間は、短めだとうれしい？",sf:"fast",w:1.1,label:"時短"},
+ {id:"q_walkin",t:"予約は、前日や当日に入れることが多い？",sf:"walkin",w:1.2,label:"直前予約"},
+ {id:"q_kids",t:"子どもを連れて行くことがある？",sf:"kids",w:1.2,label:"子連れOK"},
+ {id:"q_mens",t:"メンズのスタイルを相談したい？",sf:"mens",w:1.3,label:"メンズ"},
+ {id:"q_young",t:"担当スタイリストは、自分と年の近い人のほうが話しやすい？",tf:"young",w:1.5,staff:1,label:"年の近い担当",
+   skipIf:{q_veteran:v=>v>=.75}},
+ /* 「年の近い人がいい」と答えた人には聞かない。「いいえ」と答えた人には、つなぎの言葉を付けて聞く */
+ {id:"q_veteran",t:"担当スタイリストは、経験10年以上のベテランがいい？",tf:"veteran",w:1.5,staff:1,label:"ベテラン",
+   skipIf:{q_young:v=>v>=.75}, after:{q_young:[v=>v<=.25,"年が近いかどうかは気にしないんだね。じゃあ……担当スタイリストは、経験10年以上のベテランがいい？"]}},
+ {id:"q_male",t:"担当スタイリストは、男性がいい？",tf:"male",w:1.2,staff:1,label:"男性スタイリスト"},
+ {id:"q_propose",t:"自分で決めるより、似合うスタイルを提案してほしい？",tf:"propose",w:1.3,staff:1,label:"提案してほしい"}
+];
+/* 髪についての質問（優先して聞く） */
+const HAIR_Q = ["q_color","q_design","q_gray","q_kusege","q_change","q_short","q_perm","q_damage","q_volume","q_thin","q_bangs","q_easy","q_long","q_gentle"];
+const ANSWERS = [["はい",1],["いいえ",0],["わからない",null],["たぶんそう",.75],["たぶん違う",.25]];
+/* テーマ選択に「準備中」として表示するもの（押せません） */
+const SOON = ["ネイルサロンを探す", "ヘッドスパサロンを探す"];
+const THEMES = {
+  salon:{label:"美容室を探す",boost:{}},
+  staff:{label:"担当スタイリストを探す",boost:{staff:1.5}},
+  spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}}
+};
+const MIN_Q = 13, MAX_Q = 25, GOAL = 85;
+/* やりたいメニューで答えが分かった分だけ、最低質問数を減らす（最大3問） */
+function minQ(){ return MIN_Q - Math.min(3, ((S && S.preset) || []).length); }
+/* 2つの段階：①お店の質問でマッチ率80%まで → ②「ちょっと個人的なこと聞いていい？」で担当者まで決める */
+const PHASE1_GOAL = 80, PHASE1_MAX = 20, PERSONAL_MAX = 4;
+/* マッチ率のゆるさ。値を変えると全体の点数の出方が変わります
+   CURVE：小さなズレを許す度合い（1＝厳しい、大きいほどゆるい）
+   HARD：エリア・予算・時間など大事な条件が外れたときの掛け率
+   OFFCOND：選んだエリア・曜日・時間帯に合わない点1つごとの掛け率
+   LIFT：点数の見せ方（1＝そのまま、小さいほど全体が上がる。100%は100%のまま） */
+const MATCH = { CURVE: 2, HARD: .93, OFFCOND: .88, LIFT: .7 };
+
+/* ============ マッチング ============ */
+function qWeight(q, theme){
+  const b = THEMES[theme].boost;
+  return q.w * (b[q.id] || 1) * (q.staff && b.staff ? b.staff : 1);
+}
+/* お客さまとスタイリストの年の近さ（お客さまが年代を選んだときだけ。選んでいなければ「若手かどうか」で判断） */
+const AGE_N = {"10代":1,"20代":2,"20代前半":2,"20代後半":2.5,"30代":3,"40代":4,"50代以上":5};
+function ageNear(st){
+  const me = COND && AGE_N[COND.age], them = st.p && AGE_N[st.p.age];
+  if (!me || !them) return st.young;
+  const d = Math.abs(me - them);
+  return d <= .5 ? 1 : d <= 1 ? .6 : d <= 1.5 ? .3 : 0;
+}
+function staffFit(st, answers, theme){
+  let num=0, den=0;
+  for (const q of QUESTIONS){
+    if (!q.tf) continue;
+    const a = answers[q.id]; if (a==null) continue;
+    let v = q.tf==="young" ? ageNear(st) : st[q.tf]; if (q.tinv) v = 1 - v;
+    const w = qWeight(q, theme); num += w*(1-Math.abs(a-v)); den += w;
+  }
+  return den ? num/den : null;
+}
+function scoreAll(answers, theme){
+  return SALONS.map(s=>{
+    let num=0, den=0, penalty=1;
+    for (const q of QUESTIONS){
+      if (!q.sf) continue;
+      const a = answers[q.id]; if (a==null) continue;
+      const v = s.f[q.sf];
+      let fit = 1-Math.pow(Math.abs(a-v), MATCH.CURVE), w = qWeight(q, theme);
+      /* 「いらない」と答えた項目は、お店がそれを得意にしていても大きくは減点しない（静か・変化・隠れ家などの好みは除く） */
+      if (a < .5 && !q.sym){ fit = 1 - (.5 - a)*.6*v; w *= .5; }
+      num += w*fit; den += w;
+      if (q.hard && a>=.75 && v<.35) penalty *= MATCH.HARD;
+    }
+    const sfit = den ? num/den : .5;
+    const A = S && S.aff;
+    const staffRank = s.staff.map(st=>{ const f = staffFit(st, answers, theme), af = affinity(st, A);
+        return {st, fit:f, aff:af, total:(f??.5)*(A?.65:1) + (A?af.score*.35:0)}; })
+      .sort((x,y)=>y.total-x.total);
+    const best = staffRank[0];
+    const hasStaff = best.fit!=null;
+    if (A) penalty *= 1 + .05*best.aff.score;               /* 共通点が多い担当者がいるお店を少し上げる */
+    penalty *= 1 + .03*Math.min(100, s.done||0)/100;         /* 情報をしっかり入れているお店を少しだけ上げる */
+    const issues = condIssues(s, COND);
+    if (issues.length) penalty *= Math.pow(MATCH.OFFCOND, issues.length);
+    /* やりたいメニューが一押しメニューにあるお店からスタート（ないお店は大きく下げる） */
+    const mm = menuMatch(s, COND && COND.menus);
+    penalty *= mm.cov>=1 ? 1 : mm.cov>=.9 ? .97 : .8 + .1*mm.cov;
+    /* 「今日・明日」の人には、空きを出しているお店・直前予約に強いお店を上げる */
+    if (COND && COND.when==="soon"){ const t=ymdLocal(new Date()), m=ymdLocal(new Date(Date.now()+86400000)); penalty *= ((s.avail||[]).some(d=>d===t||d===m) ? 1.08 : 1) * (.94 + .06*(s.f.walkin??.5)); }
+    else if (availMatch(s)) penalty *= 1.06;        /* 行きたい日に空きを出しているお店を少し上げる */
+    const total = (hasStaff ? sfit*.78 + best.fit*.22 : sfit) * penalty;
+    const shown = Math.pow(Math.max(0, Math.min(1, total)), MATCH.LIFT);
+    return {salon:s, score:Math.min(99.9, Math.round(shown*1000)/10), staff:best.st, staffFit:best.fit, common:best.aff.common, issues, menuIdx:mm.idx};
+  }).sort((a,b)=>b.score-a.score);
+}
+function eligible(q, answers){
+  if (q.id in answers) return false;
+  if (q.skipIf) for (const [k,f] of Object.entries(q.skipIf)){ if (answers[k]!=null && f(answers[k])) return false; }
+  if (q.req) for (const k in q.req){ if (!(answers[k]!=null && answers[k]>=q.req[k])) return false; }
+  return true;
+}
+function nextQuestion(answers, theme, n){
+  const ranked = scoreAll(answers, theme);
+  const top = ranked[0].score;
+  const inCond = ranked.filter(r=>!r.issues.length);
+  const base = inCond.length>=3 ? inCond : ranked;
+  const pool = base.filter(r=>r.score >= base[0].score-14).slice(0,7);
+  const cands = pool.length>=3 ? pool : base.slice(0,3);
+  let best=null, bestV=-1;
+  for (const q of QUESTIONS){
+    if (!eligible(q, answers)) continue;
+    let vals;
+    if (q.sf) vals = cands.map(r=>r.salon.f[q.sf]);
+    else vals = cands.flatMap(r=>r.salon.staff.map(st=>q.tinv?1-st[q.tf]:st[q.tf]));
+    const m = vals.reduce((a,b)=>a+b,0)/vals.length;
+    const variance = vals.reduce((a,b)=>a+(b-m)**2,0)/vals.length;
+    let v = (variance + .02) * qWeight(q, theme);
+    if (HAIR_Q.includes(q.id)) v *= 1.35;     /* 髪のことを優先して聞く */
+    if (q.staff && n < 5 && theme!=="staff") v *= .5;
+    if (v > bestV){ bestV=v; best=q; }
+  }
+  return best;
+}
+/* 目標を判定するお店：やりたいメニューが一押しのお店が3軒未満なら、そのお店だけで判定する */
+function goalPool(r){
+  if (!(COND && COND.menus && COND.menus.length)) return r;
+  const m = r.filter(x=>menuMatch(x.salon, COND.menus).cov >= .9);
+  return m.length >= 3 || !m.length ? r : m;
+}
+/* 第1段階の終わり：上位3店がマッチ率80%以上、または20問 */
+function phase1Done(answers, theme, n){
+  if (n >= PHASE1_MAX) return true;
+  if (n < minQ()) return false;
+  const r = goalPool(scoreAll(answers, theme));
+  return r.length && r[Math.min(3, r.length) - 1].score >= PHASE1_GOAL;
+}
+/* 画面のマッチ率は下がらない。答えるたびに少しずつ上がり、第1段階は80%手前まで */
+function nextMeter(prev, answers, theme){
+  const r = scoreAll(answers, theme);
+  /* 質問の数に合わせて、なめらかに80%手前まで上げる（最低質問数で79%に届くペース） */
+  const curve = (PHASE1_GOAL - 1) * Math.sqrt(Math.min(1, S.n / minQ()));
+  /* 1位のお店の本当のマッチ率は超えない（超えそうなときは、下げずにその場で止める） */
+  const next = Math.min(PHASE1_GOAL - 1, r[0].score, Math.max(prev + .3, curve));
+  return Math.max(prev, Math.round(next * 10) / 10);
+}
+function meterHTML(v, label){
+  const n = Math.round(v);
+  return `<div class="meter" aria-label="${label||"マッチ率"}"><div class="meter-h"><span>${label||"見つけたお店とのマッチ率"}</span><span>${n}%</span></div><div class="bar"><i style="width:${n}%"></i></div></div>`;
+}
+function shouldFinish(answers, theme, n){
+  if (n >= MAX_Q) return true;
+  if (n < MIN_Q) return false;
+  /* マッチ率85%以上のお店が3軒そろったら結果へ */
+  const r = scoreAll(answers, theme);
+  return r.length >= 3 && r[2].score >= GOAL;
+}
+function confidence(answers, theme, n){
+  if (!n) return 0;
+  const r = scoreAll(answers, theme);            /* 3軒そろう見込み（3位の点数）で表示 */
+  const third = (r[2] || r[0]).score;
+  return Math.min(99, Math.round(third * Math.min(1, n/MIN_Q)));
+}
+function reasonsFor(r, answers){
+  const out=[];
+  for (const q of QUESTIONS){
+    const a = answers[q.id]; if (a==null || !q.sf) continue;
+    const v = r.salon.f[q.sf];
+    if (a>=.75 && v>=.7) out.push({q, s:v*qWeight(q,"salon")});
+  }
+  const m = (r.salon.menus||[])[r.menuIdx];
+  const top = out.sort((x,y)=>y.s-x.s).map(x=>x.q.label);
+  return (m ? ["一押しが『"+m.name+"』"].concat(top.slice(0,2)) : top.slice(0,3));
+}
+function bottleneck(r, answers){
+  let worst=null, wv=1;
+  for (const q of QUESTIONS){
+    const a = answers[q.id]; if (a==null || !q.sf) continue;
+    const fit = 1-Math.abs(a-r.salon.f[q.sf]);
+    if (fit < wv){ wv=fit; worst=q; }
+  }
+  return wv < .6 ? worst : null;
+}
+
+/* ============ 店舗データの読み込み（GAS → なければサンプル） ============ */
+let dataReady = null;
+function loadData(){
+  if (!CONFIG.GAS_URL){ dataReady = Promise.resolve(); return; }
+  dataReady = fetch(CONFIG.GAS_URL + "?action=data").then(r=>r.json()).then(d=>{
+    if (d && Array.isArray(d.salons) && d.salons.length >= 3) SALONS = d.salons;
+  }).catch(()=>{ /* 読めなければサンプルで動かす */ });
+}
+
+/* ============ 記録をGASに送る（順番どおりに送る） ============ */
+let sendQ = Promise.resolve();
+function send(type, data){
+  if (!CONFIG.GAS_URL || !S) return;
+  const body = JSON.stringify(Object.assign({type, sid:S.sid}, data));
+  if (type === "book" && navigator.sendBeacon){
+    sendQ = sendQ.then(()=>{ navigator.sendBeacon(CONFIG.GAS_URL, new Blob([body], {type:"text/plain"})); });
+    return;
+  }
+  sendQ = sendQ.then(()=>fetch(CONFIG.GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body, keepalive:true})).catch(()=>{});
+}
+
+/* ============ 状態と描画 ============ */
+const $app = document.getElementById("app");
+let view="theme", S=null;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function aisiImg(key){
+  const u = POSES[key];
+  if (!u) return `<div class="ph">AISI</div>`;
+  return `<img src="${u}" alt="AISI">`;
+}
+function newSid(){ return "d" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function newCode(){ return "AISI-" + String(Math.floor(1000+Math.random()*9000)); }
+
+function renderTheme(){
+  view="theme"; location.hash="";
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("shrug")}</div>
+    <div class="panel">
+      <div class="bubble"><p class="voice">……迷ってるね。<br>いいよ、俺が見つけてあげる。<br>札幌で、君に合う一軒を。</p></div>
+      <p class="note" style="font-size:.85rem;color:var(--paper)">次は、何を見つけようか。</p>
+      <div class="choices">
+        <button class="choice" type="button" data-theme="salon">${THEMES.salon.label}</button>
+        ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
+      </div>
+      <p class="note">質問は最大25問。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
+    </div>
+  </section>`;
+  $app.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>renderCond(b.dataset.theme));
+}
+
+const AGES = ["10代","20代","30代","40代","50代以上"];
+let draft = {menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
+function renderCond(theme){
+  view="cond";
+  const chip = (grp,val,label,on)=>`<button type="button" class="chip ${on?"on":""}" data-g="${grp}" data-v="${val}" aria-pressed="${on}">${label}</button>`;
+  const d = draft;
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("open")}</div>
+    <div class="panel">
+      <div class="bubble"><p class="voice">まず、今回やりたいメニューと、行ける場所・時間だけ教えて。<br>そこから先は、俺が当てる。</p></div>
+      <div class="cond">
+        <div class="cond-g must"><b>今回やりたいメニューは？</b><small>いくつでも。そのメニューが一押しのお店から探すよ</small>
+          <div class="chips">${MENU_CATS.map(([v,l])=>chip("menus",v,l,d.menus.includes(v))).join("")}${chip("menuFree","1","まだ決めてない",d.menuFree)}</div></div>
+        <div class="cond-g"><b>いつ頃行きたい？</b><small>ひとつ選んでね</small>
+          <div class="chips">${WHENS.map(([v,l])=>chip("when",v,l,d.when===v)).join("")}</div>
+          ${d.when==="soon"?`<p class="warnbox" style="margin:4px 0 0">今日・明日は、人気のお店ほど埋まっていることが多いよ。「空きあり」のお店や、直前予約に強いお店を優先して探すね。</p>`:""}
+          ${d.when==="someday"?`<p class="note" style="margin:4px 0 0">日にちが決まっていなくても大丈夫。診断結果をAISIのLINEに保存して、あとから予約できるよ。</p>`:""}</div>
+        <div class="cond-g"><b>行けるエリア</b><small>いくつでも。選ばなければ札幌市内どこでも</small>
+          <div class="chips">${ZONES.map(([v,l])=>chip("zones",v,l,d.zones.includes(v))).join("")}</div></div>
+        <div class="cond-g"><b>行ける曜日</b><small>いくつでも。日付が決まっていれば日付で</small>
+          <div class="chips">${DAYS.map((l,i)=>chip("days",i,l,d.days.includes(i))).join("")}</div>
+          <label class="datel" for="cDate">日付で指定 <input type="date" id="cDate" value="${d.date}"></label></div>
+        <div class="cond-g"><b>行きたい時間帯</b><small>いくつでも</small>
+          <div class="chips">${SLOTS.map(([v,l])=>chip("slots",v,l,d.slots.includes(v))).join("")}</div></div>
+        <div class="cond-g"><b>あなたの年代（任意）</b><small>年の近い担当者を探すときに使います</small>
+          <div class="chips">${AGES.map(v=>chip("age",v,v,d.age===v)).join("")}</div></div>
+      </div>
+      <div class="choices"><button class="choice primary" type="button" id="condGo" ${d.menus.length||d.menuFree?"":"disabled"}>${d.menus.length||d.menuFree?"この条件で始める":"やりたいメニューを選んでね"}</button></div>
+      <button class="back" type="button" id="condBack">← テーマ選択に戻る</button>
+    </div>
+  </section>`;
+  $app.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+    const g=b.dataset.g, v = g==="days" ? +b.dataset.v : b.dataset.v;
+    if (g==="when" || g==="age"){ draft[g] = draft[g]===v ? "" : v; return renderCond(theme); }
+    if (g==="menuFree"){ draft.menuFree = !draft.menuFree; if (draft.menuFree) draft.menus=[]; return renderCond(theme); }
+    if (g==="menus") draft.menuFree = false;
+    const arr=draft[g]; const k=arr.indexOf(v); if (k>=0) arr.splice(k,1); else arr.push(v);
+    if (g==="days") draft.date="";
+    renderCond(theme);
+  });
+  document.getElementById("cDate").onchange=e=>{ draft.date=e.target.value; if (draft.date) draft.days=[]; renderCond(theme); };
+  document.getElementById("condGo").onclick=async(e)=>{ e.currentTarget.disabled=true; e.currentTarget.textContent="準備中…"; await dataReady; start(theme, {menus:MENU_CATS.map(c=>c[0]).filter(k=>draft.menus.includes(k)), when:draft.when||"week", age:draft.age, zones:[...draft.zones], days:[...draft.days].sort(), slots:[...draft.slots], date:draft.date}); };
+  document.getElementById("condBack").onclick=renderTheme;
+}
+
+function start(theme, cond){
+  COND = cond;
+  S = {sid:newSid(), theme, cond, answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false};
+  send("start", {theme:THEMES[theme].label, when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
+    days: cond.date ? cond.date.replace(/-/g,"/") : (cond.days.map(d=>DAYS[d]+"曜").join("、")||"こだわらない"),
+    slots: cond.slots.map(k=>SLOTS.find(x=>x[0]===k)[1]).join("、")||"こだわらない",
+    device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
+    menu: cond.menus.length ? cond.menus.map(catLabel).join("、") : "まだ決めてない"});
+  /* やりたいメニューで分かることは、質問しない */
+  if (cond.menus.length){
+    const M = k=>cond.menus.includes(k);
+    S.answers.q_color = M("color") ? 1 : 0;
+    if (M("perm")) S.answers.q_perm = 1;
+    if (M("straight")) S.answers.q_kusege = 1;
+    if (M("treat")) S.answers.q_damage = 1;
+    if (M("spa")) S.answers.q_care = 1;
+    S.preset = Object.keys(S.answers);
+  }
+  S.current = nextQuestion(S.answers, theme, 0);
+  renderQ();
+}
+
+function asideFor(n){
+  if (n===4) return "なるほど。輪郭が見えてきた。";
+  if (n===7) return "……もう少しで、見える。";
+  if (n===10) return "簡単には決めさせてくれないね。あと少しだけ、付き合って。";
+  if (n===13) return "ここからが本番。";
+  if (n===15) return "君、なかなか手強いね。でも、もう少し。";
+  if (n===18) return "最後の詰め。ここが大事。";
+  return "";
+}
+
+/* ============ 質問画面 ============ */
+/* 前の答えによって、質問の言い方を変える */
+function qText(q){
+  if (q.after) for (const [k,[f,t]] of Object.entries(q.after)){ if (S.answers[k]!=null && f(S.answers[k])) return t; }
+  return q.t;
+}
+function renderQ(){
+  view="q";
+  const n = S.n, q = S.current;
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg(QPOSES[n % QPOSES.length])}</div>
+    <div class="panel">
+      ${meterHTML(S.meter)}
+      <div class="bubble">
+        <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${PHASE1_MAX}</span></p>
+        ${asideFor(n)?`<p class="aside">${asideFor(n)}</p>`:""}
+        <p class="voice">${esc(qText(q))}</p>
+      </div>
+      <div class="choices">
+        ${ANSWERS.map(([l],i)=>`<button class="choice" type="button" data-i="${i}">${l}</button>`).join("")}
+      </div>
+      <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
+    </div>
+  </section>`;
+  $app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>answer(ANSWERS[+b.dataset.i][1]));
+  document.getElementById("backBtn").onclick=back;
+}
+
+function answer(v){
+  const q = S.current;
+  S.history.push({q, answers:{...S.answers}, n:S.n, meter:S.meter});
+  S.answers[q.id] = v;
+  S.n++;
+  S.meter = nextMeter(S.meter, S.answers, S.theme);
+  next();
+}
+function next(){
+  if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
+  /* 切り札：9問を過ぎてもまだ絞れていなければ、1回だけ写真を見せてもらう */
+  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= PHASE1_MAX-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
+    S.photoAsked = true; return renderPhoto();
+  }
+  const nq = nextQuestion(S.answers, S.theme, S.n);
+  if (!nq) return startPersonal();
+  S.current = nq; renderQ();
+}
+function back(){
+  const h = S.history.pop(); if (!h) return;
+  S.answers = h.answers; S.n = h.n; if (h.meter != null) S.meter = h.meter;
+  if (h.photo){ S.photo = null; return renderPhoto(); }
+  S.current = h.q; renderQ();
+}
+
+/* ============ 切り札：なりたい髪型の写真 ============ */
+function renderPhoto(msg){
+  view="photo";
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("think")}</div>
+    <div class="panel">
+      <div class="bubble">
+        <p class="qno">質問 ${S.n+1}<span style="opacity:.6"> / 最大${MAX_Q} ・ 切り札</span></p>
+        <p class="voice">${msg || "……あと一歩なんだ。<br>なりたい髪型の写真、持ってる？"}</p>
+      </div>
+      <div class="choices">
+        <label class="choice primary filebtn" for="photoIn">写真を見せる</label>
+        <input type="file" id="photoIn" accept="image/*" hidden>
+        <button class="choice" type="button" id="noPhoto">持ってない</button>
+      </div>
+      <p class="note">写真はこのスマホの中だけで分析します。どこにも送信・保存しません。</p>
+      <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
+    </div>
+  </section>`;
+  document.getElementById("photoIn").onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(f) runPhoto(f); };
+  document.getElementById("noPhoto").onclick=()=>{ const nq=nextQuestion(S.answers,S.theme,S.n); if(!nq) return finish(); S.current=nq; renderQ(); };
+  document.getElementById("backBtn").onclick=back;
+}
+async function runPhoto(file){
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("think")}</div>
+    <div class="panel">
+      <div class="bubble"><p class="qno">分析中</p><p class="voice">……見せて。</p></div>
+      <div class="photo-prev"><img id="pv" alt="選んだ写真"><div class="scan"></div></div>
+    </div>
+  </section>`;
+  const url = URL.createObjectURL(file);
+  document.getElementById("pv").src = url;
+  let r = null;
+  try { r = await analyzePhoto(url); } catch(e){ r = null; }
+  URL.revokeObjectURL(url);
+  if (!r) return renderPhoto("うまく読み取れなかった。<br>髪がはっきり写った、別の写真はある？");
+  S.history.push({photo:true, answers:{...S.answers}, n:S.n, meter:S.meter});
+  for (const [k,v] of Object.entries(r.answers)) if (!(k in S.answers)) S.answers[k]=v;
+  S.photo = r.summary;
+  S.n++;
+  S.meter = nextMeter(S.meter, S.answers, S.theme);
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("peace")}</div>
+    <div class="panel">
+      <div class="bubble"><p class="qno">写真から読み取ったこと</p><p class="voice">${esc(r.summary)}。<br>……なるほど、つながった。</p></div>
+      <div class="choices"><button class="choice primary" type="button" id="goOn">続ける</button></div>
+    </div>
+  </section>`;
+  document.getElementById("goOn").onclick=next;
+}
+
+/* MediaPipe（Google の無料ライブラリ）で、端末の中だけで髪を分析する */
+let MP = null;
+async function loadMP(){
+  if (MP) return MP;
+  const base = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+  const v = await import(base + "/vision_bundle.mjs");
+  const fs = await v.FilesetResolver.forVisionTasks(base + "/wasm");
+  const seg = await v.ImageSegmenter.createFromOptions(fs, {
+    baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/hair_segmenter/float32/latest/hair_segmenter.tflite"},
+    runningMode:"IMAGE", outputCategoryMask:true, outputConfidenceMasks:false });
+  let face = null;
+  try{
+    face = await v.FaceDetector.createFromOptions(fs, {
+      baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite"},
+      runningMode:"IMAGE" });
+  }catch(e){ face = null; }
+  MP = {seg, face}; return MP;
+}
+function loadImg(url){ return new Promise((ok,ng)=>{ const i=new Image(); i.onload=()=>ok(i); i.onerror=ng; i.src=url; }); }
+function rgb2hsl(r,g,b){ r/=255; g/=255; b/=255; const mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/2; let h=0,s=0;
+  if (mx!==mn){ const d=mx-mn; s=l>.5?d/(2-mx-mn):d/(mx+mn); h = mx===r?((g-b)/d+(g<b?6:0)):mx===g?((b-r)/d+2):((r-g)/d+4); h*=60; } return [h,s,l]; }
+async function analyzePhoto(url){
+  const img = await loadImg(url);
+  const scale = Math.min(1, 512/Math.max(img.width,img.height));
+  const W = Math.round(img.width*scale), H = Math.round(img.height*scale);
+  const cv = document.createElement("canvas"); cv.width=W; cv.height=H;
+  const ctx = cv.getContext("2d", {willReadFrequently:true}); ctx.drawImage(img,0,0,W,H);
+  const px = ctx.getImageData(0,0,W,H).data;
+  const mp = await loadMP();
+  const res = mp.seg.segment(cv);
+  const mask = res.categoryMask.getAsUint8Array();
+  let n=0, sumL=0, bright=0, vivid=0, bottom=0; const rows = new Array(H).fill(0);
+  for (let y=0;y<H;y++) for (let x=0;x<W;x++){
+    const i=y*W+x; if (!mask[i]) continue;
+    const [h,s,l] = rgb2hsl(px[i*4],px[i*4+1],px[i*4+2]);
+    n++; sumL+=l; rows[y]++;
+    if (l>.58) bright++;
+    if (s>.35 && l>.25 && l<.85 && (h<8 || h>48)) vivid++;
+  }
+  res.close && res.close();
+  if (n < W*H*.02) return null;
+  let acc=0; for (let y=0;y<H;y++){ acc+=rows[y]; if (acc >= n*.97){ bottom=y; break; } }
+  const avgL = sumL/n, brightF = bright/n, vividF = vivid/n;
+  const tone = avgL<.2 ? "黒髪〜暗めのトーン" : avgL<.34 ? "ナチュラルなブラウン" : avgL<.52 ? "明るめのカラー" : "ハイトーン";
+  const design = vividF>.12 || (brightF>.12 && brightF<.55 && avgL<.42);
+  let length = "";
+  if (mp.face){
+    const fr = mp.face.detect(cv);
+    const d = fr.detections && fr.detections[0];
+    if (d){ const b=d.boundingBox; const chin=b.originY+b.height; const ratio=(bottom-chin)/b.height;
+      length = ratio<.15 ? "ショート" : ratio<.9 ? "ボブ〜ミディアム" : "ロング"; }
+  }
+  const answers = {};
+  answers.q_color = (avgL>=.2 || design) ? 1 : .25;
+  answers.q_design = design ? 1 : (tone==="ハイトーン" ? .75 : 0);
+  if (design || tone==="ハイトーン") answers.q_change = .75;
+  if (length) answers.q_short = length==="ショート" ? 1 : length==="ロング" ? 0 : .75;
+  const summary = [tone, design?"デザインカラーあり":"", length].filter(Boolean).join("・");
+  return {answers, summary};
+}
+
+/* ============ 相性（共通点）============
+ 上位のお店が同じくらいのとき、スタイリストとの共通点を聞いて、担当者まで決める */
+const AFF_Q = [
+  {key:"pets",    q:"ちょっと聞いてもいい？ ペットは飼ってる？（飼いたい、でもOK）", multi:true,  none:"いない"},
+  {key:"oshiGenre",q:"推しはいる？", multi:false, none:"いない", name:true},
+  {key:"club",    q:"学生時代、部活は何をしてた？", multi:false, none:"帰宅部"},
+  {key:"home",    q:"出身はどこ？", multi:false, none:"それ以外"},
+  {key:"hobbies", q:"好きなこと・趣味は？（いくつでも）", multi:true, none:"ほかにない"},
+  {key:"holiday", q:"休日はどう過ごすことが多い？（いくつでも）", multi:true, none:"ほかにない"},
+  {key:"music",   q:"よく聴く音楽は？（いくつでも）", multi:true, none:"ほかにない"}
+];
+const AFF_ALWAYS = {
+  club: ["野球部","サッカー部","バスケ部","バレー部","テニス部","陸上部","水泳部","ダンス部","吹奏楽部","軽音部","美術部","茶道部","その他の運動部","その他の文化部"],
+  pets: ["犬","猫","うさぎ","鳥","その他"],
+  home: ["札幌市","北海道（札幌以外）","東北","関東","中部","近畿","中国・四国","九州・沖縄","海外"]
+};
+const SPORTS_CLUB = /野球|サッカー|バスケ|バレー|テニス|陸上|水泳|ダンス|チア|剣道|柔道|運動/;
+function staffValues(st, key){
+  const p = st.p || {}; const v = p[key];
+  if (Array.isArray(v)) return v.filter(x=>x && x!=="いない");
+  return v && v!=="いない" && v!=="その他" ? [v] : [];
+}
+/* 聞く価値のある質問（候補のスタイリストの誰かが登録している項目） */
+function affQuestions(top){
+  const staff = top.flatMap(r=>r.salon.staff);
+  return AFF_Q.map(a=>{
+    const vals = {}; staff.forEach(st=>staffValues(st,a.key).forEach(v=>vals[v]=(vals[v]||0)+1));
+    const keys = Object.keys(vals);
+    const found = keys.sort((x,y)=>vals[y]-vals[x]);
+    /* よくある選択肢は、候補のスタイリストにいなくても必ず出す（それ以外は、候補のスタイリストが登録している内容） */
+    const always = AFF_ALWAYS[a.key] || [];
+    const opts = always.concat(found.filter(v=>!always.includes(v))).slice(0, always.length ? 16 : 10);
+    return Object.assign({}, a, {opts, spread: keys.length});
+  }).filter(a=>a.spread>=1).sort((x,y)=>y.spread-x.spread).slice(0, PERSONAL_MAX);
+}
+const normName = s => String(s||"").replace(/（例）|\s|　/g,"").toLowerCase();
+function affinity(st, A){
+  if (!A) return {score:0, common:[]};
+  const p = st.p || {}; let score = 0; const common = [];
+  const pets = (A.pets||[]).filter(x=>x!=="いない"), sp = (p.pets||[]).filter(x=>x!=="いない");
+  const pm = pets.filter(x=>sp.includes(x)); if (pm.length){ score+=1.5; common.push(`同じ${pm[0]}好き`); }
+  if (A.oshiGenre && p.oshiGenre && A.oshiGenre===p.oshiGenre && !/いない|その他/.test(A.oshiGenre)){
+    if (A.oshi && p.oshi && normName(A.oshi)===normName(p.oshi)){ score+=3; common.push(`推しが同じ（${p.oshi.replace("（例）","")}）`); }
+    else { score+=1; common.push(`推しのジャンルが同じ（${p.oshiGenre}）`); }
+  }
+  if (A.club && p.club){
+    if (A.club===p.club){ score+=1.5; common.push(`同じ${p.club}出身`); }
+    else if (SPORTS_CLUB.test(A.club) && SPORTS_CLUB.test(p.club)){ score+=.5; common.push("同じ運動部出身"); }
+  }
+  if (A.home && p.home && A.home===p.home){ score+=1.5; common.push(`同じ${p.home}出身`); }
+  const hm = (A.hobbies||[]).filter(x=>(p.hobbies||[]).includes(x)).slice(0,2); if (hm.length){ score+=hm.length; common.push(`趣味が同じ（${hm.join("・")}）`); }
+  const dm = (A.holiday||[]).filter(x=>(p.holiday||[]).includes(x)); if (dm.length){ score+=.75; common.push(`休日の過ごし方が似ている（${dm[0]}）`); }
+  const mm = (A.music||[]).filter(x=>(p.music||[]).includes(x)).slice(0,2); if (mm.length){ score+=.75*mm.length; common.push(`好きな音楽が同じ（${mm.join("・")}）`); }
+  return {score:Math.min(1, score/4), common};
+}
+/* 技術・接客の理由 */
+const TECH_WORDS = {q_kusege:["縮毛矯正","髪質改善","ストレート"], q_color:["カラー"], q_design:["インナー","ハイトーン","デザイン","ブリーチ"], q_short:["ショート","ボブ"],
+  q_perm:["パーマ"], q_care:["スパ","頭皮"], q_gray:["白髪","グレイ"], q_damage:["トリートメント","髪質改善","ダメージ"], q_mens:["メンズ"], q_volume:["毛量","すき"], q_thin:["ボリューム","細毛"], q_bangs:["前髪"], q_easy:["似合わせ","骨格","扱いやすい"], q_long:["ロング","毛先"], q_change:["レイヤー","似合わせ","ハイトーン"]};
+function staffReasons(st, ans){
+  const out = [], text = [st.spec].concat((st.p&&st.p.tech)||[]).join(" ");
+  for (const [qid, words] of Object.entries(TECH_WORDS)){
+    if (!(ans[qid]>=.75)) continue;
+    const w = words.find(x=>text.includes(x)); if (w){ const q=QUESTIONS.find(z=>z.id===qid); out.push(`${q.label}が得意`+(q.label.includes(w)?"":`（${w}）`)); }
+    if (out.length>=2) break;
+  }
+  if (ans.q_quiet>=.75 && st.talk<=.3) out.push("静かに過ごしたい人の接客が得意");
+  if (ans.q_quiet!=null && ans.q_quiet<=.25 && st.talk>=.7) out.push("会話を楽しめるタイプ");
+  if (ans.q_propose>=.75 && st.propose>=.7) out.push("似合うスタイルを提案してくれる");
+  if (ans.q_veteran>=.75 && st.veteran>=.7) out.push(`経験${st.years}年のベテラン`);
+  if (ans.q_young>=.75 && ageNear(st)>=.6) out.push("年が近くて話しやすい");
+  return out;
+}
+
+let affQueue = [], affIdx = 0, meterStart = 80, meterFinal = 90;
+/* 第2段階：「ちょっと個人的なこと聞いていい？」 */
+function startPersonal(){
+  if (S.affDone) return finish();
+  S.affDone = true;
+  const ranked = scoreAll(S.answers, S.theme);
+  const qs = affQuestions(ranked.slice(0,3)).slice(0, PERSONAL_MAX);
+  S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL, ranked[0].score));
+  if (!qs.length) return finish();
+  affQueue = qs; affIdx = 0; S.aff = {};
+  meterStart = S.meter;
+  view="aff-intro";
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("pocket")}</div>
+    <div class="panel">
+      ${meterHTML(S.meter)}
+      <div class="bubble">
+        <p class="qno">お店は見えてきた</p>
+        <p class="voice">……だいたい分かった。<br>ここからは、君の担当スタイリストを決めたい。<br>ちょっと、個人的なこと聞いていい？</p>
+      </div>
+      <div class="choices"><button class="choice primary" type="button" id="pYes">いいよ</button><button class="choice" type="button" id="pNo">聞かずに結果を見る</button></div>
+      <p class="note">答えた内容は、担当スタイリストとの共通点を探すためだけに使います。</p>
+    </div>
+  </section>`;
+  document.getElementById("pYes").onclick=renderAff;
+  document.getElementById("pNo").onclick=()=>{ S.aff = null; finish(); };
+}
+/* 第2段階のマッチ率：答えるたびに、最終の点数に向かって上がる */
+function personalMeter(){
+  const top = scoreAll(S.answers, S.theme)[0].score;
+  meterFinal = Math.max(S.meter, Math.min(99.9, top));
+  const left = affQueue.length - affIdx;
+  S.meter = left > 0 ? S.meter + (meterFinal - S.meter) / (left + 1) : meterFinal;
+}
+function personalDone(){
+  personalMeter();
+  S.meter = Math.max(S.meter, Math.min(99.9, scoreAll(S.answers, S.theme)[0].score));
+  view="aff-done";
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg("thumb")}</div>
+    <div class="panel">
+      ${meterHTML(S.meter)}
+      <div class="bubble"><p class="voice">分かった、ありがとう。<br>じゃあ、君に合うお店と、担当スタイリストを伝えるね。</p></div>
+      <div class="choices"><button class="choice primary" type="button" id="pShow">結果を見る</button></div>
+    </div>
+  </section>`;
+  document.getElementById("pShow").onclick=finish;
+}
+function renderAff(){
+  view="aff";
+  const a = affQueue[affIdx];
+  const opts = a.opts.concat([a.none]);
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg(affIdx%2?"peace":"think")}</div>
+    <div class="panel">
+      ${meterHTML(S.meter)}
+      <div class="bubble">
+        <p class="qno">個人的な質問 ${affIdx+1} / ${affQueue.length}</p>
+        ${affIdx===0?`<p class="aside">答えたくなければ、飛ばしていいよ。</p>`:""}
+        <p class="voice">${esc(a.q)}</p>
+      </div>
+      <div class="chips aff">${opts.map(o=>`<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>
+      ${a.name?`<label class="datel oshiname" for="affName" hidden>推しの名前（任意）<input type="text" id="affName" maxlength="40" placeholder="グループ名・チーム名など"></label>`:""}
+      <div class="choices"><button class="choice primary" type="button" id="affNext">${a.multi?"これで決定":"次へ"}</button><button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
+    </div>
+  </section>`;
+  const box = $app.querySelector(".chips.aff");
+  box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+    const v = b.dataset.v;
+    if (!a.multi || v===a.none) box.querySelectorAll(".chip").forEach(x=>{ if(x!==b){ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); } });
+    else box.querySelector(`.chip[data-v="${CSS.escape(a.none)}"]`)?.classList.remove("on");
+    b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on"));
+    if (a.name){ const on = box.querySelector(".chip.on"); $app.querySelector(".oshiname").hidden = !(on && on.dataset.v!==a.none); }
+    if (!a.multi && !a.name && b.classList.contains("on")) setTimeout(affNext, 150);
+  });
+  document.getElementById("affNext").onclick=affNext;
+  document.getElementById("affSkip").onclick=()=>{ affIdx++; affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone(); };
+}
+function affNext(){
+  const a = affQueue[affIdx];
+  const sel = [...$app.querySelectorAll(".chips.aff .chip.on")].map(b=>b.dataset.v).filter(v=>v!==a.none);
+  if (a.multi) S.aff[a.key] = sel; else if (sel[0]) S.aff[a.key] = sel[0];
+  if (a.name){ const n = (document.getElementById("affName")||{}).value; if (n) S.aff.oshi = n.trim(); }
+  affIdx++;
+  affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone();
+}
+
+/* ============ 結果 ============ */
+function wantsOf(ans){ return QUESTIONS.filter(q=>ans[q.id]!=null && ans[q.id]>=.75).map(q=>q.label); }
+function finish(){
+  S.affDone = true;
+  const ranked = scoreAll(S.answers, S.theme);
+  S.results = ranked.slice(0,3);
+  S.code = S.code || newCode();
+  const top = S.results[0].score;
+  send("finish", {qCount:S.n, code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
+    answers:S.answers, results:S.results.map(r=>({id:r.salon.id, name:r.salon.name, score:r.score}))});
+  view="result"; renderResult();
+}
+function renderResult(){
+  const r = S.results, top = r[0].score, reached = top>=GOAL, all3 = r.length>=3 && r[2].score>=GOAL;
+  const bn = !reached ? bottleneck(r[0], S.answers) : null;
+  $app.innerHTML = `
+  <section class="results">
+    <div class="reveal">
+      <div class="aisi">${aisiImg("point")}</div>
+      <div class="panel">
+        <div class="bubble">
+          <p class="qno">${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
+          <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。ほかの2軒も、近いところを選んだ。" : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、この3軒が一番近い。"}</p>
+        </div>
+        ${(()=>{ const ms=(S.cond.menus||[]); if(!ms.length) return ""; const k=r.filter(x=>!menuMatch(x.salon,ms).missing.length).length;
+          return k<r.length ? `<p class="note">「${esc(ms.map(catLabel).join("・"))}」が一押しメニューにあるお店は、いまAISIで${k}軒。残りは、それ以外で近いお店だよ。</p>` : ""; })()}
+        ${!reached ? `<div class="warnbox">マッチ率85%に届きませんでした。${bn?`ネックになった条件：<b>${esc(bn.label)}</b>。`:""}条件を少しゆるめると、選択肢が広がります。</div>`:""}
+      </div>
+    </div>
+    <div class="cards">${r.map((x,i)=>cardHTML(x,i)).join("")}</div>
+    <div class="after">
+      ${S.n < MAX_Q ? `<button class="choice" type="button" id="moreQ">ピンとこない。もう少し聞いて</button>`:""}
+      <button class="choice primary" type="button" id="again">もう一度診断する</button>
+    </div>
+  </section>`;
+  $app.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>toggleMore(b));
+  $app.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>book(b.dataset.book));
+  const mq = document.getElementById("moreQ");
+  if (mq) mq.onclick=()=>{ S.extra += 3; const nq = nextQuestion(S.answers,S.theme,S.n); if(!nq) return; S.current=nq; renderQ(); };
+  document.getElementById("again").onclick=renderTheme;
+  window.scrollTo(0,0);
+}
+function cardHTML(x,i){
+  const reasons = reasonsFor(x, S.answers);
+  const s = x.salon, st = x.staff, other = s.staff.find(z=>z.id!==st.id);
+  const say = i===0
+    ? (reasons.length ? `「${reasons.join("」「")}」。君の条件に、いちばん素直に応えてくれる店。` : "君の条件に、いちばん素直に応えてくれる店。")
+    : (reasons.length ? `「${reasons.join("」「")}」なら、ここも強い。` : "1位と迷うなら、ここ。");
+  return `
+  <article class="card ${i===0?"first":""}">
+    ${(s.photos||[])[0]?`<div class="shop-ph"><img src="${esc(s.photos[0])}" alt="${esc(s.name)}の店内" loading="lazy"></div>`:""}
+    <div class="card-h">
+      <div class="rank"><span>${i===0?"第1位":i===1?"第2位":"第3位"}</span><span class="pct ${x.score<GOAL?"low":""}">${Math.round(x.score)}<small>%</small></span></div>
+      <h3 class="name">${esc(s.name)}${s.sample?`<span class="sample">サンプル</span>`:""}</h3>
+      <div class="area">${esc(s.area)} ・ ${esc(s.price)}</div>
+      <div class="area">受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</div>
+      ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
+      ${s.perk ? `<div class="perk">AISIコードで予約すると：${esc(s.perk)}</div>`:""}
+      ${x.issues && x.issues.length ? `<div class="offcond">選んだ条件と合わない点：${x.issues.join("・")}</div>`:""}
+    </div>
+    <div class="card-b">
+      ${s.concept?`<p class="concept">${esc(s.concept)}</p>`:""}
+      <div class="tags">${s.tags.map(t=>`<span>#${esc(t)}</span>`).join("")}${(s.mood?String(s.mood).split("、"):[]).map(t=>`<span>${esc(t)}</span>`).join("")}</div>
+      ${(s.menus||[]).length ? `<div class="menus"><b>一押しメニュー</b>${s.menus.map((m,mi)=>`<div class="mi ${mi===x.menuIdx?"hit":""}"><div class="mi-h"><span>${mi===x.menuIdx?`<span class="hitb">今回のメニュー</span>`:""}${esc(m.name)}</span><em>${esc(m.price)}</em></div>${m.desc?`<small>${esc(m.desc)}${m.min?`（約${m.min}分）`:""}</small>`:""}</div>`).join("")}<small class="fine">料金は髪の長さなどで変わる場合があります。</small></div>`:""}
+      <p class="say">${esc(say)}</p>
+      <div class="staff">
+        <div class="staff-h"><div class="avatar">${st.photo?`<img src="${esc(st.photo)}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>${esc(st.name)} さん</b><small>スタイリスト歴${st.years}年 ・ ${esc(st.spec)}</small></div></div>
+        ${(()=>{ const rs = staffReasons(st, S.answers).concat(x.common||[]);
+          const pick = rs.slice(0,2).join("、");
+          return `<p class="say">この店なら、${esc(st.name)}さんに任せな。${pick?esc(pick)+"。":""}${(x.common||[]).length?"初めてでも話しやすいはずだよ。":esc(st.line)}</p>
+          ${rs.length?`<div class="why"><b>AISIが${esc(st.name)}さんを選んだ理由</b><ul>${rs.slice(0,5).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}`; })()}
+        ${(()=>{ const p=st.p||{}; const t=[p.home&&("出身："+p.home+(p.homeDetail?"（"+p.homeDetail+"）":"")), p.club, (p.pets||[]).filter(x=>x!=="いない").length&&((p.pets||[]).filter(x=>x!=="いない").join("・")+"好き"), p.oshi&&("推し："+p.oshi.replace("（例）","")), ...(p.hobbies||[]).slice(0,3)].filter(Boolean);
+          return t.length?`<div class="prof">${t.map(v=>`<span>${esc(v)}</span>`).join("")}</div>`:""; })()}
+      </div>
+      <div class="details" id="det-${esc(s.id)}" hidden>
+        ${(s.photos||[]).length>1?`<div class="more-ph">${s.photos.slice(1).map((u,k)=>`<img src="${esc(u)}" alt="${esc(s.name)}の写真${k+2}" loading="lazy">`).join("")}</div>`:""}
+        ${(s.appeal||[]).map(a=>`<span><b>${esc(a.label)}：</b>${esc(a.text)}</span>`).join("")}
+        ${s.target?`<span><b>こんな人におすすめ：</b>${esc(s.target)}</span>`:""}
+        <span>得意：${esc(st.spec)}</span>
+        ${other?`<span>もう一人のおすすめ：${esc(other.name)} さん（${esc(other.spec)}）</span>`:""}
+      </div>
+    </div>
+    <div class="card-f">
+      <button class="btn book" type="button" data-book="${esc(s.id)}">${esc(st.name)}さんで予約する</button>
+      ${(st.hpbUrl||s.bookUrl) ? `<a class="btn more linkbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(st.hpbUrl||s.bookUrl)}" target="_blank" rel="noopener">空き状況をホットペッパーで見る</a>`:""}
+      <button class="btn more" type="button" data-more="${esc(s.id)}">お店の詳細を見る</button>
+    </div>
+  </article>`;
+}
+function toggleMore(b){
+  const id = b.dataset.more, el = document.getElementById("det-"+id);
+  el.hidden = !el.hidden;
+  b.textContent = el.hidden ? "お店の詳細を見る" : "詳細を閉じる";
+  if (!el.hidden && !S.viewed.includes(id)){
+    S.viewed.push(id);
+    send("view", {salon: S.results.find(x=>x.salon.id===id).salon.name});
+  }
+}
+let bookTarget = null;
+function showView(id){ ["vCode","vForm","vDone"].forEach(v=>document.getElementById(v).hidden = v!==id); document.querySelector(".modal-c").scrollTop=0; }
+function book(salonId){
+  const r = S.results.find(x=>x.salon.id===salonId);
+  bookTarget = r;
+  send("book", {salon:r.salon.name, staff:r.staff.name});
+  document.getElementById("mCode").textContent = S.code;
+  const pk = document.getElementById("mPerk");
+  if (r.salon.perk){ pk.innerHTML = `このコードで予約すると<br><b>${esc(r.salon.perk)}</b>`; pk.hidden=false; } else pk.hidden=true;
+  document.getElementById("mText").textContent = `${r.salon.name}（${r.staff.name}さん）への予約方法を選んでください。`;
+  document.getElementById("mReq").hidden = !CONFIG.GAS_URL;
+  const ml = document.getElementById("mLine"), ms = document.getElementById("mSave");
+  if (CONFIG.LINE_ID){
+    const hm = (r.salon.menus||[])[r.menuIdx];
+    const msg = `予約\n診断コード：${S.code}\nお店：${r.salon.name}（${r.salon.id}）\n担当：${r.staff.name}` + (hm ? `\nメニュー：${hm.name}` : "");
+    ml.href = `https://line.me/R/oaMessage/${CONFIG.LINE_ID}/?${encodeURIComponent(msg)}`; ml.hidden = false;
+    ms.href = `https://line.me/R/oaMessage/${CONFIG.LINE_ID}/?${encodeURIComponent("保存\n診断コード："+S.code)}`;
+    ms.hidden = !(COND && COND.when==="someday");
+    ml.onclick = ()=>send("line", {salon:r.salon.name});
+    document.getElementById("mLineNote").hidden = false;
+  } else { ml.hidden = true; ms.hidden = true; document.getElementById("mLineNote").hidden = true; }
+  const a = document.getElementById("mLink");
+  if (r.salon.bookUrl){ a.href = r.salon.bookUrl; a.hidden = false; } else a.hidden = true;
+  showView("vCode");
+  document.getElementById("modal").hidden = false;
+}
+function menuMinutes(){ const i=document.getElementById("fMenu").value; const m=(bookTarget.salon.menus||[])[+i]; return i!==""&&m ? (m.min||0) : 0; }
+function timeOptions(sel, salon, optional){
+  const opts = [], last = salon.close - Math.max(.5, menuMinutes()/60);
+  for (let h=salon.open; h<salon.close; h++) for (const m of [0,30]) if (h + m/60 <= last + 1e-9) opts.push(`${h}:${m?"30":"00"}`);
+  sel.innerHTML = (optional?`<option value="">—</option>`:`<option value="">選ぶ</option>`) + opts.map(t=>`<option value="${t}">${t}〜</option>`).join("");
+}
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+document.getElementById("mReq").onclick=()=>{
+  const r = bookTarget, s = r.salon;
+  document.getElementById("fTitle").textContent = `${s.name} に予約リクエスト`;
+  document.getElementById("fSalon").textContent = `担当希望：${r.staff.name}さん ・ 受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}${s.perk?" ・ 特典："+s.perk:""}`;
+  const fm = document.getElementById("fMenu");
+  fm.innerHTML = (s.menus||[]).map((m,i)=>`<option value="${i}">${esc(m.name)}（${esc(m.price)}）</option>`).join("") + `<option value="">お店と相談して決める</option>`;
+  if (r.menuIdx>=0) fm.value = String(r.menuIdx);
+  fm.onchange = ()=>{ timeOptions(document.getElementById("fT1"), s, false); timeOptions(document.getElementById("fT2"), s, true); timeOptions(document.getElementById("fT3"), s, true); };
+  timeOptions(document.getElementById("fT1"), s, false);
+  timeOptions(document.getElementById("fT2"), s, true);
+  timeOptions(document.getElementById("fT3"), s, true);
+  document.getElementById("fSoon").hidden = !(COND && COND.when==="soon");
+  const today = new Date(), max = new Date(Date.now()+60*86400000);
+  ["fD1","fD2","fD3"].forEach(id=>{ const el=document.getElementById(id); el.min=ymd(today); el.max=ymd(max); });
+  if (S.cond && S.cond.date) document.getElementById("fD1").value = S.cond.date;
+  document.getElementById("fErr").hidden = true;
+  showView("vForm");
+};
+document.getElementById("fBack").onclick=()=>showView("vCode");
+document.getElementById("vForm").onsubmit=async(e)=>{
+  e.preventDefault();
+  const v = id=>document.getElementById(id).value.trim();
+  const err = msg=>{ const el=document.getElementById("fErr"); el.textContent=msg; el.hidden=false; };
+  const s = bookTarget.salon;
+  if (!v("fName")) return err("お名前を入力してください。");
+  if (v("fTel").replace(/\D/g,"").length < 10) return err("電話番号を正しく入力してください。");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("fMail"))) return err("メールアドレスを正しく入力してください。");
+  if (!v("fD1") || !v("fT1")) return err("第1希望の日と時間を選んでください。");
+  for (const [d,label] of [[v("fD1"),"第1希望"],[v("fD2"),"第2希望"],[v("fD3"),"第3希望"]]){
+    if (d && s.closed.includes(new Date(d+"T12:00").getDay())) return err(`${label}の日は定休日です。別の日を選んでください。`);
+  }
+  if (v("fD2") && !v("fT2")) return err("第2希望の時間を選んでください。");
+  if (v("fD3") && !v("fT3")) return err("第3希望の時間を選んでください。");
+  if (!document.getElementById("fAgree").checked) return err("内容を確認して、チェックを入れてください。");
+  const btn = document.getElementById("fSend"); btn.disabled = true; btn.textContent = "送信中…";
+  const body = JSON.stringify({type:"request", sid:S.sid, salonId:s.id, staff:bookTarget.staff.name, code:S.code,
+    name:v("fName"), tel:v("fTel"), email:v("fMail"), wish1:{date:v("fD1"), time:v("fT1")},
+    wish2: v("fD2") ? {date:v("fD2"), time:v("fT2")} : null, wish3: v("fD3") ? {date:v("fD3"), time:v("fT3")} : null,
+    omakase: document.getElementById("fOmk").checked, menu: document.getElementById("fMenu").value, note:v("fNote")});
+  let ok = false, rid = "";
+  try{
+    const res = await fetch(CONFIG.GAS_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
+    const j = await res.json(); ok = !!j.ok; rid = j.rid || "";
+    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err("送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
+  }catch(ex){
+    /* 返事が読めなくても届いていることが多いので、届かなかった場合に備えて案内する */
+    try{ await fetch(CONFIG.GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body}); ok = true; }catch(ex2){}
+    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err("通信できませんでした。電波の良いところで、もう一度お試しください。"); }
+  }
+  document.getElementById("dText").textContent = `${s.name} にリクエストを送りました。${rid?"受付番号："+rid+"。":""}確認メールを ${v("fMail")} にお送りしています。お店から返事が届いたら、確定の確認メールをお送りします。`;
+  btn.disabled=false; btn.textContent="リクエストを送る";
+  showView("vDone");
+};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>document.getElementById("modal").hidden=true);
+document.getElementById("mCopy").onclick=async(e)=>{
+  const b=e.currentTarget;
+  try{ await navigator.clipboard.writeText(S.code); b.textContent="コピーしました"; }
+  catch{ const r=document.createRange(); r.selectNodeContents(document.getElementById("mCode")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent="選択しました"; }
+  setTimeout(()=>b.textContent="コードをコピー",1800);
+};
+document.getElementById("home").onclick=renderTheme;
+
+/* ============ 起動 ============ */
+loadData();
+renderTheme();
+</script>
+</body>
+</html>
