@@ -10,7 +10,7 @@
 <meta property="og:image" content="img/aisi_point.webp">
 <meta name="theme-color" content="#141a26">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Yusei+Magic&display=swap">
 <style>
 /* Layout: アキネーター型。左にAISIの立ち姿、右に吹き出しと回答ボタン。スマホでは縦積み。夜の札幌をイメージした単一テーマ */
 :root{
@@ -66,6 +66,39 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .aisi::before{content:"";position:absolute;inset:12% 8% 4%;border-radius:50%;background:radial-gradient(closest-side,rgba(159,182,217,.35),transparent);filter:blur(8px)}
 .aisi img{position:relative;max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45));transition:opacity .35s ease}
 .aisi img.fade{opacity:0}
+/* ---- AISIの動き：待機の揺れ（.sway）・反応のはね（.hop）・ポーズの切り替え・手描き風マーク（.fxl） ---- */
+.aisi .sway,.aisi .hop{position:relative;height:100%;width:100%;display:flex;justify-content:center;align-items:flex-end;transform-origin:50% 100%}
+.aisi .sway{animation:aSway 4.2s ease-in-out infinite}
+.aisi .hop img.alt{position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+.aisi img.off{opacity:0}
+.aisi img.enter{animation:aEnter .45s ease-out both}
+@keyframes aEnter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes aSway{0%,100%{transform:rotate(-.9deg) translateX(-.6%)}25%,75%{transform:rotate(0) scaleY(1.008)}50%{transform:rotate(.9deg) translateX(.6%)}}
+.aisi .hop.yes{animation:aYes .55s cubic-bezier(.3,1.5,.5,1)}
+.aisi .hop.no{animation:aNo .6s ease-in-out}
+.aisi .hop.tilt{animation:aTilt .7s ease-in-out}
+.aisi .hop.wow{animation:aWow .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes aYes{30%{transform:translateY(-4%) scale(.98,1.03)}60%{transform:scale(1.02,.98)}}
+@keyframes aNo{25%{transform:rotate(-1.6deg)}50%{transform:rotate(1.4deg)}75%{transform:rotate(-.6deg)}}
+@keyframes aTilt{40%{transform:rotate(2.2deg) translateX(1%)}70%{transform:rotate(1.2deg)}}
+@keyframes aWow{35%{transform:translateY(-6%) scale(1.04)}70%{transform:scale(.99)}}
+.fxl{position:absolute;inset:0;pointer-events:none;z-index:2}
+.fxs{position:absolute;width:clamp(44px,22%,96px);transform-origin:50% 100%}
+.fxs svg{width:100%;height:auto;overflow:visible;display:block}
+.fxs.in{animation:fxIn .5s cubic-bezier(.2,1.8,.4,1) both,fxWob 1.6s ease-in-out .5s infinite}
+.fxs.word{width:auto;font-family:"Yusei Magic",var(--font-ui);font-size:clamp(1.1rem,2.6vw,1.7rem);color:#fff;-webkit-text-stroke:6px var(--night);paint-order:stroke fill;white-space:nowrap;letter-spacing:.04em}
+.fxs.word.pink{color:#ff9fb6;writing-mode:vertical-rl}
+@keyframes fxIn{0%{transform:scale(0) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes fxWob{50%{transform:rotate(6deg) translateY(-4px)}}
+/* 吹き出しの文字を1文字ずつ出す */
+.voice .tc{opacity:0;animation:tcIn .22s ease-out forwards}
+@keyframes tcIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+/* 押した答えだけ色が変わる（最初はどれも同じ色） */
+.choices .choice.picked,.choices .choice.picked:hover{background:var(--accent);color:var(--accent-ink);font-weight:700;transform:scale(1.02)}
+.choices.locked .choice:not(.picked){opacity:.45;pointer-events:none}
+@media (prefers-reduced-motion:reduce){
+  .aisi .sway,.aisi .hop,.aisi img.enter,.fxs.in,.voice .tc{animation:none!important;opacity:1}
+}
 .aisi .ph{position:relative;width:70%;aspect-ratio:3/5;border-radius:40% 40% 8px 8px;background:linear-gradient(180deg,#2a3346,#151b27);display:grid;place-items:center;font-family:var(--font-voice);letter-spacing:.4em;color:var(--silver)}
 
 .panel{display:flex;flex-direction:column;gap:18px;min-width:0}
@@ -713,7 +746,63 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 function aisiImg(key){
   const u = POSES[key];
   if (!u) return `<div class="ph">AISI</div>`;
-  return `<img src="${u}" alt="AISI">`;
+  /* 画面が変わっても揺れが途切れないように、揺れの位置を時計に合わせる */
+  const phase = ((performance.now() / 1000) % 4.2).toFixed(2);
+  return `<div class="sway" style="animation-delay:-${phase}s"><div class="hop"><img class="pose enter" src="${u}" alt="AISI" data-k="${key}"><img class="pose alt off" alt=""></div></div><div class="fxl"></div>`;
+}
+/* ===== AISIの反応 ===== */
+const FXSVG = (()=>{ const S='fill="none" stroke-linecap="round" stroke-linejoin="round"'; return {
+  note:`<svg viewBox="0 0 80 100"><path ${S} stroke="#fff" stroke-width="14" d="M30 78a12 10 0 1 1-1-1M30 76V18c14 2 26 8 34 20"/><path ${S} stroke="#ff8fb0" stroke-width="7" d="M30 78a12 10 0 1 1-1-1M30 76V18c14 2 26 8 34 20"/></svg>`,
+  spark:`<svg viewBox="0 0 100 100"><g ${S} stroke="#fff" stroke-width="13"><path d="M30 20l6 22M14 52l20 2M62 14l-8 22"/></g><g ${S} stroke="#f1d9a6" stroke-width="6"><path d="M30 20l6 22M14 52l20 2M62 14l-8 22"/></g><path d="M74 54l5 12 13 2-10 8 3 13-11-7-11 7 3-13-10-8 13-2z" fill="#f1d9a6" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg>`,
+  sweat:`<svg viewBox="0 0 80 100"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><path d="M28 18c-10 16-16 26-16 34a16 16 0 0 0 32 0c0-8-6-18-16-34z" fill="#9fc6ff"/><path d="M60 48c-6 9-9 15-9 19a9 9 0 0 0 18 0c0-4-3-10-9-19z" fill="#9fc6ff"/></g></svg>`,
+  q:`<svg viewBox="0 0 80 110"><path ${S} stroke="#fff" stroke-width="15" d="M20 34c0-24 42-26 42-2 0 16-20 18-20 36"/><path ${S} stroke="#7fe0c9" stroke-width="8" d="M20 34c0-24 42-26 42-2 0 16-20 18-20 36"/><circle cx="42" cy="92" r="8" fill="#7fe0c9" stroke="#fff" stroke-width="5"/></svg>`,
+  heart:`<svg viewBox="0 0 100 90"><path d="M50 82C18 60 8 44 8 28 8 14 20 6 31 6c9 0 15 5 19 12 4-7 10-12 19-12 11 0 23 8 23 22 0 16-10 32-42 54z" fill="#ff9fb6" stroke="#fff" stroke-width="7" stroke-linejoin="round"/></svg>`,
+  sun:`<svg viewBox="0 0 110 110"><g ${S} stroke="#fff" stroke-width="12"><path d="M55 8v14M55 88v14M8 55h14M88 55h14M22 22l10 10M78 78l10 10M88 22L78 32M22 88l10-10"/></g><g ${S} stroke="#f7b733" stroke-width="6"><path d="M55 8v14M55 88v14M8 55h14M88 55h14M22 22l10 10M78 78l10 10M88 22L78 32M22 88l10-10"/></g><circle cx="55" cy="55" r="20" fill="#ffd46b" stroke="#fff" stroke-width="6"/><path ${S} stroke="#a0651a" stroke-width="4" d="M47 52v2M63 52v2M47 62c5 5 11 5 16 0"/></svg>`
+}; })();
+/* 答え（1/.75/null/.25/0）や場面ごとの反応：ポーズ・はね方・マーク・ひとこと */
+const REACT = {
+  yes:   {pose:["thumb","peace"], move:"yes",  fx:["note","spark"], word:["いいね","うん"]},
+  maybe: {pose:["pocket"],        move:"tilt", fx:["spark"],        word:["なるほど"]},
+  idk:   {pose:["shrug"],         move:"tilt", fx:["q"],            word:["大丈夫"]},
+  maybeNo:{pose:["think"],        move:"tilt", fx:["sweat"],        word:["ふむ"]},
+  no:    {pose:["shrug"],         move:"no",   fx:["sweat"],        word:["了解"]},
+  personal:{move:"yes", fx:["heart"], word:["ドキッ"], pink:true},
+  result:{move:"wow", fx:["sun","spark"]},
+  thanks:{move:"yes", fx:["spark"]}
+};
+function reactKind(v){ return v===1 ? "yes" : v===.75 ? "maybe" : v===.25 ? "maybeNo" : v===0 ? "no" : "idk"; }
+const pick = a => a[Math.floor(Math.random()*a.length)];
+function aisiReact(kind){
+  const box = $app.querySelector(".aisi"); if (!box) return;
+  const r = REACT[kind] || {};
+  const hop = box.querySelector(".hop");
+  if (r.pose && hop){
+    const cur = hop.querySelector("img.pose:not(.off)"), nxt = hop.querySelector("img.pose.off");
+    const k = pick(r.pose);
+    if (cur && nxt && cur.dataset.k !== k){ nxt.src = POSES[k]; nxt.dataset.k = k; nxt.alt = "AISI"; nxt.classList.remove("off","enter"); cur.classList.add("off"); cur.alt = ""; }
+  }
+  if (r.move && hop){ hop.classList.remove("yes","no","tilt","wow"); void hop.offsetWidth; hop.classList.add(r.move); }
+  const fxl = box.querySelector(".fxl"); if (!fxl) return;
+  fxl.innerHTML = "";
+  (r.fx || []).slice(0, 2).forEach((k, i) => {
+    const el = document.createElement("div"); el.className = "fxs"; el.innerHTML = FXSVG[k];
+    el.style.left = i ? "6%" : "68%"; el.style.top = i ? "26%" : "8%"; el.style.animationDelay = (i*.12)+"s, "+(.5+i*.12)+"s";
+    fxl.appendChild(el); requestAnimationFrame(()=>el.classList.add("in"));
+  });
+  if (r.word){
+    const w = document.createElement("div"); w.className = "fxs word" + (r.pink ? " pink" : ""); w.textContent = pick(r.word);
+    w.style.left = r.pink ? "8%" : "4%"; w.style.top = r.pink ? "6%" : "14%";
+    fxl.appendChild(w); requestAnimationFrame(()=>w.classList.add("in"));
+  }
+}
+/* 吹き出しの文字を1文字ずつ出す（文字はそのまま、見え方だけ） */
+function typeVoice(el, speed){
+  if (!el || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const walk = node => [...node.childNodes].forEach(c => {
+    if (c.nodeType === 3){ const f = document.createDocumentFragment(); [...c.textContent].forEach(ch => { const s = document.createElement("span"); s.className = "tc"; s.textContent = ch; s.style.animationDelay = (typeVoice.i++ * (speed||22)) + "ms"; f.appendChild(s); }); c.replaceWith(f); }
+    else if (c.nodeType === 1 && c.tagName !== "BR") walk(c);
+  });
+  typeVoice.i = 0; walk(el);
 }
 function newSid(){ return "d" + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function newCode(){ return "AISI-" + String(Math.floor(1000+Math.random()*9000)); }
@@ -839,7 +928,15 @@ function renderQ(){
       <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
     </div>
   </section>`;
-  $app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>answer(ANSWERS[+b.dataset.i][1]));
+  typeVoice($app.querySelector(".bubble .voice"));
+  $app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{
+    if ($app.querySelector(".choices.locked")) return;
+    const v = ANSWERS[+b.dataset.i][1];
+    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+    document.getElementById("backBtn").disabled = true;
+    aisiReact(reactKind(v));
+    setTimeout(()=>answer(v), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
+  });
   document.getElementById("backBtn").onclick=back;
 }
 
@@ -1082,6 +1179,7 @@ function startPersonal(){
       <p class="note">答えた内容は、担当スタイリストとの共通点を探すためだけに使います。</p>
     </div>
   </section>`;
+  aisiReact("personal"); typeVoice($app.querySelector(".bubble .voice"));
   document.getElementById("pYes").onclick=renderAff;
   document.getElementById("pNo").onclick=()=>{ S.aff = null; finish(); };
 }
@@ -1105,6 +1203,7 @@ function personalDone(){
       <div class="choices"><button class="choice primary" type="button" id="pShow">結果を見る</button></div>
     </div>
   </section>`;
+  aisiReact("thanks"); typeVoice($app.querySelector(".bubble .voice"));
   document.getElementById("pShow").onclick=finish;
 }
 function renderAff(){
@@ -1182,6 +1281,7 @@ function renderResult(){
       <button class="choice primary" type="button" id="again">もう一度診断する</button>
     </div>
   </section>`;
+  aisiReact("result");
   $app.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>toggleMore(b));
   $app.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>book(b.dataset.book));
   const mq = document.getElementById("moreQ");
