@@ -7,7 +7,13 @@
 <meta name="description" content="AISIがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
 <meta property="og:title" content="AISI 札幌サロン診断">
 <meta property="og:description" content="質問に答えるだけ。AISIが札幌であなたに合う美容室と担当者を見つけます。">
-<meta property="og:image" content="img/aisi_point.webp">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kumamichan.github.io/aisi/">
+<meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
 <meta name="theme-color" content="#141a26">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Yusei+Magic&display=swap">
@@ -55,7 +61,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .logo span{font-size:.72rem;letter-spacing:.18em;color:var(--accent);border:1px solid var(--accent);padding:1px 8px;border-radius:3px}
 .top-r{display:flex;gap:8px}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--silver);border-radius:999px;padding:5px 14px;font-size:.78rem}
-.ghost:hover{border-color:var(--silver)}
+@media (hover:hover){.ghost:hover{border-color:var(--silver)}}
 
 .stage{
   max-width:1180px;margin:0 auto;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:center;
@@ -78,6 +84,8 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .aisi .hop.no{animation:aNo .6s ease-in-out}
 .aisi .hop.tilt{animation:aTilt .7s ease-in-out}
 .aisi .hop.wow{animation:aWow .7s cubic-bezier(.3,1.6,.5,1)}
+.aisi .hop.nod{animation:aNod .6s ease-in-out}
+@keyframes aNod{30%{transform:translateY(1.5%) scaleY(.985)}60%{transform:translateY(-.8%)}}
 @keyframes aYes{30%{transform:translateY(-4%) scale(.98,1.03)}60%{transform:scale(1.02,.98)}}
 @keyframes aNo{25%{transform:rotate(-1.6deg)}50%{transform:rotate(1.4deg)}75%{transform:rotate(-.6deg)}}
 @keyframes aTilt{40%{transform:rotate(2.2deg) translateX(1%)}70%{transform:rotate(1.2deg)}}
@@ -96,8 +104,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 /* 押した答えだけ色が変わる（最初はどれも同じ色） */
 .choices .choice.picked,.choices .choice.picked:hover{background:var(--accent);color:var(--accent-ink);font-weight:700;transform:scale(1.02)}
 .choices.locked .choice:not(.picked){opacity:.45;pointer-events:none}
+.chips.aff.locked{pointer-events:none}
+.chips.aff.locked .chip:not(.on){opacity:.45}
 @media (prefers-reduced-motion:reduce){
-  .aisi .sway,.aisi .hop,.aisi img.enter,.fxs.in,.voice .tc{animation:none!important;opacity:1}
+  .aisi .sway,.aisi .hop,.aisi .hop.nod,.aisi img.enter,.fxs.in,.voice .tc{animation:none!important;opacity:1}
 }
 .aisi .ph{position:relative;width:70%;aspect-ratio:3/5;border-radius:40% 40% 8px 8px;background:linear-gradient(180deg,#2a3346,#151b27);display:grid;place-items:center;font-family:var(--font-voice);letter-spacing:.4em;color:var(--silver)}
 
@@ -127,9 +137,9 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 @keyframes scan{from{top:0}to{top:calc(100% - 3px)}}
 @media (max-width:860px){.photo-prev{margin-left:0}}
 .choice.soon{background:rgba(243,241,236,.18);color:rgba(243,241,236,.55);box-shadow:none;cursor:not-allowed;display:flex;justify-content:center;align-items:center;gap:10px}
-.choice.soon:hover{background:rgba(243,241,236,.18);transform:none}
+@media (hover:hover){.choice.soon:hover{background:rgba(243,241,236,.18);transform:none}}
 .choice.soon span{font-size:.62rem;letter-spacing:.16em;border:1px solid rgba(217,183,122,.6);color:var(--accent);border-radius:999px;padding:1px 8px}
-.choice:hover{background:#fff;transform:translateY(-1px)}
+@media (hover:hover){.choice:hover{background:#fff;transform:translateY(-1px)}}
 .choice.primary{background:var(--accent);color:var(--accent-ink);font-weight:700}
 .back{background:none;border:0;color:var(--silver);font-size:.82rem;padding:4px 0;margin-left:24px;text-align:left;width:max-content}
 .back[disabled]{opacity:.3;cursor:default}
@@ -164,7 +174,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .card-f{padding:0 18px 18px;display:grid;gap:8px}
 .btn{border:0;border-radius:4px;padding:11px 14px;font-weight:700;font-size:.92rem}
 .btn.book{background:var(--ink);color:var(--paper)}
-.btn.book:hover{background:#000}
+@media (hover:hover){.btn.book:hover{background:#000}}
 .btn.more{background:transparent;border:1px solid #cfc9bd;color:var(--ink);font-weight:500}
 .details{font-size:.82rem;color:var(--ink-soft);display:grid;gap:4px}
 .after{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding-top:6px}
@@ -186,8 +196,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .modal-c label.agree input{width:auto;margin-top:3px}
 .ferr{color:#b23b2a;font-size:.82rem;margin:0}
 .btn.line{background:#06c755;color:#fff;font-weight:700}
-.btn.line:hover{background:#05b34c}
+@media (hover:hover){.btn.line:hover{background:#05b34c}}
 .btn.more.hot{border-color:#b8913f;color:#7a5a1e;font-weight:700}
+.rate{font-size:.82rem;font-weight:700;color:#b8862f;justify-self:start}
+.rate small{font-weight:500;color:var(--ink-soft);margin-left:4px}
 .availb{font-size:.75rem;font-weight:700;color:#fff;background:#2e8b57;border-radius:4px;padding:2px 8px;justify-self:start}
 .menus{display:grid;gap:6px;background:#f6f3ec;border-radius:6px;padding:10px 12px}
 .menus>b{font-size:.78rem;letter-spacing:.08em;color:var(--ink-soft)}
@@ -245,7 +257,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 .pill.wait{background:rgba(201,206,216,.12);color:var(--silver)}
 .pill.lo{background:rgba(227,161,87,.16);color:var(--warn)}
 .mini{background:transparent;border:1px solid var(--line);color:var(--paper);border-radius:4px;padding:3px 9px;font-size:.75rem}
-.mini:hover{border-color:var(--accent);color:var(--accent)}
+@media (hover:hover){.mini:hover{border-color:var(--accent);color:var(--accent)}}
 .report{display:grid;gap:10px}
 .report select{font:inherit;background:var(--night-2);color:var(--paper);border:1px solid var(--line);border-radius:4px;padding:6px 10px;max-width:100%}
 .report pre{white-space:pre-wrap;word-break:break-word;background:var(--paper);color:var(--ink);border-radius:6px;padding:16px;margin:0;font-family:var(--font-ui);font-size:.85rem;line-height:1.8}
@@ -256,7 +268,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 .cond-g small{color:var(--silver);font-size:.74rem;margin-top:-4px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:transparent;border:1px solid rgba(243,241,236,.35);color:var(--paper);border-radius:999px;padding:6px 14px;font-size:.85rem}
-.chip:hover{border-color:var(--paper)}
+@media (hover:hover){.chip:hover{border-color:var(--paper)}}
 .chip.on{background:var(--paper);color:var(--ink);border-color:var(--paper);font-weight:700}
 .datel{display:flex;align-items:center;gap:10px;font-size:.8rem;color:var(--silver)}
 .datel input{font:inherit;background:var(--night-2);color:var(--paper);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
@@ -270,7 +282,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 .report pre{max-height:420px;overflow-y:auto}
 .row-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .mini.strong{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700;padding:6px 14px;font-size:.82rem}
-.mini.strong:hover{color:var(--accent-ink)}
+@media (hover:hover){.mini.strong:hover{color:var(--accent-ink)}}
 .empty{color:var(--silver);font-size:.88rem;padding:8px 0}
 .status{font-size:.75rem;color:var(--silver)}
 
@@ -287,6 +299,9 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
   .two{grid-template-columns:1fr}
   .f-row{grid-template-columns:96px minmax(0,1fr) 92px;font-size:.78rem}
 }
+.sitefoot{text-align:center;padding:18px 16px 28px;font-size:.75rem}
+.sitefoot a{color:var(--silver)}
+.modal-c label.agree a{color:inherit}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -296,6 +311,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 </header>
 
 <main id="app"></main>
+<footer class="sitefoot"><a href="privacy.html">プライバシーポリシー</a></footer>
 
 <div class="modal" id="modal" hidden>
   <div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="mTitle">
@@ -305,7 +321,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <div class="code" id="mCode">AISI-0000</div>
       <div class="perkbox" id="mPerk" hidden></div>
       <p id="mText"></p>
-      <a class="btn line linkbtn" id="mLine" href="#" target="_blank" rel="noopener">LINEで予約する（おすすめ）</a>
+      <a class="btn line linkbtn" id="mLine" href="#" target="_blank" rel="noopener">LINEで予約する（500円引き）</a>
       <p class="fine" id="mLineNote">LINEが開いたら、画面上の「追加」で友だち追加してから送信してください。お店からの返事がLINEに届きます。</p>
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
       <button class="btn more" id="mReq" type="button">メールで予約する</button>
@@ -339,7 +355,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <p class="fine" id="fSoon" hidden>今日・明日は埋まっていることが多いので、候補を2〜3個出すと取りやすくなります。</p>
       <label class="agree" for="fOmk"><input type="checkbox" id="fOmk" checked> 指名のスタイリストが埋まっていたら、同じお店の別のスタイリストでもOK</label>
       <label for="fNote">ご要望（任意）<textarea id="fNote" rows="3" maxlength="300" placeholder="例：前髪は短めにしたい"></textarea></label>
-      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することを了解しました</label>
+      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスは、予約が確定したあとにだけ伝わります。<a href="privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました</label>
       <p class="ferr" id="fErr" hidden></p>
       <button class="btn book" type="submit" id="fSend">リクエストを送る</button>
       <button class="btn more" type="button" id="fBack">戻る</button>
@@ -366,7 +382,7 @@ const CONFIG = {
   GAS_URL: "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec",
   PHOTO: true,
   LINE_ID: "@933trlwv",  /* AISI公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
-  PERK: "施術料金から500円引き"   /* AISIコードの共通特典（サンプル表示用。本番は設定シートの値が使われます） */
+  PERK: "施術料金から500円引き"   /* AISIのLINEで予約したときの特典（サンプル表示用。本番は設定シートの値が使われます） */
 };
 
 /* ============ AISI 画像 ============ */
@@ -548,8 +564,56 @@ const QUESTIONS = [
  {id:"q_veteran",t:"担当スタイリストは、経験10年以上のベテランがいい？",tf:"veteran",w:1.5,staff:1,label:"ベテラン",
    skipIf:{q_young:v=>v>=.75}, after:{q_young:[v=>v<=.25,"年が近いかどうかは気にしないんだね。じゃあ……担当スタイリストは、経験10年以上のベテランがいい？"]}},
  {id:"q_male",t:"担当スタイリストは、男性がいい？",tf:"male",w:1.2,staff:1,label:"男性スタイリスト"},
- {id:"q_propose",t:"自分で決めるより、似合うスタイルを提案してほしい？",tf:"propose",w:1.3,staff:1,label:"提案してほしい"}
+ {id:"q_propose",t:"自分で決めるより、似合うスタイルを提案してほしい？",tf:"propose",w:1.3,staff:1,label:"提案してほしい"},
+ /* ===== メニューの深掘り（選んだメニューだけ、最初に聞く）=====
+    cat=メニューの種類、kw=お店の一押しメニュー（名前・内容）・タグ・スタッフの得意技術から探す言葉 */
+ {id:"d_cut_layer",cat:"cut",deep:1,t:"顔まわりにレイヤーを入れて、小顔に見せたい？",kw:"レイヤー|顔まわり|小顔|似合わせ|韓国",w:1.8,label:"レイヤー・似合わせカット"},
+ {id:"d_cut_short",cat:"cut",deep:1,t:"今回は、ショートやボブにしたい？",kw:"ショート|ボブ",sf:"short",w:1.8,label:"ショート・ボブ",skipIf:{q_short:v=>v!=null}},
+ {id:"d_cut_easy",cat:"cut",deep:1,t:"骨格に合わせて、扱いやすく切ってほしい？",kw:"骨格|扱いやすい|似合わせ|大人",w:1.6,label:"骨格に合わせたカット"},
+ {id:"d_cut_quick",cat:"cut",deep:1,t:"カットは、サッと短い時間で済ませたい？",kw:"時短|45分|クイック|サッと",sf:"fast",w:1.5,label:"時短カット"},
+ {id:"d_col_bright",cat:"color",deep:1,t:"ブリーチを使った、明るい色やハイトーンにしたい？",kw:"ブリーチ|ハイトーン|ハイライト",w:1.9,label:"ハイトーン・ブリーチ"},
+ {id:"d_col_inner",cat:"color",deep:1,t:"インナーカラーみたいに、ポイントで色を入れたい？",kw:"インナー|デザインカラー|ポイント|イヤリング",w:1.8,label:"インナー・デザインカラー"},
+ {id:"d_col_clear",cat:"color",deep:1,t:"派手さより、透明感やツヤのある色がいい？",kw:"透明|ツヤ|艶|オーガニック|ナチュラル",w:1.7,label:"透明感・ツヤカラー"},
+ {id:"d_col_gray",cat:"color",deep:1,t:"白髪をなじませたり、ぼかしたりしたい？",kw:"白髪|グレイ|ぼかし|エイジング",sf:"gray",w:1.8,label:"白髪ぼかし・グレイカラー",skipIf:{q_gray:v=>v!=null}},
+ {id:"d_perm_curl",cat:"perm",deep:1,t:"しっかりしたカールが、長持ちするパーマがいい？",kw:"デジタル|カール|コテ|長持ち",w:1.9,label:"デジタルパーマ"},
+ {id:"d_perm_soft",cat:"perm",deep:1,t:"乾かすだけでまとまる、ゆるいパーマがいい？",kw:"ナチュラル|ゆる|乾かすだけ|まとまる",w:1.8,label:"ゆるパーマ"},
+ {id:"d_perm_vol",cat:"perm",deep:1,t:"根元をふんわりさせて、ボリュームを出したい？",kw:"ボリューム|根元|ふんわり",sf:"thin",w:1.6,label:"ボリュームパーマ"},
+ {id:"d_perm_mens",cat:"perm",deep:1,t:"ツイストや波巻きみたいな、メンズのパーマ？",kw:"メンズ|ツイスト|波巻|スパイラル",sf:"mens",w:1.6,label:"メンズパーマ"},
+ {id:"d_str_front",cat:"straight",deep:1,t:"伸ばしたいのは、前髪や顔まわりだけ？",kw:"前髪|顔まわり|部分",w:1.9,label:"前髪・部分ストレート"},
+ {id:"d_str_natural",cat:"straight",deep:1,t:"ピンとしすぎない、自然なストレートがいい？",kw:"自然|酸性|ナチュラル|髪質改善",w:1.8,label:"自然なストレート"},
+ {id:"d_str_damage",cat:"straight",deep:1,t:"前にかけた縮毛矯正で、傷んだことがある？",kw:"酸性|ダメージ|髪質改善|補修",sf:"treat",w:1.6,label:"ダメージを抑えた矯正"},
+ {id:"d_tr_frizz",cat:"treat",deep:1,t:"広がりやうねりを抑えて、まとまる髪にしたい？",kw:"髪質改善|まとま|広がり|うねり",w:1.8,label:"髪質改善"},
+ {id:"d_tr_shine",cat:"treat",deep:1,t:"いちばんは、ツヤと手触りをよくしたい？",kw:"ツヤ|艶|手触り|集中|上質",w:1.7,label:"ツヤ・手触り"},
+ {id:"d_tr_home",cat:"treat",deep:1,t:"自分の髪に合うケアを、診断して選んでほしい？",kw:"オーダーメイド|診断|ホームケア|内側",w:1.5,label:"髪に合わせたケア"},
+ {id:"d_spa_relax",cat:"spa",deep:1,t:"眠ってしまうくらい、ゆったりしたい？",kw:"ドライ|眠|リラックス|癒",sf:"quiet",w:1.8,label:"リラックススパ"},
+ {id:"d_spa_eye",cat:"spa",deep:1,t:"目や首・肩の疲れも、ほぐしてほしい？",kw:"眼精|目|首|肩|疲れ",w:1.8,label:"目・首肩の疲れケア"},
+ {id:"d_spa_scalp",cat:"spa",deep:1,t:"頭皮の状態を、チェックしてもらいたい？",kw:"頭皮|診断|マイクロ|炭酸",sf:"care",w:1.6,label:"頭皮チェック"}
 ];
+/* 深掘りの言葉を、正規表現にしておく */
+QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
+const DEEP_COVERS = { q_short:["d_cut_short"], q_gray:["d_col_gray"], q_design:["d_col_bright","d_col_inner"], q_fast:["d_cut_quick"],
+  q_care:["d_spa_scalp"], q_thin:["d_perm_vol"], q_mens:["d_perm_mens"], q_easy:["d_perm_soft"], q_damage:["d_str_damage","d_tr_shine"] };
+/* 深掘りの質問は、メニュー1つにつき最大3問、全部で最大6問 */
+const DEEP_PER_CAT = 3, DEEP_MAX = 6;
+/* お店が、その深掘りの内容にどれだけ合うか（0〜1）
+   一押しメニューに言葉がある＝1、別の種類のメニューにある＝.8、タグ・スタッフの得意技術にある＝.55、ない＝.15 */
+const KW_CACHE = new WeakMap();
+function kwFit(s, q){
+  let c = KW_CACHE.get(s); if (!c){ c = {}; KW_CACHE.set(s, c); }
+  if (q.id in c) return c[q.id];
+  const menus = s.menus || [];
+  const txt = m => (m.name||"") + " " + (m.desc||"");
+  let v = .15;
+  if (menus.some(m => menuCats(m).includes(q.cat) && q.re.test(txt(m)))) v = 1;
+  else if (menus.some(m => q.re.test(txt(m)))) v = .8;
+  else if (q.re.test([(s.tags||[]).join(" "), s.concept||"", (s.staff||[]).map(st => [st.spec].concat((st.p&&st.p.tech)||[]).join(" ")).join(" ")].join(" "))) v = .55;
+  if (q.sf && s.f[q.sf] != null) v = Math.max(v, s.f[q.sf] * .9);
+  return (c[q.id] = v);
+}
+/* 質問ごとの「お店の特徴の値」 */
+function featOf(s, q){ return q.kw ? kwFit(s, q) : s.f[q.sf]; }
+/* スタッフの得意技術に、深掘りの言葉があるか */
+function staffKw(st, q){ return q.re ? q.re.test([st.spec].concat((st.p&&st.p.tech)||[]).join(" ")) : false; }
 /* 髪についての質問（優先して聞く） */
 const HAIR_Q = ["q_color","q_design","q_gray","q_kusege","q_change","q_short","q_perm","q_damage","q_volume","q_thin","q_bangs","q_easy","q_long","q_gentle"];
 const ANSWERS = [["はい",1],["いいえ",0],["わからない",null],["たぶんそう",.75],["たぶん違う",.25]];
@@ -588,6 +652,8 @@ function ageNear(st){
 function staffFit(st, answers, theme){
   let num=0, den=0;
   for (const q of QUESTIONS){
+    /* 深掘りで「はい」と答えた技術を、得意技術に持っている担当者を上げる */
+    if (q.deep && answers[q.id] >= .75){ const w = q.w * .6; num += w * (staffKw(st, q) ? 1 : .45); den += w; continue; }
     if (!q.tf) continue;
     const a = answers[q.id]; if (a==null) continue;
     let v = q.tf==="young" ? ageNear(st) : st[q.tf]; if (q.tinv) v = 1 - v;
@@ -599,9 +665,9 @@ function scoreAll(answers, theme){
   return SALONS.map(s=>{
     let num=0, den=0, penalty=1;
     for (const q of QUESTIONS){
-      if (!q.sf) continue;
+      if (!q.sf && !q.kw) continue;
       const a = answers[q.id]; if (a==null) continue;
-      const v = s.f[q.sf];
+      const v = featOf(s, q);
       let fit = 1-Math.pow(Math.abs(a-v), MATCH.CURVE), w = qWeight(q, theme);
       /* 「いらない」と答えた項目は、お店がそれを得意にしていても大きくは減点しない（静か・変化・隠れ家などの好みは除く） */
       if (a < .5 && !q.sym){ fit = 1 - (.5 - a)*.6*v; w *= .5; }
@@ -617,6 +683,7 @@ function scoreAll(answers, theme){
     const hasStaff = best.fit!=null;
     if (A) penalty *= 1 + .05*best.aff.score;               /* 共通点が多い担当者がいるお店を少し上げる */
     penalty *= 1 + .03*Math.min(100, s.done||0)/100;         /* 情報をしっかり入れているお店を少しだけ上げる */
+    if (s.rating && s.rating.n >= 3) penalty *= 1 + .015*(s.rating.avg - 3);   /* 来店後アンケートの満足度（3件以上）で少しだけ上下 */
     const issues = condIssues(s, COND);
     if (issues.length) penalty *= Math.pow(MATCH.OFFCOND, issues.length);
     /* やりたいメニューが一押しメニューにあるお店からスタート（ないお店は大きく下げる） */
@@ -632,6 +699,13 @@ function scoreAll(answers, theme){
 }
 function eligible(q, answers){
   if (q.id in answers) return false;
+  /* 深掘りで聞いた内容と同じことは、もう一度聞かない */
+  if ((DEEP_COVERS[q.id] || []).some(k => k in answers)) return false;
+  if (q.cat){
+    if (!(COND && COND.menus && COND.menus.includes(q.cat))) return false;
+    const done = QUESTIONS.filter(x => x.deep && x.id in answers);
+    if (done.length >= DEEP_MAX || done.filter(x => x.cat === q.cat).length >= DEEP_PER_CAT) return false;
+  }
   if (q.skipIf) for (const [k,f] of Object.entries(q.skipIf)){ if (answers[k]!=null && f(answers[k])) return false; }
   if (q.req) for (const k in q.req){ if (!(answers[k]!=null && answers[k]>=q.req[k])) return false; }
   return true;
@@ -647,12 +721,13 @@ function nextQuestion(answers, theme, n){
   for (const q of QUESTIONS){
     if (!eligible(q, answers)) continue;
     let vals;
-    if (q.sf) vals = cands.map(r=>r.salon.f[q.sf]);
+    if (q.sf || q.kw) vals = cands.map(r=>featOf(r.salon, q));
     else vals = cands.flatMap(r=>r.salon.staff.map(st=>q.tinv?1-st[q.tf]:st[q.tf]));
     const m = vals.reduce((a,b)=>a+b,0)/vals.length;
     const variance = vals.reduce((a,b)=>a+(b-m)**2,0)/vals.length;
     let v = (variance + .02) * qWeight(q, theme);
     if (HAIR_Q.includes(q.id)) v *= 1.35;     /* 髪のことを優先して聞く */
+    if (q.deep) v = (v + .05) * 4;            /* 選んだメニューの深掘りを、いちばん先に聞く */
     if (q.staff && n < 5 && theme!=="staff") v *= .5;
     if (v > bestV){ bestV=v; best=q; }
   }
@@ -668,16 +743,22 @@ function goalPool(r){
 function phase1Done(answers, theme, n){
   if (n >= PHASE1_MAX) return true;
   if (n < minQ()) return false;
-  const r = goalPool(scoreAll(answers, theme));
-  return r.length && r[Math.min(3, r.length) - 1].score >= PHASE1_GOAL;
+  const all = scoreAll(answers, theme), r = goalPool(all);
+  if (r.length && r[Math.min(3, r.length) - 1].score >= PHASE1_GOAL) return true;
+  /* 1位がはっきり見えたら、残りは担当者の質問で詰める（同じ所で足踏みさせない） */
+  if (all[0].score >= PHASE1_GOAL + 4) return true;
+  return n >= minQ() + 4;
 }
 /* 画面のマッチ率は下がらない。答えるたびに少しずつ上がり、第1段階は80%手前まで */
 function nextMeter(prev, answers, theme){
   const r = scoreAll(answers, theme);
-  /* 質問の数に合わせて、なめらかに80%手前まで上げる（最低質問数で79%に届くペース） */
-  const curve = (PHASE1_GOAL - 1) * Math.sqrt(Math.min(1, S.n / minQ()));
+  /* 最低質問数までは、なめらかに75%まで上げる */
+  const curve = (PHASE1_GOAL - 5) * Math.sqrt(Math.min(1, S.n / minQ()));
+  /* そのあとは、1位のお店の本当のマッチ率に向かって毎回少しずつ近づく（第1段階は84%まで） */
+  const target = Math.min(r[0].score, PHASE1_GOAL + 4);
+  const after = S.n >= minQ() ? prev + Math.max(1.2, (target - prev) * .4) : 0;
   /* 1位のお店の本当のマッチ率は超えない（超えそうなときは、下げずにその場で止める） */
-  const next = Math.min(PHASE1_GOAL - 1, r[0].score, Math.max(prev + .3, curve));
+  const next = Math.min(target, Math.max(prev + .4, curve, after));
   return Math.max(prev, Math.round(next * 10) / 10);
 }
 function meterHTML(v, label){
@@ -700,9 +781,9 @@ function confidence(answers, theme, n){
 function reasonsFor(r, answers){
   const out=[];
   for (const q of QUESTIONS){
-    const a = answers[q.id]; if (a==null || !q.sf) continue;
-    const v = r.salon.f[q.sf];
-    if (a>=.75 && v>=.7) out.push({q, s:v*qWeight(q,"salon")});
+    const a = answers[q.id]; if (a==null || (!q.sf && !q.kw)) continue;
+    const v = featOf(r.salon, q);
+    if (a>=.75 && v>=.7) out.push({q, s:v*qWeight(q,"salon")*(q.deep?1.4:1)});
   }
   const m = (r.salon.menus||[])[r.menuIdx];
   const top = out.sort((x,y)=>y.s-x.s).map(x=>x.q.label);
@@ -711,8 +792,8 @@ function reasonsFor(r, answers){
 function bottleneck(r, answers){
   let worst=null, wv=1;
   for (const q of QUESTIONS){
-    const a = answers[q.id]; if (a==null || !q.sf) continue;
-    const fit = 1-Math.abs(a-r.salon.f[q.sf]);
+    const a = answers[q.id]; if (a==null || (!q.sf && !q.kw)) continue;
+    const fit = 1-Math.abs(a-featOf(r.salon, q));
     if (fit < wv){ wv=fit; worst=q; }
   }
   return wv < .6 ? worst : null;
@@ -755,6 +836,7 @@ const FXSVG = (()=>{ const S='fill="none" stroke-linecap="round" stroke-linejoin
   note:`<svg viewBox="0 0 80 100"><path ${S} stroke="#fff" stroke-width="14" d="M30 78a12 10 0 1 1-1-1M30 76V18c14 2 26 8 34 20"/><path ${S} stroke="#ff8fb0" stroke-width="7" d="M30 78a12 10 0 1 1-1-1M30 76V18c14 2 26 8 34 20"/></svg>`,
   spark:`<svg viewBox="0 0 100 100"><g ${S} stroke="#fff" stroke-width="13"><path d="M30 20l6 22M14 52l20 2M62 14l-8 22"/></g><g ${S} stroke="#f1d9a6" stroke-width="6"><path d="M30 20l6 22M14 52l20 2M62 14l-8 22"/></g><path d="M74 54l5 12 13 2-10 8 3 13-11-7-11 7 3-13-10-8 13-2z" fill="#f1d9a6" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg>`,
   sweat:`<svg viewBox="0 0 80 100"><g stroke="#fff" stroke-width="7" stroke-linejoin="round"><path d="M28 18c-10 16-16 26-16 34a16 16 0 0 0 32 0c0-8-6-18-16-34z" fill="#9fc6ff"/><path d="M60 48c-6 9-9 15-9 19a9 9 0 0 0 18 0c0-4-3-10-9-19z" fill="#9fc6ff"/></g></svg>`,
+  check:`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="#7fe0c9" stroke="#fff" stroke-width="7"/><path ${S} stroke="#fff" stroke-width="11" d="M32 52l12 12 24-26"/></svg>`,
   q:`<svg viewBox="0 0 80 110"><path ${S} stroke="#fff" stroke-width="15" d="M20 34c0-24 42-26 42-2 0 16-20 18-20 36"/><path ${S} stroke="#7fe0c9" stroke-width="8" d="M20 34c0-24 42-26 42-2 0 16-20 18-20 36"/><circle cx="42" cy="92" r="8" fill="#7fe0c9" stroke="#fff" stroke-width="5"/></svg>`,
   heart:`<svg viewBox="0 0 100 90"><path d="M50 82C18 60 8 44 8 28 8 14 20 6 31 6c9 0 15 5 19 12 4-7 10-12 19-12 11 0 23 8 23 22 0 16-10 32-42 54z" fill="#ff9fb6" stroke="#fff" stroke-width="7" stroke-linejoin="round"/></svg>`,
   sun:`<svg viewBox="0 0 110 110"><g ${S} stroke="#fff" stroke-width="12"><path d="M55 8v14M55 88v14M8 55h14M88 55h14M22 22l10 10M78 78l10 10M88 22L78 32M22 88l10-10"/></g><g ${S} stroke="#f7b733" stroke-width="6"><path d="M55 8v14M55 88v14M8 55h14M88 55h14M22 22l10 10M78 78l10 10M88 22L78 32M22 88l10-10"/></g><circle cx="55" cy="55" r="20" fill="#ffd46b" stroke="#fff" stroke-width="6"/><path ${S} stroke="#a0651a" stroke-width="4" d="M47 52v2M63 52v2M47 62c5 5 11 5 16 0"/></svg>`
@@ -764,8 +846,8 @@ const REACT = {
   yes:   {pose:["thumb","peace"], move:"yes",  fx:["note","spark"], word:["いいね","うん"]},
   maybe: {pose:["pocket"],        move:"tilt", fx:["spark"],        word:["なるほど"]},
   idk:   {pose:["shrug"],         move:"tilt", fx:["q"],            word:["大丈夫"]},
-  maybeNo:{pose:["think"],        move:"tilt", fx:["sweat"],        word:["ふむ"]},
-  no:    {pose:["shrug"],         move:"no",   fx:["sweat"],        word:["了解"]},
+  maybeNo:{pose:["pocket"],       move:"nod",  fx:["check"],        word:["なるほど","OK"]},
+  no:    {pose:["open"],          move:"nod",  fx:["check"],        word:["分かったよ","了解"]},
   personal:{move:"yes", fx:["heart"], word:["ドキッ"], pink:true},
   result:{move:"wow", fx:["sun","spark"]},
   thanks:{move:"yes", fx:["spark"]}
@@ -781,7 +863,7 @@ function aisiReact(kind){
     const k = pick(r.pose);
     if (cur && nxt && cur.dataset.k !== k){ nxt.src = POSES[k]; nxt.dataset.k = k; nxt.alt = "AISI"; nxt.classList.remove("off","enter"); cur.classList.add("off"); cur.alt = ""; }
   }
-  if (r.move && hop){ hop.classList.remove("yes","no","tilt","wow"); void hop.offsetWidth; hop.classList.add(r.move); }
+  if (r.move && hop){ hop.classList.remove("yes","no","tilt","wow","nod"); void hop.offsetWidth; hop.classList.add(r.move); }
   const fxl = box.querySelector(".fxl"); if (!fxl) return;
   fxl.innerHTML = "";
   (r.fx || []).slice(0, 2).forEach((k, i) => {
@@ -1141,6 +1223,7 @@ const TECH_WORDS = {q_kusege:["縮毛矯正","髪質改善","ストレート"], 
   q_perm:["パーマ"], q_care:["スパ","頭皮"], q_gray:["白髪","グレイ"], q_damage:["トリートメント","髪質改善","ダメージ"], q_mens:["メンズ"], q_volume:["毛量","すき"], q_thin:["ボリューム","細毛"], q_bangs:["前髪"], q_easy:["似合わせ","骨格","扱いやすい"], q_long:["ロング","毛先"], q_change:["レイヤー","似合わせ","ハイトーン"]};
 function staffReasons(st, ans){
   const out = [], text = [st.spec].concat((st.p&&st.p.tech)||[]).join(" ");
+  QUESTIONS.filter(q => q.deep && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`${q.label}が得意`));
   for (const [qid, words] of Object.entries(TECH_WORDS)){
     if (!(ans[qid]>=.75)) continue;
     const w = words.find(x=>text.includes(x)); if (w){ const q=QUESTIONS.find(z=>z.id===qid); out.push(`${q.label}が得意`+(q.label.includes(w)?"":`（${w}）`)); }
@@ -1232,10 +1315,23 @@ function renderAff(){
     else box.querySelector(`.chip[data-v="${CSS.escape(a.none)}"]`)?.classList.remove("on");
     b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on"));
     if (a.name){ const on = box.querySelector(".chip.on"); $app.querySelector(".oshiname").hidden = !(on && on.dataset.v!==a.none); }
-    if (!a.multi && !a.name && b.classList.contains("on")) setTimeout(affNext, 150);
+    /* 1つ選ぶ質問は、ほかの質問と同じように反応してから次へ（すぐには切り替えない） */
+    if (!a.multi && !a.name && b.classList.contains("on")) affGo(v === a.none ? "maybeNo" : "yes");
   });
-  document.getElementById("affNext").onclick=affNext;
+  document.getElementById("affNext").onclick=()=>{
+    const any = [...box.querySelectorAll(".chip.on")].some(x => x.dataset.v !== a.none);
+    affGo(any ? "yes" : "maybeNo");
+  };
+  typeVoice($app.querySelector(".bubble .voice"));
   document.getElementById("affSkip").onclick=()=>{ affIdx++; affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone(); };
+}
+/* 個人的な質問：選んだらAISIが反応して、少し待ってから次へ */
+function affGo(kind){
+  if ($app.querySelector(".chips.aff.locked")) return;
+  $app.querySelector(".chips.aff").classList.add("locked");
+  $app.querySelectorAll("#affNext,#affSkip").forEach(x => x.disabled = true);
+  aisiReact(kind);
+  setTimeout(affNext, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
 }
 function affNext(){
   const a = affQueue[affIdx];
@@ -1304,7 +1400,8 @@ function cardHTML(x,i){
       <div class="area">${esc(s.area)} ・ ${esc(s.price)}</div>
       <div class="area">受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</div>
       ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
-      ${s.perk ? `<div class="perk">AISIコードで予約すると：${esc(s.perk)}</div>`:""}
+      ${s.rating && s.rating.n >= 3 ? `<div class="rate">★${s.rating.avg.toFixed(1)}<small>（来店したお客さま ${s.rating.n}人${s.rating.again!=null?` ・ また行きたい ${s.rating.again}%`:""}）</small></div>`:""}
+      ${s.perk ? `<div class="perk">AISIのLINEで予約すると：${esc(s.perk)}</div>`:""}
       ${x.issues && x.issues.length ? `<div class="offcond">選んだ条件と合わない点：${x.issues.join("・")}</div>`:""}
     </div>
     <div class="card-b">
@@ -1353,7 +1450,7 @@ function book(salonId){
   send("book", {salon:r.salon.name, staff:r.staff.name});
   document.getElementById("mCode").textContent = S.code;
   const pk = document.getElementById("mPerk");
-  if (r.salon.perk){ pk.innerHTML = `このコードで予約すると<br><b>${esc(r.salon.perk)}</b>`; pk.hidden=false; } else pk.hidden=true;
+  if (r.salon.perk){ pk.innerHTML = `LINEで予約すると<br><b>${esc(r.salon.perk)}</b><br><small>※メールやホットペッパーからの予約は対象外です</small>`; pk.hidden=false; } else pk.hidden=true;
   document.getElementById("mText").textContent = `${r.salon.name}（${r.staff.name}さん）への予約方法を選んでください。`;
   document.getElementById("mReq").hidden = !CONFIG.GAS_URL;
   const ml = document.getElementById("mLine"), ms = document.getElementById("mSave");
@@ -1381,7 +1478,7 @@ function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0
 document.getElementById("mReq").onclick=()=>{
   const r = bookTarget, s = r.salon;
   document.getElementById("fTitle").textContent = `${s.name} に予約リクエスト`;
-  document.getElementById("fSalon").textContent = `担当希望：${r.staff.name}さん ・ 受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}${s.perk?" ・ 特典："+s.perk:""}`;
+  document.getElementById("fSalon").textContent = `担当希望：${r.staff.name}さん ・ 受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}${s.perk?" ・ ※メールでの予約は、LINE予約の特典（"+s.perk+"）の対象外です":""}`;
   const fm = document.getElementById("fMenu");
   fm.innerHTML = (s.menus||[]).map((m,i)=>`<option value="${i}">${esc(m.name)}（${esc(m.price)}）</option>`).join("") + `<option value="">お店と相談して決める</option>`;
   if (r.menuIdx>=0) fm.value = String(r.menuIdx);
@@ -1416,12 +1513,12 @@ document.getElementById("vForm").onsubmit=async(e)=>{
   const body = JSON.stringify({type:"request", sid:S.sid, salonId:s.id, staff:bookTarget.staff.name, code:S.code,
     name:v("fName"), tel:v("fTel"), email:v("fMail"), wish1:{date:v("fD1"), time:v("fT1")},
     wish2: v("fD2") ? {date:v("fD2"), time:v("fT2")} : null, wish3: v("fD3") ? {date:v("fD3"), time:v("fT3")} : null,
-    omakase: document.getElementById("fOmk").checked, menu: document.getElementById("fMenu").value, note:v("fNote")});
+    omakase: document.getElementById("fOmk").checked, menu: document.getElementById("fMenu").value, note:v("fNote"), agree:true});
   let ok = false, rid = "";
   try{
     const res = await fetch(CONFIG.GAS_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
     const j = await res.json(); ok = !!j.ok; rid = j.rid || "";
-    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err("送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
+    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err(j.error==="busy" ? "送信が続いたため、いったん受付を止めています。時間をおいてお試しください。" : "送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
   }catch(ex){
     /* 返事が読めなくても届いていることが多いので、届かなかった場合に備えて案内する */
     try{ await fetch(CONFIG.GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body}); ok = true; }catch(ex2){}

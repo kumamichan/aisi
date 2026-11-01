@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>AISI 予約ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: 上にお店の名前と要対応の数、タブ（要対応・今日・明日・今週・すべて）と担当者の絞り込み。下に予約カードを日時順に並べる。
+   受付のiPad・パソコンで開きっぱなしにする前提で、1分ごとに自動で更新 */
+:root{
+  --night:#141a26; --night-2:#1e2738; --paper:#f3f1ec; --card:#fbfaf7; --ink:#1b2130; --ink-soft:#5a6274;
+  --line:#ddd8cd; --accent:#d9b77a; --accent-ink:#2a2112; --ok:#2e8b57; --warn:#b23b2a; --wait:#c07a12; --info:#3d6fb6;
+  --font-voice:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --font-ui:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);line-height:1.6;font-size:15px}
+header{background:var(--night);color:var(--paper);padding:16px max(16px,env(safe-area-inset-left,0px)) 14px;position:sticky;top:0;z-index:5}
+.hin{max-width:1080px;margin:0 auto;display:grid;gap:10px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-family:var(--font-voice);letter-spacing:.3em;font-size:1.1rem}
+.logo small{font-family:var(--font-ui);letter-spacing:.1em;font-size:.68rem;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 6px;margin-left:8px;vertical-align:2px}
+h1{margin:0;font-family:var(--font-voice);font-size:1.3rem}
+.upd{font-size:.75rem;color:#aab2c2;display:flex;gap:8px;align-items:center}
+.upd button{font:inherit;font-size:.75rem;background:transparent;color:var(--paper);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:3px 10px;cursor:pointer}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:inherit;font-size:.86rem;border:1px solid rgba(255,255,255,.25);background:transparent;color:var(--paper);border-radius:999px;padding:6px 14px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.tab.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.tab .n{font-size:.72rem;background:rgba(255,255,255,.15);border-radius:999px;padding:0 7px}
+.tab.on .n{background:rgba(0,0,0,.12)}
+.tab.alert .n{background:var(--warn);color:#fff}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.82rem;color:#c9ced8}
+.filters select{font:inherit;font-size:.86rem;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:var(--night-2);color:var(--paper);padding:5px 8px}
+main{max-width:1080px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 60px;display:grid;gap:14px}
+.day{font-weight:700;font-size:.9rem;color:var(--ink-soft);margin:8px 0 -4px;letter-spacing:.06em}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:8px;min-width:0;border-left:5px solid var(--line)}
+.card.s-wait{border-left-color:var(--warn)}
+.card.s-ask{border-left-color:var(--wait)}
+.card.s-ok{border-left-color:var(--ok)}
+.card.s-done{opacity:.78}
+.c-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.when{font-weight:700;font-size:1.05rem}
+.pill{font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap;color:#fff;background:var(--ink-soft)}
+.pill.wait{background:var(--warn)}.pill.ask{background:var(--wait)}.pill.ok{background:var(--ok)}.pill.info{background:var(--info)}
+.who{font-size:.95rem}
+.who b{font-size:1.02rem}
+.who a{color:var(--info);text-decoration:none;margin-left:6px;font-size:.88rem}
+.meta{font-size:.84rem;color:var(--ink-soft);display:grid;gap:2px}
+.meta b{color:var(--ink);font-weight:500}
+.wishes{display:grid;gap:4px;font-size:.86rem}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.btn{font:inherit;font-size:.82rem;border-radius:6px;border:1px solid var(--night-2);background:var(--night-2);color:#fff;padding:7px 12px;font-weight:700;cursor:pointer}
+.btn.sub{background:#fff;color:var(--ink);border-color:#cfc9bd;font-weight:500}
+.btn.ok{background:var(--ok);border-color:var(--ok)}
+.btn.ng{background:#fff;color:var(--warn);border-color:var(--warn)}
+.btn.arm{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.prop{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.prop input{font:inherit;font-size:.86rem;border:1px solid #cfc9bd;border-radius:6px;padding:6px 8px}
+.res{font-size:.82rem;margin:0}
+.res.ok{color:var(--ok)}.res.err{color:var(--warn)}
+.sv{font-size:.82rem;background:#f6efe1;border-radius:6px;padding:6px 10px;color:#6b5320}
+.empty{text-align:center;color:var(--ink-soft);padding:40px 10px;background:var(--card);border:1px dashed var(--line);border-radius:12px}
+.center{text-align:center;padding:60px 16px;color:var(--ink-soft)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:420px){.list{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="hin">
+  <div class="top">
+    <div><div class="logo">AISI<small>予約ボード</small></div><h1 id="title">読み込み中…</h1></div>
+    <div class="upd"><span id="upd"></span><button type="button" id="reload">今すぐ更新</button></div>
+  </div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="filters"><label for="fStaff">担当</label><select id="fStaff"><option value="">全員</option></select></div>
+</div></header>
+<main id="main"><div class="center">読み込み中…</div></main>
+
+<script>
+/* GASのウェブアプリのURL（index.html と同じもの） */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec";
+
+const $ = id => document.getElementById(id);
+const KEY = new URLSearchParams(location.search).get("k") || "";
+const ST = { WAIT:"返信待ち", ASK:"お客様確認待ち", OK:"予約確定", NG:"予約不可", DECLINE:"お客様辞退", NOREPLY:"お店未返信", VISIT:"来店済み", CANCEL:"キャンセル" };
+const DAYS = ["日","月","火","水","木","金","土"];
+let D = null, TAB = "todo", STAFF = "";
+try { TAB = localStorage.getItem("aisiBoardTab") || "todo"; STAFF = localStorage.getItem("aisiBoardStaff") || ""; } catch (e) {}
+
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ymd = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+function toDate(iso){ return iso ? new Date(String(iso).replace(" ", "T")) : null; }
+function fmt(iso){ const d = toDate(iso); if (!d || isNaN(d)) return String(iso || ""); return (d.getMonth()+1) + "/" + d.getDate() + "(" + DAYS[d.getDay()] + ") " + d.getHours() + ":" + String(d.getMinutes()).padStart(2,"0"); }
+/* その予約の基準の日時：確定していれば来店日時、まだなら提案や第1希望 */
+function keyAt(q){ return toDate(q.at) || toDate(q.prop) || toDate(q.wishes[0]) || toDate(q.created); }
+function isTodo(q){ return q.state === ST.WAIT || q.state === ST.NOREPLY || (q.state === ST.OK && keyAt(q) && keyAt(q).getTime() + 3*3600000 < Date.now()); }
+
+async function load(){
+  if (!KEY) { $("main").innerHTML = `<div class="center">リンクが正しくありません。「AISI サロンさま窓口」の「予約の一覧」→「予約ボードを開く」から開いてください。</div>`; $("title").textContent = "予約ボード"; return; }
+  try {
+    const r = await (await fetch(`${GAS_URL}?action=board&k=${encodeURIComponent(KEY)}`)).json();
+    if (!r.ok) { $("main").innerHTML = `<div class="center">このリンクは使えなくなっています。運営に新しいリンクをもらってください。</div>`; $("title").textContent = "予約ボード"; return; }
+    D = r; $("title").textContent = r.salon;
+    $("upd").textContent = "更新 " + new Date().toLocaleTimeString("ja-JP", {hour:"2-digit", minute:"2-digit"});
+    const sel = $("fStaff"); const cur = STAFF;
+    sel.innerHTML = `<option value="">全員</option><option value="__omakase">おまかせ（指名なし）</option>` + r.staff.map(n => `<option value="${esc(n)}">${esc(n)}さん</option>`).join("");
+    sel.value = cur; if (sel.value !== cur) { STAFF = ""; sel.value = ""; }
+    render();
+  } catch (e) { $("upd").textContent = "更新できませんでした（通信を確認してください）"; }
+}
+
+function inTab(q, t){
+  const k = keyAt(q); const today = ymd(new Date()), tmr = ymd(new Date(Date.now()+86400000));
+  const day = k ? ymd(k) : "";
+  if (t === "todo") return isTodo(q);
+  if (t === "today") return day === today && [ST.WAIT, ST.ASK, ST.OK, ST.NOREPLY, ST.VISIT].includes(q.state);
+  if (t === "tomorrow") return day === tmr && [ST.WAIT, ST.ASK, ST.OK, ST.NOREPLY].includes(q.state);
+  if (t === "week") return k && k.getTime() >= new Date(today + "T00:00").getTime() && k.getTime() < Date.now() + 7*86400000 && [ST.WAIT, ST.ASK, ST.OK, ST.NOREPLY].includes(q.state);
+  return true;
+}
+function byStaff(q){ return !STAFF || (STAFF === "__omakase" ? !q.staff : q.staff === STAFF); }
+
+function render(){
+  const items = D.items.filter(byStaff);
+  const tabs = [["todo","要対応"],["today","今日"],["tomorrow","明日"],["week","今週"],["all","すべて（3週間）"]];
+  $("tabs").innerHTML = tabs.map(([k, l]) => { const n = items.filter(q => inTab(q, k)).length;
+    return `<button type="button" role="tab" class="tab ${TAB===k?"on":""} ${k==="todo"&&n?"alert":""}" data-t="${k}" aria-selected="${TAB===k}">${l}<span class="n">${n}</span></button>`; }).join("");
+  $("tabs").querySelectorAll(".tab").forEach(b => b.onclick = () => { TAB = b.dataset.t; try { localStorage.setItem("aisiBoardTab", TAB); } catch (e) {} render(); });
+  const list = items.filter(q => inTab(q, TAB)).sort((a, b) => (keyAt(TAB==="all"?b:a)||0) - (keyAt(TAB==="all"?a:b)||0));
+  if (!list.length) { $("main").innerHTML = `<div class="empty">${TAB==="todo" ? "いま対応が必要な予約はありません。" : "この期間の予約はありません。"}</div>`; return; }
+  const groups = [];
+  list.forEach(q => {
+    const k = keyAt(q); const day = k ? (k.getMonth()+1) + "月" + k.getDate() + "日（" + DAYS[k.getDay()] + "）" : "日時未定";
+    const g = groups[groups.length - 1];
+    if (g && g.day === day) g.items.push(q); else groups.push({ day, items: [q] });
+  });
+  $("main").innerHTML = groups.map(g => `<div class="day">${g.day}</div><div class="list">${g.items.map(card).join("")}</div>`).join("");
+  wire();
+}
+
+function card(q){
+  const cls = q.state === ST.WAIT || q.state === ST.NOREPLY ? "s-wait" : q.state === ST.ASK ? "s-ask" : q.state === ST.OK ? "s-ok" : "s-done";
+  const pill = q.state === ST.WAIT || q.state === ST.NOREPLY ? "wait" : q.state === ST.ASK ? "ask" : q.state === ST.OK || q.state === ST.VISIT ? "ok" : "";
+  const when = q.state === ST.OK || q.state === ST.VISIT ? (q.when || fmt(q.at)) : q.state === ST.ASK ? fmt(q.prop) + "（お客様の確認待ち）" : "第1希望 " + fmt(q.wishes[0]);
+  let acts = "";
+  if (q.state === ST.WAIT || q.state === ST.NOREPLY) {
+    acts = `<div class="wishes">${q.wishes.map((w, i) => `<div class="acts"><button type="button" class="btn ok" data-act="ok" data-n="${i+1}" data-rid="${esc(q.rid)}">第${i+1}希望 ${esc(fmt(w))} でOK</button></div>`).join("")}</div>
+      <div class="prop"><input type="datetime-local" step="1800" aria-label="別の日時" data-dt="${esc(q.rid)}"><button type="button" class="btn sub" data-act="prop" data-rid="${esc(q.rid)}">この日時を提案</button></div>
+      <div class="acts"><button type="button" class="btn ng" data-act="ng" data-rid="${esc(q.rid)}">受けられない</button></div>`;
+  } else if (q.state === ST.OK) {
+    acts = `<div class="acts"><button type="button" class="btn ok" data-act="visit" data-rid="${esc(q.rid)}">来店した</button><button type="button" class="btn ng" data-act="noshow" data-rid="${esc(q.rid)}">来なかった・キャンセル</button></div>`;
+  }
+  return `<article class="card ${cls}">
+    <div class="c-h"><span class="when">${esc(when)}</span><span class="pill ${pill}">${esc(q.state)}</span></div>
+    <div class="who">${q.hidden ? `<b>受付 ${esc(q.rid)}</b><small style="color:#5a6274">お名前・電話番号は確定後に表示</small>` : `<b>${esc(q.name)} 様</b>`}${q.tel ? `<a href="tel:${esc(q.tel.replace(/[^\d+]/g, ""))}">${esc(q.tel)}</a>` : ""}</div>
+    <div class="meta">
+      <span>担当：<b>${esc(q.staff || "おまかせ")}</b>${q.staff ? (q.omakase ? "（埋まっていればおまかせOK）" : "（指名のみ）") : ""}</span>
+      ${q.menu ? `<span>メニュー：<b>${esc(q.menu)}</b>${q.price ? " " + esc(q.price) : ""}</span>` : ""}
+      ${q.note ? `<span>ご要望：<b>${esc(q.note)}</b></span>` : ""}
+      <span>診断コード ${esc(q.code)} ・ ${esc(q.channel)} ・ 受付 ${esc(fmt(q.created))}</span>
+    </div>
+    ${q.star ? `<div class="sv">来店後アンケート：${"★".repeat(q.star)}${"☆".repeat(5-q.star)}${q.again ? " ・ また行きたい：" + esc(q.again) : ""}${q.voice ? "<br>「" + esc(q.voice) + "」" : ""}</div>` : ""}
+    ${acts}
+    <p class="res" id="res-${esc(q.rid)}" hidden></p>
+  </article>`;
+}
+
+/* ボタンは2回押しで実行（押し間違い防止）。1回目で「もう一度押して確定」に変わる */
+function wire(){
+  document.querySelectorAll("[data-act]").forEach(b => b.onclick = async () => {
+    if (!b.classList.contains("arm")) {
+      document.querySelectorAll(".btn.arm").forEach(x => { x.classList.remove("arm"); x.textContent = x.dataset.label; });
+      b.dataset.label = b.textContent; b.classList.add("arm"); b.textContent = "もう一度押して確定";
+      setTimeout(() => { if (b.classList.contains("arm")) { b.classList.remove("arm"); b.textContent = b.dataset.label; } }, 4000);
+      return;
+    }
+    const rid = b.dataset.rid, act = b.dataset.act, res = $("res-" + rid);
+    const body = { type: "board", k: KEY, rid, act, n: b.dataset.n || "" };
+    if (act === "prop") {
+      const v = document.querySelector(`[data-dt="${CSS.escape(rid)}"]`).value;
+      if (!v) { b.classList.remove("arm"); b.textContent = b.dataset.label; res.hidden = false; res.className = "res err"; res.textContent = "提案する日時を選んでください。"; return; }
+      body.dt = v;
+    }
+    b.disabled = true; b.textContent = "送信中…";
+    try {
+      const r = await (await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })).json();
+      res.hidden = false; res.className = "res " + (r.ok ? "ok" : "err"); res.textContent = r.ok ? r.msg : "送信できませんでした。もう一度お試しください。";
+      setTimeout(load, 1500);
+    } catch (e) { res.hidden = false; res.className = "res err"; res.textContent = "送信できませんでした。通信を確認してください。"; b.disabled = false; b.classList.remove("arm"); b.textContent = b.dataset.label; }
+  });
+}
+$("fStaff").onchange = e => { STAFF = e.target.value; try { localStorage.setItem("aisiBoardStaff", STAFF); } catch (er) {} render(); };
+$("reload").onclick = load;
+load();
+setInterval(() => { if (!document.querySelector(".btn.arm") && document.visibilityState === "visible") load(); }, 60000);
+</script>
+</body>
+</html>

@@ -189,8 +189,8 @@ function renderSalon(){
     </div>
     <div class="f"><b style="font-size:.86rem">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
     <label class="f">予約ページのURL<small>ホットペッパーなど</small><input type="url" id="book" value="${esc(D["予約ページURL"])}"></label>
-    <div class="f"><b style="font-size:.86rem">AISIコードの特典</b><small>AISIコードで予約したお客さまには、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」になります。</small></div>
-    <label class="f">お店独自の特典（任意）<small>共通の特典に追加したいときだけ。例：ホームケアサンプル付き</small><input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label>
+    <div class="f"><b style="font-size:.86rem">LINE予約の特典</b><small>AISIのLINEで予約したお客さまには、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」になります（メールやホットペッパーからの予約は対象外）。お会計のときにお店で値引きしてください。</small></div>
+    <label class="f"${D.perkOwnOn?"":" hidden"}>お店独自の特典（オプション）<small>共通の特典に追加したいときだけ。例：ホームケアサンプル付き</small><input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label>
     <label class="f">予約の連絡を受け取るメール<small>LINEを登録していないときに使います</small><input type="email" id="mail" value="${esc(D["お店の通知メール"])}"></label>
     <label class="f">タグ<small>「、」で区切る。例：髪質改善、マンツーマン</small><input type="text" id="tags" value="${esc(D["タグ（、区切り）"])}"></label>
   </section>
