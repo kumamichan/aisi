@@ -34,9 +34,8 @@ a{color:#3d6fb6}
 <body>
 <header><div class="hin"><div class="logo">AISI</div><h1>プライバシーポリシー</h1></div></header>
 <main>
-  <div class="draft" id="draft">【下書き】この内容は、専門家（弁護士など）の確認前の案です。確認が終わったら、この枠を消してください（下の CONFIG の DRAFT を false に）。</div>
 
-  <section><p><span class="op">【運営者名】</span>（以下「運営者」）は、美容室マッチングサービス「AISI」（診断アプリ、LINE公式アカウント「AISI」「AISI サロンさま窓口」、関連するウェブページを含みます。以下「本サービス」）における個人情報の取り扱いを、次のとおり定めます。</p></section>
+  <section><p><span class="op">株式会社Indepe</span>（以下「運営者」）は、美容室マッチングサービス「AISI」（診断アプリ、LINE公式アカウント「AISI」「AISI サロンさま窓口」、関連するウェブページを含みます。以下「本サービス」）における個人情報の取り扱いを、次のとおり定めます。</p></section>
 
   <section><h2>1. 取得する情報</h2>
     <div class="tbl"><table>
@@ -104,24 +103,28 @@ a{color:#3d6fb6}
   </section>
 
   <section><h2>10. お問い合わせ先</h2>
-    <p><span class="op">【運営者名】</span><br>連絡先：<span class="contact">【メールアドレスまたはLINE】</span></p>
-    <p class="meta"><span class="date">【制定日】</span> 制定</p>
+    <p><span class="op">株式会社Indepe</span><br>連絡先：<span class="contact"><a href="https://lin.ee/7pI6PGW" target="_blank" rel="noopener">株式会社Indepe 公式LINE</a></span></p>
+    <p class="meta"><span class="date">2026年10月31日</span> 制定</p>
   </section>
 </main>
 <script>
 /* ===== ここを書き換えてください ===== */
 const CONFIG = {
-  OPERATOR: "",        /* 運営者名（例："株式会社〇〇"） */
-  CONTACT: "",         /* 問い合わせ先（例："info@example.com"） */
-  DATE: "",            /* 制定日（例："2026年11月1日"） */
+  OPERATOR: "株式会社Indepe",                 /* 運営者名 */
+  CONTACT: "株式会社Indepe 公式LINE",          /* 問い合わせ先（表示する文字） */
+  CONTACT_URL: "https://lin.ee/7pI6PGW",       /* 問い合わせ先のリンク */
+  DATE: "2026年10月31日",                      /* 制定日 */
   KEEP_MONTHS: 12,     /* 設定シートの「個人情報の保存期間（か月）」と同じ数字に */
-  DRAFT: true          /* 専門家の確認が終わったら false に */
+  DRAFT: false         /* true にすると「下書き」の枠が出ます */
 };
 if (CONFIG.OPERATOR) document.querySelectorAll(".op").forEach(e => e.textContent = CONFIG.OPERATOR);
-if (CONFIG.CONTACT) document.querySelectorAll(".contact").forEach(e => e.textContent = CONFIG.CONTACT);
+if (CONFIG.CONTACT) document.querySelectorAll(".contact").forEach(e => {
+  if (CONFIG.CONTACT_URL) { e.textContent = ""; const a = document.createElement("a"); a.href = CONFIG.CONTACT_URL; a.target = "_blank"; a.rel = "noopener"; a.textContent = CONFIG.CONTACT; e.appendChild(a); }
+  else e.textContent = CONFIG.CONTACT;
+});
 if (CONFIG.DATE) document.querySelectorAll(".date").forEach(e => e.textContent = CONFIG.DATE);
 document.querySelectorAll(".keep").forEach(e => e.textContent = CONFIG.KEEP_MONTHS + "か月");
-if (!CONFIG.DRAFT) document.getElementById("draft").remove();
+if (CONFIG.DRAFT) { const d = document.createElement("div"); d.className = "draft"; d.textContent = "【下書き】専門家の確認前の案です。"; document.querySelector("main").prepend(d); }
 </script>
 </body>
 </html>
