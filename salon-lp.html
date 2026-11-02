@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>AISI サロン掲載</title>
+<meta name="description" content="SNSを頑張らなくても、プロフィールを書くだけで「あなたに会いたい」お客様が来店する。札幌の美容室向けマッチングサービスです。">
+<meta property="og:title" content="AISI 美容室コネクトサービス｜サロン掲載のご案内">
+<meta property="og:description" content="SNSを頑張らなくても、プロフィールを書くだけで「あなたに会いたい」お客様が来店する。札幌の美容室向けマッチングサービスです。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kumamichan.github.io/aisi/salon/">
+<meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 <style>
@@ -489,5 +498,9 @@ if (SALON_LINE_ID){
 }
 </script>
 
+<script>
+/* 代理店から届いたURL（?d=会社名）のときは、情報入力ページに代理店名を引き継ぐ */
+try { const d = new URLSearchParams(location.search).get("d"); if (d) document.querySelectorAll('a[href*="signup.html"]').forEach(a => { a.href = a.href.split("?")[0] + "?d=" + encodeURIComponent(d); }); } catch (e) {}
+</script>
 </body>
 </html>
