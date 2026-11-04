@@ -81,6 +81,30 @@ textarea{min-height:84px;resize:vertical}
 .msg.ok{color:var(--ok);font-weight:700}
 .msg.err{color:var(--warn);font-weight:700}
 .center{padding:60px 16px;text-align:center;color:var(--ink-soft)}
+.warnline{color:var(--warn)!important;font-weight:700}
+/* AISIと話しながら入力する */
+.wz-open{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:center;background:var(--night);color:var(--paper);border-radius:10px;padding:14px;border:0;font:inherit;text-align:left;cursor:pointer}
+.wz-open img{width:64px;height:64px;object-fit:cover;object-position:top;border-radius:50%;background:var(--night-2)}
+.wz-open b{display:block;font-size:1rem}
+.wz-open small{color:#c9ced8;font-size:.8rem}
+.wz{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--paper);display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.wz-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);font-size:.85rem}
+.wz-h button{font:inherit;background:transparent;color:var(--paper);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 12px;cursor:pointer}
+.wz-log{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-width:640px;width:100%;margin:0 auto}
+.wz-m{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:end}
+.wz-m img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top;background:var(--night-2)}
+.wz-m p{margin:0;background:var(--paper);color:var(--ink);border-radius:14px 14px 14px 4px;padding:10px 13px;font-family:var(--font-voice);font-size:.95rem;line-height:1.7}
+.wz-me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-radius:14px 14px 4px 14px;padding:8px 13px;font-size:.88rem;font-weight:700;max-width:85%}
+.wz-sum{background:#fff6e5;color:var(--ink);border:1px solid #ecd3a4;border-radius:10px;padding:12px;font-size:.9rem;line-height:1.8}
+.wz-a{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1);background:var(--night-2);max-height:48vh;overflow-y:auto}
+.wz-ain{max-width:640px;margin:0 auto;display:grid;gap:10px}
+.wz-a .chip{background:rgba(243,241,236,.92);border-color:transparent;padding:8px 14px;font-size:.9rem}
+.wz-a .chip.on{background:var(--accent);color:var(--accent-ink)}
+.wz-a .row{display:flex;gap:8px}
+.wz-a .row .btn{flex:1}
+.wz-a .btn:not(.skip){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.wz-a .btn.skip{background:transparent;border-color:rgba(255,255,255,.35);color:var(--paper);font-weight:500}
+.wz-a input{font-size:16px}
 @media (max-width:560px){.row2{grid-template-columns:1fr}.feat{grid-template-columns:1fr;gap:4px}}
 </style>
 <script src="js/bx.js"></script>
@@ -122,6 +146,10 @@ const OPT = {
   pets: ["犬","猫","うさぎ","鳥","魚","爬虫類","その他","いない"],
   hobby: ["カフェ巡り","旅行","キャンプ・アウトドア","釣り","サウナ・温泉","筋トレ・ジム","ランニング","ヨガ","ゴルフ","スノーボード・スキー","ゲーム","アニメ・マンガ","映画・ドラマ","読書","料理","ガーデニング","写真","ファッション・古着","推し活","カラオケ","ライブ・フェス","車・バイク","お酒・ワイン"],
   holiday: ["家でゆっくり","カフェ巡り","ショッピング","アウトドア","旅行","スポーツ観戦","ライブ・推し活","ジム・運動","家族と過ごす","温泉・サウナ"],
+  please: ["扱いやすさ","傷ませない","似合わせの提案","色の美しさ・透明感","再現性（家でも同じに）","時短","リラックス・癒し","若々しさ・エイジングケア"],
+  value: ["切る前に長さ・仕上がりを確認する","写真でイメージを共有する","追加料金は事前に説明する","髪の状態を正直に伝える","無理なすすめはしない","家でのケア方法を教える","最初から最後まで自分が担当する","会話の量をお客様に合わせる"],
+  worry: ["くせ毛・うねり","ダメージ毛","ブリーチ毛","白髪","細い髪・ボリューム不足","多い髪・広がり","頭皮の悩み","似合う髪型が分からない","前の美容室での失敗"],
+  homecare: ["しっかり提案する","聞かれたら提案する","すすめない"],
   music: ["J-POP","K-POP","洋楽","ロック","ヒップホップ","アニソン","ジャズ","クラシック","EDM","ボカロ","演歌・歌謡曲"]
 };
 const FEATS = [
@@ -258,6 +286,7 @@ function renderStaff(){
   $("kind").textContent="スタッフ"; $("title").textContent=D.name+" さん（"+D.salon+"）";
   meter(Number(D["プロフィール充実度"])||0, "入れた項目が多いほど、共通点のあるお客さまとマッチしやすくなります。");
   $("app").innerHTML = `
+  <button class="wz-open" type="button" id="wzOpen"><img src="img/aisi_peace.webp" alt=""><span><b>AISIと話しながら入力する（おすすめ）</b><small>質問に答えていくだけで、あなたらしいプロフィールができます。最後に「第三者から見たあなた」をAISIがまとめます。</small></span></button>
   <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容は、AISIのマッチングに使い、「公開する」にした項目はお客さまに表示されることに同意します。公開したくない項目は、いつでも「公開する」を外したり、消したりできます。</label></div>
 
   <section><h2>顔写真</h2>
@@ -280,6 +309,15 @@ function renderStaff(){
     <div class="f"><b style="font-size:.86rem">得意な技術（いくつでも）</b>${chips("tech", OPT.tech, D["得意な技術"], true)}</div>
     <label class="f">お客さまへのひとこと<small>120字まで。診断結果に出ます</small><textarea id="line" maxlength="120">${esc(D["AISIのひとこと"])}</textarea></label>
     <label class="f">自分のホットペッパー予約ページのURL（任意）<input type="url" id="hpb" value="${esc(D["ホットペッパー予約URL"])}"></label>
+    <label class="f">ホットペッパーの「スタイリストページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見る普通のホットペッパービューティーのページです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
+  </section>
+
+  <section><h2>美容師としてのあなた<small>お客さまの「本音」とつなぐ</small></h2>
+    <p class="lead">お客さまがAISIに話した悩みや大事にしていることと、ここで選んだ内容が重なると、あなたが選ばれる理由として結果に表示されます。</p>
+    <div class="f"><b style="font-size:.86rem">お客さまのどんな悩みを解決するのが得意？（いくつでも）</b>${chips("worry", OPT.worry, D["得意な悩み"], true)}</div>
+    <div class="f"><b style="font-size:.86rem">お客さまに、いちばん喜ばれること（3つまでがおすすめ）</b>${chips("please", OPT.please, D["喜ばれること"], true)}</div>
+    <div class="f"><b style="font-size:.86rem">施術で、必ず大事にしていること（いくつでも）</b>${chips("value", OPT.value, D["大事にしていること"], true)}</div>
+    <div class="f"><b style="font-size:.86rem">ホームケアやサロンの商品について</b>${chips("homecare", OPT.homecare, D["ホームケア提案"], false)}</div>
   </section>
 
   <section><h2>接客のスタイル</h2>
@@ -312,6 +350,11 @@ function renderStaff(){
   </section>`;
   wire();
   wirePhotos("staff");
+  $("wzOpen").onclick = openWizard;
+  const hpbCheck = () => { const v = $("hpbStyle").value.trim(), m = $("hpbStyleMsg");
+    m.hidden = !v || (/^https:\/\/beauty\.hotpepper\.jp\//.test(v) && !/salonboard/i.test(v));
+    m.textContent = /salonboard/i.test(v) ? "サロンボードのURLは使えません。お客さまが見るホットペッパービューティーのページのURLを入れてください。" : "https://beauty.hotpepper.jp/ で始まるURLを入れてください。"; };
+  $("hpbStyle").oninput = () => { hpbCheck(); dirty(); }; hpbCheck();
   $("agree").onchange=dirty;
   document.querySelectorAll("[data-pub]").forEach(c=>c.onchange=dirty);
 }
@@ -322,10 +365,146 @@ function collectStaff(){
     "性別":$("sex").value, "年代":$("age").value, "出身":$("home").value, "出身（くわしく）":$("homeD").value,
     "推しのジャンル":$("oshiG").value, "推しの名前":$("oshi").value, "部活":$("club").value,
     "ペット":chipVal("pets"), "趣味":chipVal("hobby"), "休日の過ごし方":chipVal("holiday"), "好きな音楽":chipVal("music"),
+    "ホットペッパー スタイルURL":$("hpbStyle").value.trim(), "得意な悩み":chipVal("worry").join("、"), "喜ばれること":chipVal("please").join("、"), "大事にしていること":chipVal("value").join("、"), "ホームケア提案":chipVal("homecare")[0]||"",
     hidden: [...document.querySelectorAll("[data-pub]")].filter(c=>!c.checked).map(c=>c.dataset.pub)
   };
 }
 
+
+/* ---------------- AISIと話しながら入力する（スタッフ） ----------------
+ ・AISIが1つずつ聞いて、答えるたびに「つまり、こういう人だよね」と受け止める
+ ・答えは下のフォームにそのまま入る（最後に本人が確認して「保存する」）
+ ・最後に、第三者から見た紹介文（AISIのひとこと・120字まで）と「得意なこと」をAISIがまとめる */
+const WZ_IMG = ["img/aisi_think.webp","img/aisi_open.webp","img/aisi_pocket.webp","img/aisi_thumb.webp","img/aisi_peace.webp"];
+const pickOne = a => a[Math.floor(Math.random()*a.length)];
+const WZ = [
+  {key:"years", q:"まずは基本から。美容師になって、何年？", type:"one",
+   opts:[["1〜2年",2],["3〜5年",4],["6〜9年",7],["10〜14年",12],["15年以上",16]],
+   say:v => v>=10 ? "たくさんの髪を見てきた人だね。その経験、ちゃんと伝わるようにする。" : v>=6 ? "腕も感覚も、いちばん乗ってくる時期だね。" : "お客さんと一緒に成長していける人、ってことだね。"},
+  {key:"tech", q:"得意な技術を教えて。いくつでもいいよ。", type:"many", opts:()=>OPT.tech,
+   say:a => `${a.slice(0,2).join("と")}${a.length>2?"、ほかにも":""}が得意、と。技術で選ぶお客さんに、ちゃんと届けるね。`},
+  {key:"worry", q:"お客さんのどんな悩みを解決するのが得意？", type:"many", opts:()=>OPT.worry,
+   say:a => `「${a[0]}」で困ってる人が、あなたに会えたら安心するね。`},
+  {key:"please", q:"お客さんに、いちばん喜ばれるのはどんなところ？　3つまで選んで。", type:"many", max:3, opts:()=>OPT.please,
+   say:a => `つまり、「${a[0]}」で選ばれる美容師ってことだね。`},
+  {key:"value", q:"施術で、必ず大事にしていることは？", type:"many", opts:()=>OPT.value,
+   say:a => `「${a[0]}」。それ、お客さんが美容師に直接は言いにくいところなんだ。大事にしてる人だって伝えるね。`},
+  {key:"talk", q:"施術中の会話は、どんな感じが多い？", type:"one",
+   opts:[["ほとんど話さない",1],["聞かれたら話す",2],["お客さんに合わせる",3],["けっこう話す",4],["たくさん話す",5]],
+   say:v => v<=2 ? "静かに過ごしたいお客さんにとって、ありがたい人だね。" : v===3 ? "相手を見て合わせられる人。これ、できそうでできないんだ。" : "話していて楽しい人、ってことだね。"},
+  {key:"prop", q:"スタイルの決め方は、どっちに近い？", type:"one",
+   opts:[["お客さんの希望に寄り添う",1],["少しだけ提案する",2],["半分ずつ",3],["積極的に提案する",4],["どんどん提案する",5]],
+   say:v => v>=4 ? "迷っているお客さんの背中を押せる人だね。" : v<=2 ? "お客さんの「こうしたい」を、ちゃんと形にする人だね。" : "聞くことも、提案することもできる人だね。"},
+  {key:"homecare", q:"ホームケアやサロンの商品は、どうしてる？", type:"one", opts:()=>OPT.homecare.map(x=>[x,x]),
+   say:v => /しっかり/.test(v) ? "家でのケアまで面倒を見てくれる人。必要な理由が分かれば試したいお客さんと合いそうだ。" : /聞かれたら/.test(v) ? "押しつけない。でも聞けば教えてくれる。ちょうどいい距離感だね。" : "商品をすすめられるのが苦手なお客さんには、安心できる人だね。"},
+  {key:"home", q:"ここからは、あなた自身のこと。出身はどこ？", type:"one", opts:()=>OPT.home.map(x=>[x,x]), skip:true,
+   say:v => `${v}出身ね。同じ出身のお客さん、きっと話が弾むよ。`},
+  {key:"club", q:"学生時代、部活は何をしてた？", type:"one", opts:()=>OPT.club.map(x=>[x,x]), skip:true,
+   say:v => v==="帰宅部" ? "帰宅部仲間、意外と多いんだ。それも立派な共通点。" : `${v}か。同じ部活だった人とは、一気に距離が縮まるね。`},
+  {key:"hobby", q:"好きなことや趣味は？　いくつでも。", type:"many", opts:()=>OPT.hobby, skip:true,
+   say:a => `${a.slice(0,2).join("と")}。施術中の話題には困らなそうだ。`},
+  {key:"oshiG", q:"推しはいる？", type:"one", opts:()=>OPT.oshi.map(x=>[x,x]), skip:true,
+   say:v => v==="いない" ? "了解。推しがなくても、話題はほかにもたくさんあるよ。" : "推しが同じお客さんと出会えたら、それだけで特別な時間になるね。"},
+  {key:"hpbStyle", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタイリストページのURLを貼って。", type:"url", skip:true,
+   say:v => "ありがとう。マッチしたお客さんが、あなたのスタイルを見てから予約できるようにするね。"}
+];
+let wzI = 0, wzA = {};
+function wzLog(html, me){ const log = $("wzLog"); const d = document.createElement("div");
+  if (me){ d.className = "wz-me"; d.textContent = html; }
+  else { d.className = "wz-m"; d.innerHTML = `<img src="${pickOne(WZ_IMG)}" alt=""><p>${esc(html)}</p>`; }
+  log.appendChild(d); log.scrollTop = log.scrollHeight; }
+function openWizard(){
+  wzI = 0; wzA = {};
+  const el = document.createElement("div"); el.className = "wz"; el.id = "wz"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","AISIと話しながら入力する");
+  el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力</span><button type="button" id="wzClose">閉じる</button></div><div class="wz-log" id="wzLog"></div><div class="wz-a"><div class="wz-ain" id="wzAns"></div></div>`;
+  document.body.appendChild(el); document.body.style.overflow = "hidden";
+  $("wzClose").onclick = closeWizard;
+  wzLog(`${D.name}さん、はじめまして。AISIです。いくつか質問するから、気軽に答えて。答えたくないものは飛ばしていいよ。`);
+  setTimeout(wzAsk, 350);
+}
+function closeWizard(){ const el = $("wz"); if (el) el.remove(); document.body.style.overflow = ""; }
+function wzAsk(){
+  if (wzI >= WZ.length) return wzSummary();
+  const st = WZ[wzI];
+  wzLog(st.q);
+  const box = $("wzAns");
+  const skipBtn = `<button class="btn skip" type="button" id="wzSkip">${st.skip ? "答えずに次へ" : "あとで入れる"}</button>`;
+  if (st.type === "url"){
+    box.innerHTML = `<small style="color:#c9ced8">開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー（サロンボードではありません）</small>
+      <input type="url" id="wzUrl" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc($("hpbStyle").value)}">
+      <small id="wzUrlMsg" class="warnline" hidden></small>
+      <div class="row">${skipBtn}<button class="btn" type="button" id="wzGo">これで決定</button></div>`;
+    $("wzGo").onclick = () => { const v = $("wzUrl").value.trim(), m = $("wzUrlMsg");
+      if (!/^https:\/\/beauty\.hotpepper\.jp\//.test(v) || /salonboard/i.test(v)){ m.hidden = false; m.textContent = /salonboard/i.test(v) ? "サロンボードのURLは使えません。お客さまが見るページのURLを入れてね。" : "https://beauty.hotpepper.jp/ で始まるURLを入れてね。"; return; }
+      wzDone(st, v, "URLを入れました"); };
+  } else {
+    const opts = (typeof st.opts === "function" ? st.opts() : st.opts).map(o => Array.isArray(o) ? o : [o, o]);
+    box.innerHTML = `<div class="chips">${opts.map(([l,v],i)=>`<button type="button" class="chip" data-i="${i}">${esc(l)}</button>`).join("")}</div>
+      <div class="row">${skipBtn}${st.type==="many" ? `<button class="btn" type="button" id="wzGo">これで決定</button>` : ""}</div>`;
+    box.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+      if (st.type === "one"){ const [l,v] = opts[+b.dataset.i]; return wzDone(st, v, l); }
+      if (!b.classList.contains("on") && st.max && box.querySelectorAll(".chip.on").length >= st.max) return;
+      b.classList.toggle("on");
+    });
+    if (st.type === "many") $("wzGo").onclick = () => { const on = [...box.querySelectorAll(".chip.on")].map(b => opts[+b.dataset.i][1]); if (!on.length) return; wzDone(st, on, on.join("・")); };
+  }
+  $("wzSkip").onclick = () => { wzLog("あとで", true); box.innerHTML = ""; wzI++; setTimeout(wzAsk, 300); };
+}
+function wzDone(st, v, label){
+  wzA[st.key] = v; wzLog(label, true); $("wzAns").innerHTML = "";
+  setTimeout(() => { wzLog(st.say(v)); wzI++; setTimeout(wzAsk, 700); }, 350);
+}
+/* 第三者から見た紹介文（120字まで）。答えた内容だけで組み立てる */
+function wzBio(){
+  const A = wzA, parts = [];
+  const head = (A.years>=10 ? "経験豊富な" : A.years>=6 ? "腕の確かな" : A.years ? "お客さんと一緒に成長していく" : "") + "美容師。";
+  const sub = [];
+  if (A.worry) sub.push(`${A.worry[0]}の悩みが得意`);
+  if (A.please) sub.push(`「${A.please[0]}」で喜ばれている`);
+  parts.push(sub.length ? sub.join("で、") + "、" + head : head);
+  if (A.value) parts.push(`施術では「${A.value[0]}」を大事にしている。`);
+  if (A.talk) parts.push(A.talk<=2 ? "静かに過ごしたい人も安心。" : A.talk===3 ? "会話はお客さんに合わせてくれる。" : "話していて楽しい人。");
+  let out = "";
+  for (const p of parts){ if ((out + p).length > 120) break; out += p; }
+  return out;
+}
+function wzSummary(){
+  const bio = wzBio(), spec = (wzA.tech||[]).slice(0,2).join("・");
+  wzLog("ありがとう。聞いた話から、お客さんから見たあなたをまとめてみた。");
+  const log = $("wzLog"), d = document.createElement("div"); d.className = "wz-sum";
+  d.innerHTML = `<b>第三者から見た${esc(D.name)}さん</b><br>${esc(bio || "（答えが少なかったので、まとめられませんでした）")}${spec?`<br><small>得意なこと：${esc(spec)}</small>`:""}`;
+  log.appendChild(d); log.scrollTop = log.scrollHeight;
+  setTimeout(() => wzLog("こんな感じの人だよね。これで大丈夫？　あとから下のフォームで、いつでも直せるよ。"), 300);
+  $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzRedo">最初からやり直す</button><button class="btn" type="button" id="wzOk">これでOK</button></div>`;
+  $("wzRedo").onclick = () => { closeWizard(); openWizard(); };
+  $("wzOk").onclick = () => { wzApply(bio, spec); closeWizard();
+    const m = $("msg"); m.className = "msg ok"; m.textContent = "変更があります。AISIとの会話の内容を入れたので、確認して「保存する」を押してください。";
+    $("agree").scrollIntoView({behavior:"smooth", block:"center"}); };
+}
+/* 会話の答えを、フォームに入れる */
+function wzApply(bio, spec){
+  const A = wzA;
+  const setChips = (id, vals) => { const box = document.querySelector(`[data-chips="${id}"]`); if (!box || !vals) return;
+    box.querySelectorAll(".chip").forEach(b => { const on = vals.includes(b.dataset.v); b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); }); };
+  const setSeg = (id, v) => { const box = document.querySelector(`[data-seg="${id}"]`); if (!box || v == null) return;
+    box.querySelectorAll("button").forEach(b => b.classList.toggle("on", String(b.dataset.v) === String(v))); };
+  if (A.years) $("years").value = A.years;
+  if (A.tech) setChips("tech", A.tech);
+  if (A.worry) setChips("worry", A.worry);
+  if (A.please) setChips("please", A.please);
+  if (A.value) setChips("value", A.value);
+  if (A.homecare) setChips("homecare", [A.homecare]);
+  if (A.talk) setSeg("talk", A.talk);
+  if (A.prop) setSeg("prop", A.prop);
+  if (A.home) $("home").value = A.home;
+  if (A.club) $("club").value = A.club;
+  if (A.hobby) setChips("hobby", A.hobby);
+  if (A.oshiG) $("oshiG").value = A.oshiG;
+  if (A.hpbStyle){ $("hpbStyle").value = A.hpbStyle; }
+  if (bio) $("line").value = bio;
+  if (spec && !$("spec").value.trim()) $("spec").value = spec;
+  dirty();
+}
 /* ---------------- 写真 ---------------- */
 /* 送る前にスマホの中で小さくする（お店：長い辺1280px／顔：480pxの正方形） */
 function shrink(file, kind){
