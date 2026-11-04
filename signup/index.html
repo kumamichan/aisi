@@ -45,6 +45,10 @@ label.f small{font-weight:400;color:var(--ink-soft);font-size:.76rem}
 .req{color:var(--warn);font-size:.72rem;margin-left:6px;font-weight:700}
 input[type=text],input[type=email],input[type=tel],input[type=number],select{font:inherit;font-size:16px;width:100%;border:1px solid #cfc9bd;border-radius:6px;padding:10px 12px;background:#fff;color:var(--ink)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slot{margin:0;border-radius:10px;padding:10px 12px;font-size:.88rem;font-weight:700;background:#efe9dc;color:#5a4318}
+.slot.few,.slot.last{background:#fbeee4;color:#8a3a16}
+.slot.full{background:#f3e3e0;color:#9a2a1c}
+.slot small{display:block;font-weight:400;color:#5a6274;margin-top:2px}
 .row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .row4 label.f{font-size:.8rem}
 div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
@@ -74,6 +78,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
 .send{font-family:monospace;background:#eef0f3;border-radius:4px;padding:1px 6px;font-weight:700}
 @media (max-width:420px){.row2{grid-template-columns:1fr}.row4{grid-template-columns:1fr 1fr}.code{font-size:2.4rem}}
 </style>
+<script src="../js/bx.js"></script>
 </head>
 <body>
 <header><div class="hin">
@@ -97,9 +102,11 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
       <label class="f" for="name"><span>店名<span class="req">必須</span></span><input type="text" id="name" maxlength="40" autocomplete="organization" placeholder="例：Lumo 大通店"></label>
       <div class="row2">
         <label class="f" for="area">エリア<small>例：大通、円山</small><input type="text" id="area" maxlength="30"></label>
-        <label class="f" for="zone">エリア区分
-          <select id="zone"><option value="">選ばない</option><option value="center">大通・すすきの</option><option value="station">札幌駅周辺</option><option value="west">円山・西区・琴似</option><option value="south">豊平・平岸・南区</option><option value="east">白石・厚別・新札幌</option><option value="north">北区・東区</option></select></label>
+        <label class="f" for="zone"><span>エリア区分<span class="req">必須</span></span>
+          <select id="zone"><option value="">選んでください</option><option value="center">大通・すすきの</option><option value="station">札幌駅周辺</option><option value="west">円山・西区・琴似</option><option value="south">豊平・平岸・南区</option><option value="east">白石・厚別・新札幌</option><option value="north">北区・東区</option></select></label>
       </div>
+      <p class="slot" id="slot" hidden></p>
+      <label class="f" for="address"><span>お店の住所<span class="req">必須</span></span><small>番地・建物名まで入れてください。地図で場所を確認するために使います（公開はされません）</small><input type="text" id="address" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F"></label>
       <div class="f"><span>スタッフの人数</span>
         <div class="row4">
           <label class="f" for="sStylist">スタイリスト<input type="number" id="sStylist" min="0" max="99" inputmode="numeric" placeholder="0"></label>
@@ -169,7 +176,7 @@ const $ = id => document.getElementById(id);
 try { const q = new URLSearchParams(location.search); if (q.get("d")) $("dealer").value = q.get("d").slice(0, 60); } catch (e) {}
 
 const ERR = {
-  required: "店名・管理者のお名前・メールアドレスを入れてください。",
+  required: "店名・エリア区分・お店の住所・管理者のお名前・メールアドレスを入れてください。",
   mail: "メールアドレスの形が正しくないようです。",
   tel: "電話番号は市外局番から入れてください。",
   agree: "同意のチェックを入れてください。",
@@ -187,31 +194,53 @@ $("form").addEventListener("submit", async ev => {
   ev.preventDefault();
   $("err").hidden = true;
   const d = {
-    type: "signup", name: $("name").value.trim(), area: $("area").value.trim(), zone: $("zone").value,
+    type: "signup", name: $("name").value.trim(), area: $("area").value.trim(), zone: $("zone").value, address: $("address").value.trim(),
     staff: {stylist:+$("sStylist").value||0, assistant:+$("sAssist").value||0, spa:+$("sSpa").value||0, reception:+$("sRecep").value||0}, owner: $("owner").value.trim(), mail: $("mail").value.trim(), tel: $("tel").value.trim(),
     plan: (document.querySelector("input[name=plan]:checked") || {}).value || "", dealer: $("dealer").value.trim(),
     agree: $("agree").checked, hp: $("hp").value
   };
-  if (!d.name || !d.owner || !d.mail) return showErr("required");
+  if (!d.name || !d.zone || !d.address || !d.owner || !d.mail) return showErr("required");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.mail)) return showErr("mail");
   if (!d.agree) return showErr("agree");
   if (!GAS_URL) return showErr("net");
   const b = $("go"); b.disabled = true; b.textContent = "送信中…";
   try {
     const r = await (await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) })).json();
-    if (!r.ok) { showErr(r.error); b.textContent = "入力して、登録コードを受け取る"; syncGo(); return; }
+    if (!r.ok) { showErr(r.error); b.textContent = goLabel(); syncGo(); return; }
     showDone(r);
-  } catch (e) { showErr("net"); b.textContent = "入力して、登録コードを受け取る"; syncGo(); }
+  } catch (e) { showErr("net"); b.textContent = goLabel(); syncGo(); }
 });
 
 function showDone(r){
   $("form").hidden = true; $("done").hidden = false;
   $("title").textContent = r.again ? "すでにご入力いただいています" : "ご入力ありがとうございます";
   $("sub").textContent = r.again ? "同じ店名・メールアドレスで入力済みだったので、そのときの登録コードをお知らせします。" : "このあと、LINEで登録コードを送ると、お店情報の入力ページが届きます。";
+  if (!r.again && r.hold) $("sub").textContent = "近くに先に登録しているサロンがあるため、掲載の前に運営からご連絡いたします。お店の情報の入力は、先に進めていただいて大丈夫です。";
+  if (!r.again && r.wait) $("sub").textContent = "選ばれたエリアは掲載枠が満枠のため、キャンセル待ちでお受けしました。枠が空き次第、運営からご連絡いたします。登録コードで、お店の情報の入力は先に進められます。";
   $("code").textContent = r.code; $("send").textContent = "登録 " + r.code;
   $("lineBtn").href = r.line || ("https://line.me/R/ti/p/" + SALON_LINE_ID);
   window.scrollTo(0, 0);
 }
+/* エリア区分ごとの掲載枠（残り21軒以上「掲載受付中」／20〜6軒「残りわずか」／5軒以下「あと◯軒」／満枠「キャンセル待ち」） */
+let SLOTS = {};
+function goLabel(){ const z = SLOTS[$("zone").value]; return z && z.state === "full" ? "キャンセル待ちで申し込む" : "入力して、登録コードを受け取る"; }
+function showSlot(){
+  const z = SLOTS[$("zone").value], el = $("slot");
+  if (!z) { el.hidden = true; $("go").textContent = goLabel(); return; }
+  el.hidden = false; el.className = "slot " + z.state;
+  el.innerHTML = z.name + "の掲載枠：" + z.text + (z.state === "full" ? "<small>いまは満枠です。キャンセル待ちで申し込むと、枠が空き次第ご連絡します。</small>" : z.state === "open" ? "" : "<small>エリアごとに掲載できる店舗数に上限があります。</small>");
+  $("go").textContent = goLabel();
+}
+(async () => {
+  if (!GAS_URL) return;
+  try {
+    const r = await (await fetch(GAS_URL + "?action=slots")).json();
+    if (!r.ok) return;
+    r.zones.forEach(z => { SLOTS[z.zone] = z; const o = document.querySelector('#zone option[value="' + z.zone + '"]'); if (o && z.state !== "open") o.textContent = z.name + "（" + z.text.replace(/（.*）/, "") + "）"; });
+    showSlot();
+  } catch (e) {}
+})();
+$("zone").addEventListener("change", showSlot);
 $("copy").addEventListener("click", async () => {
   const t = $("code").textContent;
   try { await navigator.clipboard.writeText(t); $("copy").textContent = "コピーしました"; }

@@ -70,6 +70,7 @@ section{padding:clamp(64px,9vw,120px) 0}
 .hero{background:radial-gradient(circle at 78% 40%,#2a3550 0%,var(--night) 62%);color:var(--paper);padding:clamp(56px,8vw,96px) 0;overflow:hidden}
 .hero .cols{grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr)}
 .hero .en{font-size:.82rem;letter-spacing:.3em;color:var(--gold);font-weight:700;margin:0}
+@media (max-width:520px){.hero .en{font-size:.72rem;letter-spacing:.14em}}
 .hero h1{word-break:keep-all;font-family:var(--display);font-size:clamp(1.8rem,4.6vw,3.2rem);line-height:1.35;margin:14px 0 6px}
 .hero .logo{font-family:var(--display);font-size:clamp(4rem,13vw,8.5rem);font-weight:800;letter-spacing:.22em;color:var(--gold);line-height:1;margin:0}
 .hero hr{border:0;border-top:2px solid var(--gold);width:min(420px,80%);margin:26px 0}
@@ -193,6 +194,7 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
 @media (max-width:760px){.tr-in{grid-template-columns:1fr}.tr-phone{display:none}.tr-steps{grid-template-columns:1fr}.tr-go{grid-template-columns:1fr}.tr-go img{display:none}.tr-fab span{display:none}.tr-fab{padding:10px}.tr-pc{display:none}.tr-top b{font-size:1.08rem}.tr-top{padding-right:56px}}
 @media (prefers-reduced-motion:reduce){.tr-fab i::after{animation:none}}
 </style>
+<script src="../js/bx.js"></script>
 </head>
 <body>
 
@@ -200,6 +202,7 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
 <header class="hero">
   <div class="wrap cols">
     <div>
+<p style="display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 14px;border-radius:999px;border:1px solid rgba(217,183,122,.7);background:rgba(217,183,122,.14);color:#f3e6c8;font-size:.85rem;font-weight:700;letter-spacing:.04em"><span style="background:#d9b77a;color:#241b0c;border-radius:999px;padding:1px 9px;font-size:.75rem;white-space:nowrap;flex:none">LAUNCH</span>2027年2月15日（月）サービス開始</p>
       <p class="en">BEAUTY SALON CONNECT SERVICE</p>
       <h1>美容室向け<br>マッチング<wbr>コネクトサービス</h1>
       <p class="logo">AISI</p>
@@ -219,7 +222,7 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
     <div>
       <p class="tr-k">TRY THE APP</p>
       <h2 class="tr-h">まずは、<em>お客様と同じ画面</em>で<br>触ってみてください。</h2>
-      <p class="tr-p">美容室マッチングアプリ「AISI」は、すでに実際に動いています。質問に答えて、3つのお店と担当スタイリストが表示されるまでを、スマホでもパソコンでもすぐに体験できます。</p>
+      <p class="tr-p">美容室マッチングアプリ「AISI」は、いま<b style="color:#e2b866">デモ体験版</b>として実際に動いています（本サービスは2027年2月15日（月）開始）。質問に答えて、3つのお店と担当スタイリストが表示されるまでを、スマホでもパソコンでもすぐに体験できます。</p>
       <div class="tr-btns"><button type="button" class="tr-btn" data-try><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>美容室マッチングアプリはこちら</button></div>
     </div>
     <button type="button" class="tr-phone" data-try aria-label="アプリの体験を開く"><img src="../img/intro_result.webp" alt="アプリの診断結果の画面"><span>タップして体験</span></button>
@@ -350,7 +353,7 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
   <div class="wrap rv">
     <p class="eyebrow">02　分析レポートプラン</p>
     <h2 class="hl"><span class="b">月1回の<wbr>分析レポート</span><span class="s">は、こんな形で届きます。</span></h2>
-    <img src="../img/intro_report.webp" alt="月次分析レポートの例：表示回数・閲覧・予約・確定・来店の数字、ファネル、選ばれた理由、満足度★4.7、また行きたい94%、改善提案" style="margin-top:34px;width:100%;filter:drop-shadow(0 18px 34px rgba(0,0,0,.16))">
+    <a href="../img/intro_report.webp" target="_blank" rel="noopener" style="display:block"><img src="../img/intro_report.webp" alt="月次分析レポートの例：表示回数・閲覧・予約・確定・来店の数字、ファネル、選ばれた理由、満足度★4.7、また行きたい94%、改善提案" style="margin-top:34px;width:100%;filter:drop-shadow(0 18px 34px rgba(0,0,0,.16))"></a><p style="text-align:center;font-size:.8rem;color:#6a7080;margin:8px 0 0">タップで拡大して見られます</p>
     <p class="cap">数値はサンプルです</p>
     <div class="grid4">
       <div class="card"><h3>どこで止まったか</h3><p>表示から来店までを数字で</p></div>
@@ -405,7 +408,7 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
       <p class="eyebrow">04　今後の展開</p>
       <h2 class="hl"><span class="b">札幌から<wbr>全国へ。</span><span class="s">使うほど、つながりの精度が高まります。</span></h2>
       <div class="road">
-        <div><span class="k">STEP1</span><p style="margin:0"><b>札幌でサービス開始</b>　掲載サロンとお客様の利用データを蓄積</p></div>
+        <div><span class="k">STEP1</span><p style="margin:0"><b>2027年2月15日（月）札幌でサービス開始</b>　掲載サロンとお客様の利用データを蓄積</p></div>
         <div><span class="k">STEP2</span><p style="margin:0"><b>代理店さまと各都道府県へ展開</b>　地域ごとの窓口を開設</p></div>
         <div><span class="k">STEP3</span><p style="margin:0"><b>データで集客を改善</b>　マッチング精度の向上、地区・メニュー別のお知らせ配信</p></div>
       </div>

@@ -51,7 +51,7 @@ h2 em{font-style:normal;color:var(--accent)}
 .card.ink p{color:var(--mist)}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:34px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:38px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:700;text-decoration:none;border-radius:999px;padding:16px 30px;font-size:1.05rem;transition:transform .2s,box-shadow .2s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:700;text-decoration:none;white-space:nowrap;border-radius:999px;padding:16px 30px;font-size:1.05rem;transition:transform .2s,box-shadow .2s}
 .btn.main{background:var(--gold);color:#241b0c;box-shadow:0 10px 24px rgba(207,169,104,.35)}
 .btn.line{background:var(--green);color:#fff}
 .btn.ghost{border:1.5px solid var(--gold);color:inherit;padding:14px 24px;font-size:.95rem}
@@ -147,6 +147,7 @@ footer a{color:var(--mist)}
   .safe-main{flex-direction:column;align-items:flex-start}
 }
 </style>
+<script src="../js/bx.js"></script>
 </head>
 <body>
 
@@ -154,12 +155,14 @@ footer a{color:var(--mist)}
 <header class="hero">
   <div class="wrap cols">
     <div>
+<p style="display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 14px;border-radius:999px;border:1px solid rgba(217,183,122,.7);background:rgba(217,183,122,.14);color:#f3e6c8;font-size:.85rem;font-weight:700;letter-spacing:.04em"><span style="background:#d9b77a;color:#241b0c;border-radius:999px;padding:1px 9px;font-size:.75rem;white-space:nowrap;flex:none">LAUNCH</span>2027年2月15日（月）サービス開始</p>
       <p class="tag">AISI ｜ 札幌の美容室さがし</p>
       <h1><span class="q1">自分にぴったりの</span><span class="q2">美容室、<wbr>スタイリスト。</span><span class="q3">見つかっていますか？</span></h1>
       <p class="sub"><b>AISIの質問に答えるだけ。</b><br>あなたにぴったりの美容室と、担当のスタイリストへ導きます。</p>
       <div class="pills"><span>無料</span><span>会員登録なし</span><span>LINE予約で500円引き</span></div>
+      <p style="margin:14px 0 0;color:#e5e1d8;font-size:.92rem">いまは<b style="color:var(--gold-hi)">デモ体験版</b>を公開中。2月15日の本サービス開始まで、何回でも診断を試してみてください。</p>
       <div class="cta">
-        <a class="btn main" href="../">AISIに聞いてみる（無料）</a>
+        <a class="btn main" href="../">AISIを体験してみる（無料）</a>
         <a class="btn ghost" href="#how">どんなサービス？</a>
       </div>
     </div>
@@ -266,8 +269,8 @@ footer a{color:var(--mist)}
         <p style="font-family:var(--display);font-size:clamp(1.3rem,3vw,1.8rem);color:var(--paper);font-weight:700">施術料金から</p>
         <p class="big">500<small>円引き</small></p>
         <p>AISIのLINEから予約すると、どのお店でも施術料金から500円引きになります。お会計のときに、診断コードを伝えるだけ。<br><b style="color:var(--paper)">まずは気軽に、AISIに話しかけてみてください。</b></p>
-        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn main" href="../">AISIに聞いてみる（無料）</a></div>
-        <p style="font-size:.78rem;margin-top:12px">※LINEからのご予約が対象です（メールでのご予約は対象外）。</p>
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn main" href="../">AISIを体験してみる（無料）</a></div>
+        <p style="font-size:.78rem;margin-top:12px">※LINEからのご予約が対象です（メールでのご予約は対象外）。予約の受付は、2027年2月15日（月）から始まります。</p>
       </div>
       <img src="../img/aisi_thumb.webp" alt="親指を立てるAISI">
     </div>
@@ -280,12 +283,14 @@ footer a{color:var(--mist)}
     <p class="eyebrow">よくある質問</p>
     <h2>気になること、<em>先にお答えします。</em></h2>
     <div class="faq">
+      <details><summary>いつから使えますか？</summary><p>本サービスは2027年2月15日（月）に始まります。いまはデモ体験版を公開中で、診断は何回でも無料で試せます。お店の予約は、2月15日から受け付けます。</p></details>
       <details><summary>料金はかかりますか？</summary><p>AISIは無料でお使いいただけます。お支払いは、ご来店したお店での施術料金だけです（LINE予約なら500円引き）。</p></details>
       <details><summary>会員登録は必要ですか？</summary><p>必要ありません。診断はそのまま始められます。予約するときだけ、AISIのLINEを友だち追加してください。</p></details>
       <details><summary>診断したら、必ず予約しないといけませんか？</summary><p>いいえ。診断だけでも大丈夫です。予約しない限り、お店にあなたのことが伝わることはありません。</p></details>
       <details><summary>希望の日時で予約できないことはありますか？</summary><p>AISIはホットペッパービューティーなどの予約システムとは連動していないため、ご希望の日時が埋まっていることがあります。その場合はお店から別の日時の提案が届くので、見てから決められます。</p></details>
       <details><summary>LINEを使っていなくても予約できますか？</summary><p>メールでも予約のリクエストができます。ただし、500円引きの特典はLINEからのご予約が対象です。</p></details>
-      <details><summary>予約の変更やキャンセルは？</summary><p>予約が確定したあとの変更・キャンセルは、お店に直接ご連絡ください。</p></details>
+      <details><summary>予約の変更やキャンセルは？</summary><p>LINEで予約した方は、AISIのLINEのメニュー「予約の確認」から、日時の変更やキャンセルができます。日時を変更するときは、新しい日時が決まるまで今の予約はそのまま残ります。メールで予約した方は、お店に直接ご連絡ください。</p></details>
+      <details><summary>なりたい髪型の画像を見せられますか？</summary><p>はい。予約のあと、AISIのLINEに画像を送るだけで、担当の方に届きます（1つの予約に3枚まで、スクショでもOK）。画像は予約が確定したときにお店に届きます。メールで予約する場合は、フォームから添付できます。</p></details>
       <details><summary>どこのエリアで使えますか？</summary><p>現在は札幌市内の美容室をご紹介しています。対応エリアは順次広げていきます。</p></details>
     </div>
   </div>
@@ -299,7 +304,7 @@ footer a{color:var(--mist)}
     <div class="pv">
       <div class="card"><h3>お預かりする情報</h3><ul><li>診断の回答（やりたいメニュー、エリア・日時、髪の悩みや好み、相性の質問への回答など）</li><li>予約するときのお名前・電話番号（メール予約の場合はメールアドレス）、LINEの表示名</li><li>来店後アンケートの回答（満足度、また行きたいか、ひとこと）</li></ul></div>
       <div class="card"><h3>使い道</h3><ul><li>合う美容室と担当者をおすすめするため</li><li>予約をお店に取り次ぎ、確定・前日のお知らせなどを連絡するため</li><li>アンケートの結果を、お店のサービス向上とおすすめの精度向上に使うため（個人を特定しない形）</li></ul></div>
-      <div class="card"><h3>お店に伝える情報とタイミング</h3><ul><li>予約リクエストの時点：希望の日時・メニュー・担当者・ご要望</li><li>予約が確定したあと：お名前・電話番号（メール予約の場合はメールアドレス）</li><li>上記以外に、ご本人の同意なく第三者へ提供することはありません</li></ul></div>
+      <div class="card"><h3>お店に伝える情報とタイミング</h3><ul><li>予約リクエストの時点：希望の日時・メニュー・担当者・ご要望</li><li>予約が確定したあと：お名前・電話番号（メール予約の場合はメールアドレス）、送っていただいたイメージ画像、診断で答えた好みや担当との共通点（カウンセリングの参考に）</li><li>上記以外に、ご本人の同意なく第三者へ提供することはありません</li></ul></div>
       <div class="card"><h3>保存と削除</h3><ul><li>お名前・電話番号などは、一定期間（12か月）を過ぎると自動で削除します</li><li>AISIのLINEに「削除」と送ると、いつでもご自身の連絡先を削除できます（進行中の予約を除きます）</li><li>アクセス解析や広告のためのクッキーは使っていません</li></ul></div>
     </div>
     <p style="margin-top:20px"><a class="btn ghost" href="../privacy/">プライバシーポリシー（全文）を見る</a></p>
@@ -313,7 +318,7 @@ footer a{color:var(--mist)}
     <h2>次の美容室は、<br><em>AISIに聞いてから。</em></h2>
     <p class="lead" style="margin:16px auto 0">質問に答えるだけで、あなたにぴったりの美容室とスタイリストへ。<br>LINE予約なら施術料金から500円引きです。</p>
     <div class="cta">
-      <a class="btn main" href="../">AISIに聞いてみる（無料）</a>
+      <a class="btn main" href="../">AISIを体験してみる（無料）</a>
       <a class="btn line" href="https://line.me/R/ti/p/@933trlwv" target="_blank" rel="noopener">AISIのLINEを友だち追加</a>
     </div>
   </div>
@@ -321,7 +326,7 @@ footer a{color:var(--mist)}
 
 <footer><div class="wrap"><span>AISI ｜ 札幌の美容室マッチングサービス</span><span><a href="../privacy/">プライバシーポリシー</a></span></div></footer>
 
-<div class="sticky" id="sticky"><a class="btn main" href="../">AISIに聞いてみる（無料）</a></div>
+<div class="sticky" id="sticky"><a class="btn main" href="../">AISIを体験してみる（無料）</a></div>
 
 <script>
 /* スクロールで各章をふわっと表示 ／ スマホは途中から下にボタンを固定 */

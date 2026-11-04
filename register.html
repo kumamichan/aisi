@@ -83,6 +83,7 @@ textarea{min-height:84px;resize:vertical}
 .center{padding:60px 16px;text-align:center;color:var(--ink-soft)}
 @media (max-width:560px){.row2{grid-template-columns:1fr}.feat{grid-template-columns:1fr;gap:4px}}
 </style>
+<script src="js/bx.js"></script>
 </head>
 <body>
 <header>
@@ -169,9 +170,9 @@ function renderSalon(){
   const m = D.menus;
   $("app").innerHTML = `
   <section><h2>お店の写真<small>3枚まで</small></h2>
-    <p class="lead">店内や外観の写真。1枚目が診断結果のいちばん上に大きく出ます。人の顔が写っていない写真にしてください。</p>
+    <p class="lead">1枚目は<b>お店の外観</b>、2・3枚目は<b>店内</b>の写真がおすすめです。診断結果のいちばん上に、1枚目が大きく、2・3枚目が横に並んで出ます。人の顔が写っていない写真にしてください。</p>
     <div class="photos">${[0,1,2].map(i=>`<div class="ph-slot">
-      <div class="ph-box" id="ph${i}">${D.photos&&D.photos[i]?`<img src="${esc(D.photos[i])}" alt="お店の写真${i+1}">`:`<span>${i===0?"1枚目（メイン）":(i+1)+"枚目"}</span>`}</div>
+      <div class="ph-box" id="ph${i}">${D.photos&&D.photos[i]?`<img src="${esc(D.photos[i])}" alt="お店の写真${i+1}">`:`<span>${i===0?"1枚目（外観）":(i+1)+"枚目（店内）"}</span>`}</div>
       <label class="btn sub" for="phIn${i}">${D.photos&&D.photos[i]?"入れ替える":"写真を選ぶ"}</label><input type="file" id="phIn${i}" accept="image/*" hidden data-slot="${i+1}">
       ${D.photos&&D.photos[i]?`<button class="btn sub" type="button" data-del="${i+1}">削除</button>`:""}
     </div>`).join("")}</div>
