@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AISI 札幌サロン診断</title>
-<meta name="description" content="AISIがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
-<meta property="og:title" content="AISI 札幌サロン診断">
+<title>ピタリスト 札幌サロン診断</title>
+<meta name="description" content="ピタリストがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
+<meta property="og:title" content="ピタリスト 札幌サロン診断">
 <meta property="og:description" content="質問に答えるだけ。AISIが札幌であなたに合う美容室と担当者を見つけます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kumamichan.github.io/aisi/">
@@ -57,7 +57,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
   max-width:1180px;margin:0 auto;
 }
 .logo{display:flex;align-items:baseline;gap:10px;background:none;border:0;color:var(--paper);padding:0}
-.logo b{font-family:var(--font-voice);font-size:1.7rem;letter-spacing:.32em;font-weight:700}
+.logo b{font-family:var(--font-voice);font-size:1.6rem;letter-spacing:.12em;font-weight:700}
 .logo span{font-size:.72rem;letter-spacing:.18em;color:var(--accent);border:1px solid var(--accent);padding:1px 8px;border-radius:3px}
 .top-r{display:flex;gap:8px}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--silver);border-radius:999px;padding:5px 14px;font-size:.78rem}
@@ -341,9 +341,9 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 </head>
 <body>
 <header class="top">
-  <button class="logo" id="home" type="button" aria-label="トップへ"><b>AISI</b><span>SAPPORO</span></button>
+  <button class="logo" id="home" type="button" aria-label="トップへ"><b>ピタリスト</b><span>SAPPORO</span></button>
 </header>
-<div class="demobar" id="demobar" hidden><b>デモ体験版</b>2027年2月15日（月）本サービス開始！それまで、たくさん体験してみてください。</div>
+<div class="demobar" id="demobar" hidden></div>
 
 <main id="app"></main>
 <footer class="sitefoot"><a href="privacy/">プライバシーポリシー</a></footer>
@@ -352,7 +352,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
   <div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <!-- コード表示 -->
     <div id="vCode" class="mview">
-      <b id="mTitle" class="mt">あなたのAISI診断コード</b>
+      <b id="mTitle" class="mt">あなたのピタリスト診断コード</b>
       <div class="code" id="mCode">AISI-0000</div>
       <div class="perkbox" id="mPerk" hidden></div>
       <p id="mText"></p>
@@ -361,7 +361,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
       <button class="btn more" id="mReq" type="button">メールで予約する</button>
       <a class="btn more linkbtn" id="mLink" href="#" target="_blank" rel="noopener">ホットペッパーで予約する（要望欄にコードを入力）</a>
-      <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、AISIからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
+      <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、ピタリストからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
       <div class="row">
         <button class="btn more" id="mCopy" type="button">コードをコピー</button>
         <button class="btn more" data-close type="button">閉じる</button>
@@ -415,18 +415,20 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
    GAS_URL：GASを「ウェブアプリ」としてデプロイしたときのURL（https://script.google.com/macros/s/……/exec）
             空のままだと、サンプルの店舗データで動き、記録は送りません。
    PHOTO  ：写真の切り札を使うか（true / false）
-   LINE_ID：AISI公式LINEのID（@から始まる）
+   LINE_ID：ピタリスト公式LINEのID（@から始まる）
    ===================================================================== */
 const CONFIG = {
   GAS_URL: "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec",
   PHOTO: true,
-  LINE_ID: "@933trlwv",  /* AISI公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
-  PERK: "施術料金から500円引き",   /* AISIのLINEで予約したときの特典（サンプル表示用。本番は設定シートの値が使われます） */
-  LAUNCH: "2027-02-15"   /* 本サービスの開始日。この日までは「デモ体験版」で、予約ボタンは押せません（URLに ?test=1 を付けると予約も試せます） */
+  LINE_ID: "@933trlwv",  /* ピタリスト公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
+  PERK: "施術料金から500円引き",   /* ピタリストのLINEで予約したときの特典（サンプル表示用。本番は設定シートの値が使われます） */
+  BOOK_START: "2026-11-19",   /* お店の掲載と予約の受付開始日。この日までは「デモ体験版」で、予約ボタンは押せません（URLに ?test=1 を付けると予約も試せます） */
+  LAUNCH: "2027-02-15"        /* 本番スタート日。この日までは、札幌市中央区のお店だけ */
 };
 /* デモ体験の期間か（開始日の0時まで） */
-const DEMO = (() => { try { return new Date() < new Date(CONFIG.LAUNCH + "T00:00:00+09:00") && !/[?&]test=1/.test(location.search); } catch (e) { return false; } })();
-const LAUNCH_TEXT = "2027年2月15日（月）";
+const DEMO = (() => { try { return new Date() < new Date(CONFIG.BOOK_START + "T00:00:00+09:00") && !/[?&]test=1/.test(location.search); } catch (e) { return false; } })();
+const PRE = (() => { try { return new Date() < new Date(CONFIG.LAUNCH + "T00:00:00+09:00"); } catch (e) { return false; } })();   /* 本番前（中央区だけ） */
+const LAUNCH_TEXT = "2027年2月15日（月）", BOOK_TEXT = "11月19日（木）";
 
 /* ============ AISI 画像 ============ */
 const POSES = {
@@ -520,7 +522,7 @@ const SLOTS = [["am","午前（〜12時）",9,12],["noon","昼（12〜15時）",
 const WHENS = [["soon","今日・明日"],["week","今週中"],["next","来週くらい"],["someday","日にちは決まってない"]];
 function whenLabel(k){ return (WHENS.find(x=>x[0]===k)||[,""])[1]; }
 function ymdLocal(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-/* お店が「AISI サロン窓口」で登録した空き日（今週・来週） */
+/* お店が「ピタリスト サロン窓口」で登録した空き日（今週・来週） */
 function mdLabel(ymd){ const d=new Date(ymd+"T12:00"); return (d.getMonth()+1)+"/"+d.getDate()+"("+DAYS[d.getDay()]+")"; }
 function availMatch(s){
   const a=(s.avail||[]).filter(d=>d>=ymdLocal(new Date())); if (!a.length || !COND) return "";
@@ -873,7 +875,9 @@ function send(type, data){
 }
 
 /* デモ体験の期間は、上に案内を出す */
-if (DEMO) { const db = document.getElementById("demobar"); if (db) db.hidden = false; }
+if (DEMO || PRE) { const db = document.getElementById("demobar"); if (db){ db.hidden = false;
+  db.innerHTML = DEMO ? `<b>デモ体験版</b>${BOOK_TEXT}から、札幌市中央区のお店の掲載と予約がスタート。それまで、たくさん体験してみてください。`
+                      : `<b>先行スタート中</b>いまは札幌市中央区のお店だけ。${LAUNCH_TEXT}から札幌全域へ広がります。`; } }
 /* ============ 状態と描画 ============ */
 const $app = document.getElementById("app");
 let view="theme", S=null;
@@ -957,7 +961,8 @@ function renderTheme(){
         ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
       </div>
       <p class="note">質問は最大25問。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
-      ${DEMO?`<p class="warnbox" style="margin-top:4px">いまは<b>デモ体験版</b>です。本サービスは${LAUNCH_TEXT}にスタート。診断は何回でも試せるので、たくさん体験してみてください（予約は開始日から受け付けます）。</p>`:""}
+      ${DEMO?`<p class="warnbox" style="margin-top:4px">いまは<b>デモ体験版</b>です（サンプルのお店）。${BOOK_TEXT}から、札幌市中央区のお店の掲載と予約がスタートします。診断は何回でも試せるので、たくさん体験してみてください。</p>`
+        : PRE?`<p class="warnbox" style="margin-top:4px">いまは<b>札幌市中央区のお店</b>から先行スタート中です。${LAUNCH_TEXT}から札幌全域のお店に広がります。</p>`:""}
     </div>
   </section>`;
   $app.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>renderCond(b.dataset.theme));
@@ -981,8 +986,9 @@ const INTRO = [
     say:v=>({lifelong:"いいね。じゃあ、腕だけじゃなくて「人」も見て選ぶよ。", casual:"了解。通いやすさと気軽さ、ちゃんと見ておく。", explore:"たまの冒険、いいじゃん。いつもと違う良さがある店を探そう。", model:"なるほど。モデルの募集があるかは、予約のときにお店が確かめてくれるよ。"})[v] },
   { key:"menus", kind:"many", pose:"think", q:"今回、やりたいメニューは？", sub:"いくつでも。そのメニューが一押しのお店から探すよ", opts:()=>MENU_CATS.map(c=>[c[0],c[1]]), none:"まだ決めてない", required:true },
   { key:"when", kind:"one", pose:"pocket", q:"いつ頃行きたい？", opts:()=>WHENS,
-    say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。本サービスが始まったら、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はAISIのLINEに保存して、あとから予約できるよ。") : "" },
-  { key:"zones", kind:"many", pose:"open", q:"行けるエリアは？", sub:"いくつでも。選ばなければ札幌市内どこでも", opts:()=>ZONES, none:"どこでもOK" },
+    say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。11月19日からは、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はピタリストのLINEに保存して、あとから予約できるよ。") : "" },
+  { key:"zones", kind:"many", pose:"open", q:"行けるエリアは？", sub:PRE ? "いくつでも。2月15日までは、札幌市中央区のお店だけを紹介しています" : "いくつでも。選ばなければ札幌市内どこでも",
+    opts:()=>PRE ? ZONES.filter(z=>["center","station","west"].includes(z[0])) : ZONES, none:"どこでもOK" },
   { key:"days", kind:"many", pose:"think", q:"行ける曜日は？", sub:"いくつでも。日付が決まっていれば、日付でもいいよ", opts:()=>DAYS.map((l,i)=>[String(i), l+"曜"]), none:"いつでもOK", date:true },
   { key:"slots", kind:"many", pose:"peace", q:"時間帯は？", sub:"いくつでも", opts:()=>SLOTS.map(x=>[x[0],x[1]]), none:"いつでもOK" },
   { key:"age", kind:"one", pose:"thumb", q:"最後に、君の年代は？\n年の近い担当を探すときに使うよ。", opts:()=>AGES.map(a=>[a,a]), none:"答えない" }
@@ -1731,7 +1737,7 @@ function renderResult(){
         </div>
         ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。</p>` : ""}
         ${(()=>{ const ms=(S.cond.menus||[]); if(!ms.length) return ""; const k=r.filter(x=>!menuMatch(x.salon,ms).missing.length).length;
-          return k<r.length ? `<p class="note">「${esc(ms.map(catLabel).join("・"))}」が一押しメニューにあるお店は、いまAISIで${k}軒。残りは、それ以外で近いお店だよ。</p>` : ""; })()}
+          return k<r.length ? `<p class="note">「${esc(ms.map(catLabel).join("・"))}」が一押しメニューにあるお店は、いまピタリストで${k}軒。残りは、それ以外で近いお店だよ。</p>` : ""; })()}
         ${!reached ? `<div class="warnbox">マッチ率85%に届きませんでした。${bn?`ネックになった条件：<b>${esc(bn.label)}</b>。`:""}条件を少しゆるめると、選択肢が広がります。</div>`:""}
       </div>
     </div>
@@ -1790,7 +1796,7 @@ function cardHTML(x,i){
       <div class="area">受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</div>
       ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
       ${s.rating && s.rating.n >= 3 ? `<div class="rate">★${s.rating.avg.toFixed(1)}<small>（来店したお客さま ${s.rating.n}人${s.rating.again!=null?` ・ また行きたい ${s.rating.again}%`:""}）</small></div>`:""}
-      ${s.perk ? `<div class="perk">AISIのLINEで予約すると：${esc(s.perk)}</div>`:""}
+      ${s.perk ? `<div class="perk">ピタリストのLINEで予約すると：${esc(s.perk)}</div>`:""}
       ${x.issues && x.issues.length ? `<div class="offcond">選んだ条件と合わない点：${x.issues.join("・")}</div>`:""}
     </div>
     <div class="card-b">
@@ -1820,7 +1826,7 @@ function cardHTML(x,i){
       </div>
     </div>
     <div class="card-f">
-      ${DEMO ? `<button class="btn book" type="button" disabled title="予約は本サービス開始から">予約は${LAUNCH_TEXT.replace(/^2027年/,"")}から</button>` : `<button class="btn book" type="button" data-book="${esc(s.id)}">${esc(st.name)}さんで予約する</button>`}
+      ${DEMO ? `<button class="btn book" type="button" disabled title="予約は掲載スタートから">予約は${BOOK_TEXT}から</button>` : `<button class="btn book" type="button" data-book="${esc(s.id)}">${esc(st.name)}さんで予約する</button>`}
       ${(st.hpbUrl||s.bookUrl) ? `<a class="btn more linkbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(st.hpbUrl||s.bookUrl)}" target="_blank" rel="noopener">空き状況をホットペッパーで見る</a>`:""}
       <button class="btn more" type="button" data-more="${esc(s.id)}">お店の詳細を見る</button>
     </div>

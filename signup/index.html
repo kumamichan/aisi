@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>AISI お店の情報入力</title>
-<meta name="description" content="AISIに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
-<meta property="og:title" content="AISI 美容室コネクトサービス｜サロン情報の入力">
-<meta property="og:description" content="AISIに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
+<title>ピタリスト お店の情報入力</title>
+<meta name="description" content="ピタリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
+<meta property="og:title" content="ピタリスト 美容室コネクトサービス｜サロン情報の入力">
+<meta property="og:description" content="ピタリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kumamichan.github.io/aisi/signup/">
 <meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
@@ -29,7 +29,7 @@
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);line-height:1.75;font-size:15px}
 header{background:var(--night);color:var(--paper);padding:22px max(16px,env(safe-area-inset-left,0px)) 24px}
 .hin{max-width:640px;margin:0 auto;display:grid;gap:8px}
-.logo{font-family:var(--font-voice);letter-spacing:.32em;font-size:1.3rem}
+.logo{font-family:var(--font-voice);letter-spacing:.1em;font-size:1.3rem}
 .logo small{font-family:var(--font-ui);letter-spacing:.1em;font-size:.72rem;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 6px;margin-left:8px;vertical-align:3px}
 h1{margin:0;font-family:var(--font-voice);font-size:1.45rem;line-height:1.5}
 .sub{margin:0;color:#c9ced8;font-size:.88rem}
@@ -56,6 +56,10 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
 .plan{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;border:1px solid #cfc9bd;border-radius:8px;padding:10px 12px;background:#fff;cursor:pointer}
 .plan:has(input:checked){border-color:var(--accent);background:#fbf4e6}
 .plan b{display:block;font-size:.9rem}
+.campbox{display:grid;gap:4px;border:2px solid var(--accent);background:#fbf4e6;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.campbox b{font-size:.95rem}
+.campbox b span{margin-left:8px;font-size:.8rem;color:#9a5a24}
+.campbox span{font-size:.82rem;line-height:1.7}
 .plan span{font-size:.78rem;color:var(--ink-soft)}
 .agree{display:flex;gap:8px;align-items:flex-start;font-size:.86rem}
 .agree input{margin-top:5px}
@@ -82,7 +86,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
 </head>
 <body>
 <header><div class="hin">
-  <div class="logo">AISI<small>お店の情報入力</small></div>
+  <div class="logo">ピタリスト<small>お店の情報入力</small></div>
   <h1 id="title">お店の情報入力</h1>
   <p class="sub" id="sub">入力は1分ほど。送信すると、その場で「登録コード」が表示されます。</p>
 </div></header>
@@ -106,7 +110,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
           <select id="zone"><option value="">選んでください</option><option value="center">大通・すすきの</option><option value="station">札幌駅周辺</option><option value="west">円山・西区・琴似</option><option value="south">豊平・平岸・南区</option><option value="east">白石・厚別・新札幌</option><option value="north">北区・東区</option></select></label>
       </div>
       <p class="slot" id="slot" hidden></p>
-      <label class="f" for="address"><span>お店の住所<span class="req">必須</span></span><small>番地・建物名まで入れてください。地図で場所を確認するために使います（公開はされません）</small><input type="text" id="address" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F"></label>
+      <label class="f" for="address"><span>お店の住所<span class="req">必須</span></span><small>番地・建物名まで入れてください。地図で場所を確認するために使います（公開はされません）。<b id="chuoNote">2027年2月15日までは、札幌市中央区のお店だけ受け付けています（「中央区」から入れてください）。</b></small><input type="text" id="address" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F"></label>
       <div class="f"><span>スタッフの人数</span>
         <div class="row4">
           <label class="f" for="sStylist">スタイリスト<input type="number" id="sStylist" min="0" max="99" inputmode="numeric" placeholder="0"></label>
@@ -123,16 +127,19 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
     </section>
     <section style="margin-top:16px">
       <h2>プラン</h2>
+      <div class="campbox" id="campBox"><b>初回キャンペーン｜札幌市中央区・先着50店<span id="campLeft"></span></b>
+        <span>掲載を始めた月から6か月間、掲載料0円。LINEに登録するスタッフ1人あたり月300円と、ピタリストからの予約でご来店があった分だけ1件300円（キャンセルは0円）。7か月目からは、下で選んだプランになります（成果報酬はなし）。続けるかどうかは、その時点で決められます。</span></div>
+      <p class="fine" id="planLead" style="margin:0 0 6px">7か月目からのプランを選んでください。</p>
       <div class="plans" role="radiogroup" aria-label="希望のプラン">
-        <label class="plan"><input type="radio" name="plan" value="オープニングキャンペーン（月3,000円）" checked><div><b>オープニングキャンペーン 月3,000円</b><span>分析レポートプランと同じ内容を、期間限定の価格で</span></div></label>
-        <label class="plan"><input type="radio" name="plan" value="分析レポートプラン（月5,000円）"><div><b>分析レポートプラン 月5,000円</b><span>掲載＋月1回の分析レポートと改善の提案</span></div></label>
+        <label class="plan" id="plan3000"><input type="radio" name="plan" value="オープニングキャンペーン（月3,000円）"><div><b>オープニングキャンペーン 月3,000円</b><span>分析レポートプランと同じ内容を、期間限定の価格で</span></div></label>
+        <label class="plan"><input type="radio" name="plan" value="分析レポートプラン（月5,000円）" checked><div><b>分析レポートプラン 月5,000円</b><span>掲載＋月1回の分析レポートと改善の提案</span></div></label>
         <label class="plan"><input type="radio" name="plan" value="掲載プラン（月6,000円）"><div><b>掲載プラン 月6,000円</b><span>お店とスタッフの情報を掲載</span></div></label>
       </div>
       <p class="fine">どのプランも、LINEに登録するスタッフ1人につき月300円が加わります。金額は税抜です。</p>
       <label class="f" for="dealer">紹介してくれた代理店（任意）<small>代理店の紹介で入力する場合は、会社名と担当者名を入れてください</small><input type="text" id="dealer" maxlength="60"></label>
     </section>
     <section style="margin-top:16px">
-      <label class="agree" for="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">お店向け利用規約</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意し、入力した内容をAISIの運営が確認すること、登録コードを入力したメールアドレスに送ることに同意します。</span></label>
+      <label class="agree" for="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">お店向け利用規約</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意し、入力した内容をピタリストの運営が確認すること、登録コードを入力したメールアドレスに送ることに同意します。</span></label>
       <div class="hp" aria-hidden="true"><label for="hp">この欄は空のままにしてください</label><input type="text" id="hp" tabindex="-1" autocomplete="off"></div>
       <p class="msg" id="err" hidden></p>
       <button class="btn" type="submit" id="go" disabled>入力して、登録コードを受け取る</button>
@@ -153,7 +160,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
     <button class="copy" type="button" id="copy">コードをコピー</button>
     <p class="fine" id="mailed">同じ内容を、入力したメールアドレスにもお送りしました。</p>
     <div class="howto">
-      <div><i>1</i><span>下のボタンから、お店用LINE「AISI サロンさま窓口」を友だち追加</span></div>
+      <div><i>1</i><span>下のボタンから、お店用LINE「ピタリスト サロンさま窓口」を友だち追加</span></div>
       <div><i>2</i><span>トークで <span class="send" id="send">登録 S0000</span> と送る</span></div>
       <div><i>3</i><span>出てきたボタンから「管理者」を押す</span></div>
       <div><i>4</i><span>届いたリンクを開いて、お店の写真・コンセプト・一押しメニュー・スタッフを入力して保存</span></div>
@@ -180,6 +187,7 @@ const ERR = {
   mail: "メールアドレスの形が正しくないようです。",
   tel: "電話番号は市外局番から入れてください。",
   agree: "同意のチェックを入れてください。",
+  area_pre: "2027年2月15日までは、札幌市中央区のお店だけ受け付けています。住所は「札幌市中央区」から入れてください。中央区以外のお店は、2月15日からお申し込みいただけます。",
   busy: "ただいまアクセスが混み合っています。時間をおいてもう一度お試しください。",
   net: "送信できませんでした。通信状態を確認して、もう一度お試しください。"
 };
@@ -200,6 +208,7 @@ $("form").addEventListener("submit", async ev => {
     agree: $("agree").checked, hp: $("hp").value
   };
   if (!d.name || !d.zone || !d.address || !d.owner || !d.mail) return showErr("required");
+  if (PRE && !/中央区/.test(d.address)) return showErr("area_pre");
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.mail)) return showErr("mail");
   if (!d.agree) return showErr("agree");
   if (!GAS_URL) return showErr("net");
@@ -217,10 +226,21 @@ function showDone(r){
   $("sub").textContent = r.again ? "同じ店名・メールアドレスで入力済みだったので、そのときの登録コードをお知らせします。" : "このあと、LINEで登録コードを送ると、お店情報の入力ページが届きます。";
   if (!r.again && r.hold) $("sub").textContent = "近くに先に登録しているサロンがあるため、掲載の前に運営からご連絡いたします。お店の情報の入力は、先に進めていただいて大丈夫です。";
   if (!r.again && r.wait) $("sub").textContent = "選ばれたエリアは掲載枠が満枠のため、キャンセル待ちでお受けしました。枠が空き次第、運営からご連絡いたします。登録コードで、お店の情報の入力は先に進められます。";
+  if (!r.again && r.camp) $("sub").textContent += "（初回キャンペーン：中央区・先着50店の対象です。掲載を始めた月から6か月間、掲載料は0円です）";
   $("code").textContent = r.code; $("send").textContent = "登録 " + r.code;
   $("lineBtn").href = r.line || ("https://line.me/R/ti/p/" + SALON_LINE_ID);
   window.scrollTo(0, 0);
 }
+/* 初回キャンペーン：本番スタート（2/15）までは中央区だけ。先着50店が埋まったら、ふつうのプランの選び方に戻す */
+let PRE = Date.now() < new Date("2027-02-15T00:00:00+09:00").getTime(), CAMP_OPEN = PRE;
+function showCamp(left){
+  $("campBox").hidden = !CAMP_OPEN; $("plan3000").hidden = CAMP_OPEN; $("chuoNote").hidden = !PRE;
+  $("planLead").textContent = CAMP_OPEN ? "7か月目からのプランを選んでください。" : "希望のプランを選んでください。";
+  if (!CAMP_OPEN) document.querySelector('#plan3000 input').checked = true;
+  if (CAMP_OPEN && document.querySelector('#plan3000 input').checked) document.querySelector('input[value="分析レポートプラン（月5,000円）"]').checked = true;
+  $("campLeft").textContent = CAMP_OPEN && left != null ? "（残り" + left + "店）" : "";
+}
+showCamp();
 /* エリア区分ごとの掲載枠（残り21軒以上「掲載受付中」／20〜6軒「残りわずか」／5軒以下「あと◯軒」／満枠「キャンセル待ち」） */
 let SLOTS = {};
 function goLabel(){ const z = SLOTS[$("zone").value]; return z && z.state === "full" ? "キャンセル待ちで申し込む" : "入力して、登録コードを受け取る"; }
@@ -236,6 +256,7 @@ function showSlot(){
   try {
     const r = await (await fetch(GAS_URL + "?action=slots")).json();
     if (!r.ok) return;
+    if (r.camp){ PRE = !!r.pre; CAMP_OPEN = !!r.camp.open; showCamp(r.camp.left); }
     r.zones.forEach(z => { SLOTS[z.zone] = z; const o = document.querySelector('#zone option[value="' + z.zone + '"]'); if (o && z.state !== "open") o.textContent = z.name + "（" + z.text.replace(/（.*）/, "") + "）"; });
     showSlot();
   } catch (e) {}
