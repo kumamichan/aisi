@@ -60,6 +60,17 @@ textarea{min-height:84px;resize:vertical}
 .btn.sub{background:#fff;color:var(--ink);border-color:#cfc9bd;font-weight:500;padding:6px 10px;font-size:.8rem}
 .btn:focus-visible,.chip:focus-visible,.seg button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .addrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.st{grid-template-columns:minmax(0,1fr)}
+.st .acts{justify-content:flex-start}
+.howto{border:1px solid var(--line);border-radius:8px;padding:12px;background:#faf8f3;font-size:.84rem;margin-bottom:10px}
+.howto ol{margin:6px 0 6px;padding-left:1.3em}
+.howto li{margin:3px 0}
+.howto .code{margin:6px 0;font-size:.9rem}
+.howto small{display:block;color:var(--ink-soft);font-size:.75rem;line-height:1.6}
+.added{margin-top:10px;border:2px solid var(--ok);border-radius:8px;padding:12px;background:#fff;font-size:.85rem}
+.added p{margin:6px 0}
+.added pre{white-space:pre-wrap;word-break:break-all;background:#faf8f3;border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit;font-size:.8rem;max-height:240px;overflow:auto}
+.added .acts{display:flex;justify-content:flex-end}
 .pub{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--ink-soft);font-weight:400;cursor:pointer}
 .pub input{width:auto}
 .photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
@@ -248,24 +259,77 @@ function renderSalon(){
   </section>
 
   <section><h2>スタッフ</h2>
-    <p class="lead">スタッフのプロフィール（出身・推し・部活など）は、本人がそれぞれのリンクから入力します。リンクをコピーして本人に送ってください。「ぴたリスト サロン窓口」に登録したスタッフには、自動でリンクが届きます。</p>
-    <div class="staff">${D.staff.map((s,i)=>`<div class="st"><div><span class="nm">${esc(s.name)}</span><small>プロフィール充実度 ${s.done}%</small>
-      <label class="pub"><input type="checkbox" data-on="${i}" ${s.on?"checked":""}> 診断に出す</label></div>
-      <div class="acts"><button class="btn sub" type="button" data-copy="${esc(s.url)}">リンクをコピー</button></div></div>`).join("") || `<p class="lead">まだスタッフがいません。</p>`}</div>
+    <div class="howto"><b>スタッフ本人が、自分のプロフィールを入れるまで</b>
+      <ol>
+        <li>下の「スタッフを追加」で名前を入れる</li>
+        <li>その人の「案内文をコピー」を押して、本人にLINEなどで送る</li>
+        <li>本人がサロン用LINEを友だち追加し、<b>「登録 ${esc(D.code||"S1234")}」</b>と送って、自分の名前を選ぶ</li>
+        <li>管理者のLINEに届く「登録の承認のお願い」で「承認する」を押す</li>
+        <li>本人のLINEにプロフィール入力のリンクが届く →「AISIと話しながら入力する」で入力</li>
+      </ol>
+      ${D.code?`<p class="code">お店の登録コード：<b>${esc(D.code)}</b></p>`:""}
+      <small>LINEで選べる名前は「診断に出す」にチェックが入っているスタッフだけです。先にプロフィールだけ入れてもらう場合は「リンクだけコピー」を送ってください（予約のLINE通知は、LINE登録をしないと届きません）。</small>
+    </div>
+    <div class="staff" id="staffList"></div>
     <div class="addrow"><input type="text" id="newStaff" maxlength="20" placeholder="追加するスタッフの名前"><button class="btn sub" type="button" id="addStaff">スタッフを追加</button></div>
+    <div id="addDone"></div>
   </section>`;
   wire();
   wirePhotos("salon");
-  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
-    try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="コピーしました"; }catch(e){ prompt("このリンクをコピーしてください", b.dataset.copy); }
-    setTimeout(()=>b.textContent="リンクをコピー",1800);
-  });
+  drawStaff();
   $("addStaff").onclick=async()=>{
     const name=$("newStaff").value.trim(); if(!name) return;
+    const b=$("addStaff"); b.disabled=true; b.textContent="追加中…";
     const r = await api({type:"add_staff", key:KEY, name});
-    if (r && r.ok){ await load(); $("msg").className="msg ok"; $("msg").textContent=name+"さんを追加しました。リンクを本人に送ってください。"; }
+    b.disabled=false; b.textContent="スタッフを追加";
+    if (r && r.ok){
+      if (r.staff){ keepStaffChecks(); D.staff.push(r.staff); drawStaff(); }
+      else { await load(); }                       // 古いGASのとき（念のため）
+      $("newStaff").value="";
+      const s = D.staff.find(x=>x.name===name);
+      $("addDone").innerHTML = s ? `<div class="added"><b>${esc(name)}さんを追加しました</b>
+        <p>次に、この案内文を${esc(name)}さんに送ってください。LINEの登録とプロフィール入力のやり方が入っています。</p>
+        <pre>${esc(inviteText(s))}</pre>
+        <div class="acts"><button class="btn" type="button" id="copyInvite">案内文をコピー</button></div></div>` : "";
+      if (s) $("copyInvite").onclick=()=>copyText($("copyInvite"), inviteText(s), "案内文をコピー");
+      $("msg").className="msg ok"; $("msg").textContent=name+"さんを追加しました。案内文を本人に送ってください。";
+    }
     else { $("msg").className="msg err"; $("msg").textContent = r && r.error==="dup" ? "同じ名前のスタッフがいます。" : "追加できませんでした。"; }
   };
+}
+/* スタッフ一覧（追加したときは、ここだけ書き直す。ほかの入力中の内容は消えない） */
+function keepStaffChecks(){ D.staff.forEach((s,i)=>{ const c=document.querySelector(`[data-on="${i}"]`); if(c) s.on=c.checked; }); }
+function drawStaff(){
+  $("staffList").innerHTML = D.staff.map((s,i)=>`<div class="st"><div><span class="nm">${esc(s.name)}</span><small>プロフィール充実度 ${s.done}%</small>
+      <label class="pub"><input type="checkbox" data-on="${i}" ${s.on?"checked":""}> 診断に出す</label></div>
+      <div class="acts"><button class="btn sub" type="button" data-invite="${i}">案内文をコピー</button><button class="btn sub" type="button" data-copy="${i}">リンクだけコピー</button></div></div>`).join("") || `<p class="lead">まだスタッフがいません。</p>`;
+  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(b, D.staff[+b.dataset.copy].url, "リンクだけコピー"));
+  document.querySelectorAll("[data-invite]").forEach(b=>b.onclick=()=>copyText(b, inviteText(D.staff[+b.dataset.invite]), "案内文をコピー"));
+}
+/* スタッフ本人に送る案内文 */
+function inviteText(s){
+  const code = D.code || "（お店の登録コード）";
+  return `${s.name}さん
+
+${D.name}のスタイリストとして、「ぴたリスト」への登録をお願いします。
+
+① サロン用LINE「ぴたリスト サロンさま窓口」を友だち追加
+${D.lineUrl || "（管理者に友だち追加のリンクを聞いてください）"}
+
+② そのLINEで「登録 ${code}」と送る
+
+③ 出てきた名前から「${s.name}」を選ぶ
+→ 管理者が承認すると、LINEにプロフィール入力のリンクが届きます
+
+④ リンクを開いて「AISIと話しながら入力する」から進めてください（5分ほどで終わります）
+
+先にプロフィールだけ入れる場合は、こちらからも開けます（${s.name}さん専用のリンクです。ほかの人には送らないでください）
+${s.url}`;
+}
+async function copyText(btn, text, label){
+  try{ await navigator.clipboard.writeText(text); btn.textContent="コピーしました"; }
+  catch(e){ prompt("この内容をコピーしてください", text); }
+  setTimeout(()=>btn.textContent=label,1800);
 }
 function collectSalon(){
   const f={}; FEATS.forEach(([,items])=>items.forEach(([k])=>{ const v=segVal("f_"+k); if(v!=="") f[k]=Number(v); }));
@@ -596,7 +660,7 @@ async function load(){
 $("save").onclick=async()=>{
   const b=$("save"), m=$("msg");
   if (MODE==="staff" && !$("agree").checked){ m.className="msg err"; m.textContent="いちばん上の同意にチェックを入れてください。"; window.scrollTo({top:0,behavior:"smooth"}); return; }
-  b.disabled=true; b.textContent="保存中…";
+  b.disabled=true; b.textContent="保存中…"; m.className="msg"; m.textContent="保存しています。数秒お待ちください。";
   const r = await api({type: MODE==="salon"?"save_salon":"save_staff", key:KEY, data: MODE==="salon"?collectSalon():collectStaff()});
   b.disabled=false; b.textContent="保存する";
   if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。"; if (r.done!=null){ $("pct").textContent=r.done+"%"; $("bar").style.width=r.done+"%"; } }
