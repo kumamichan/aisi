@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>ピタリスト 登録ページ</title>
+<title>ぴたリスト 登録ページ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 <style>
@@ -112,7 +112,7 @@ textarea{min-height:84px;resize:vertical}
 <body>
 <header>
   <div class="hin">
-    <div class="logo">ピタリスト<small id="kind">登録</small></div>
+    <div class="logo">ぴたリスト<small id="kind">登録</small></div>
     <h1 id="title">読み込み中…</h1>
     <div class="meter" id="meterBox" hidden>
       <div class="meter-h"><span>プロフィール充実度</span><span id="pct">0%</span></div>
@@ -218,7 +218,7 @@ function renderSalon(){
     </div>
     <div class="f"><b style="font-size:.86rem">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
     <label class="f">予約ページのURL<small>ホットペッパーなど</small><input type="url" id="book" value="${esc(D["予約ページURL"])}"></label>
-    <div class="f"><b style="font-size:.86rem">LINE予約の特典</b><small>ピタリストのLINEで予約したお客さまには、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」になります（メールやホットペッパーからの予約は対象外）。お会計のときにお店で値引きしてください。</small></div>
+    <div class="f"><b style="font-size:.86rem">LINE予約の特典</b><small>ぴたリストのLINEで予約したお客さまには、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」になります（メールやホットペッパーからの予約は対象外）。お会計のときにお店で値引きしてください。</small></div>
     <label class="f"${D.perkOwnOn?"":" hidden"}>お店独自の特典（オプション）<small>共通の特典に追加したいときだけ。例：ホームケアサンプル付き</small><input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label>
     <label class="f">予約の連絡を受け取るメール<small>LINEを登録していないときに使います</small><input type="email" id="mail" value="${esc(D["お店の通知メール"])}"></label>
     <label class="f">タグ<small>「、」で区切る。例：髪質改善、マンツーマン</small><input type="text" id="tags" value="${esc(D["タグ（、区切り）"])}"></label>
@@ -248,7 +248,7 @@ function renderSalon(){
   </section>
 
   <section><h2>スタッフ</h2>
-    <p class="lead">スタッフのプロフィール（出身・推し・部活など）は、本人がそれぞれのリンクから入力します。リンクをコピーして本人に送ってください。「ピタリスト サロン窓口」に登録したスタッフには、自動でリンクが届きます。</p>
+    <p class="lead">スタッフのプロフィール（出身・推し・部活など）は、本人がそれぞれのリンクから入力します。リンクをコピーして本人に送ってください。「ぴたリスト サロン窓口」に登録したスタッフには、自動でリンクが届きます。</p>
     <div class="staff">${D.staff.map((s,i)=>`<div class="st"><div><span class="nm">${esc(s.name)}</span><small>プロフィール充実度 ${s.done}%</small>
       <label class="pub"><input type="checkbox" data-on="${i}" ${s.on?"checked":""}> 診断に出す</label></div>
       <div class="acts"><button class="btn sub" type="button" data-copy="${esc(s.url)}">リンクをコピー</button></div></div>`).join("") || `<p class="lead">まだスタッフがいません。</p>`}</div>
@@ -287,7 +287,7 @@ function renderStaff(){
   meter(Number(D["プロフィール充実度"])||0, "入れた項目が多いほど、共通点のあるお客さまとマッチしやすくなります。");
   $("app").innerHTML = `
   <button class="wz-open" type="button" id="wzOpen"><img src="img/aisi_peace.webp" alt=""><span><b>AISIと話しながら入力する（おすすめ）</b><small>質問に答えていくだけで、あなたらしいプロフィールができます。最後に「第三者から見たあなた」をAISIがまとめます。</small></span></button>
-  <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容は、ピタリストのマッチングに使い、「公開する」にした項目はお客さまに表示されることに同意します。公開したくない項目は、いつでも「公開する」を外したり、消したりできます。</label></div>
+  <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容は、ぴたリストのマッチングに使い、「公開する」にした項目はお客さまに表示されることに同意します。公開したくない項目は、いつでも「公開する」を外したり、消したりできます。</label></div>
 
   <section><h2>顔写真</h2>
     <div class="face-row">
@@ -584,12 +584,12 @@ async function api(body){
   catch(e){ return null; }
 }
 async function load(){
-  if (!GAS_URL || !MODE){ $("title").textContent="リンクが正しくありません"; $("app").innerHTML=`<div class="center">「ピタリスト サロン窓口」から届いたリンクを開いてください。</div>`; return; }
+  if (!GAS_URL || !MODE){ $("title").textContent="リンクが正しくありません"; $("app").innerHTML=`<div class="center">「ぴたリスト サロン窓口」から届いたリンクを開いてください。</div>`; return; }
   try{
     const r = await fetch(`${GAS_URL}?action=${MODE}&key=${encodeURIComponent(KEY)}`);
     D = await r.json();
   }catch(e){ D=null; }
-  if (!D || !D.ok){ $("title").textContent="ページを開けませんでした"; $("app").innerHTML=`<div class="center">リンクが古いか、間違っている可能性があります。「ピタリスト サロン窓口」のメニューから、もう一度開いてください。</div>`; return; }
+  if (!D || !D.ok){ $("title").textContent="ページを開けませんでした"; $("app").innerHTML=`<div class="center">リンクが古いか、間違っている可能性があります。「ぴたリスト サロン窓口」のメニューから、もう一度開いてください。</div>`; return; }
   MODE==="salon" ? renderSalon() : renderStaff();
   $("bottom").hidden=false;
 }

@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ピタリスト 札幌サロン診断</title>
-<meta name="description" content="ピタリストがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
-<meta property="og:title" content="ピタリスト 札幌サロン診断">
+<title>ぴたリスト 札幌サロン診断</title>
+<meta name="description" content="ぴたリストがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
+<meta property="og:title" content="ぴたリスト 札幌サロン診断">
 <meta property="og:description" content="質問に答えるだけ。AISIが札幌であなたに合う美容室と担当者を見つけます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kumamichan.github.io/aisi/">
@@ -144,6 +144,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .back{background:none;border:0;color:var(--silver);font-size:.82rem;padding:4px 0;margin-left:24px;text-align:left;width:max-content}
 .back[disabled]{opacity:.3;cursor:default}
 .note{font-size:.75rem;color:var(--silver);margin:0 0 0 24px;max-width:460px}
+/* 吹き出しの中の補足（白い背景でも読みやすい色） */
+.qsub{margin:8px 0 0;font-size:.86rem;line-height:1.6;color:var(--ink-soft)}
+.qnotice{margin:10px 0 0;padding:8px 12px;font-size:.86rem;line-height:1.6;color:var(--accent-ink);background:#f6e6c6;border-left:4px solid var(--accent);border-radius:4px}
+.qnotice b{font-weight:700}
 
 /* results */
 .results{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px;display:grid;gap:18px}
@@ -341,7 +345,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 </head>
 <body>
 <header class="top">
-  <button class="logo" id="home" type="button" aria-label="トップへ"><b>ピタリスト</b><span>SAPPORO</span></button>
+  <button class="logo" id="home" type="button" aria-label="トップへ"><b>ぴたリスト</b><span>SAPPORO</span></button>
 </header>
 <div class="demobar" id="demobar" hidden></div>
 
@@ -352,7 +356,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
   <div class="modal-c" role="dialog" aria-modal="true" aria-labelledby="mTitle">
     <!-- コード表示 -->
     <div id="vCode" class="mview">
-      <b id="mTitle" class="mt">あなたのピタリスト診断コード</b>
+      <b id="mTitle" class="mt">あなたのぴたリスト診断コード</b>
       <div class="code" id="mCode">AISI-0000</div>
       <div class="perkbox" id="mPerk" hidden></div>
       <p id="mText"></p>
@@ -361,7 +365,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
       <button class="btn more" id="mReq" type="button">メールで予約する</button>
       <a class="btn more linkbtn" id="mLink" href="#" target="_blank" rel="noopener">ホットペッパーで予約する（要望欄にコードを入力）</a>
-      <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、ピタリストからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
+      <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、ぴたリストからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
       <div class="row">
         <button class="btn more" id="mCopy" type="button">コードをコピー</button>
         <button class="btn more" data-close type="button">閉じる</button>
@@ -415,13 +419,13 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
    GAS_URL：GASを「ウェブアプリ」としてデプロイしたときのURL（https://script.google.com/macros/s/……/exec）
             空のままだと、サンプルの店舗データで動き、記録は送りません。
    PHOTO  ：写真の切り札を使うか（true / false）
-   LINE_ID：ピタリスト公式LINEのID（@から始まる）
+   LINE_ID：ぴたリスト公式LINEのID（@から始まる）
    ===================================================================== */
 const CONFIG = {
   GAS_URL: "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec",
   PHOTO: true,
-  LINE_ID: "@933trlwv",  /* ピタリスト公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
-  PERK: "施術料金から500円引き",   /* ピタリストのLINEで予約したときの特典（サンプル表示用。本番は設定シートの値が使われます） */
+  LINE_ID: "@933trlwv",  /* ぴたリスト公式LINEのID（例："@123abcde"）。空だと「LINEで予約する」は出ません */
+  PERK: "施術料金から500円引き",   /* ぴたリストのLINEで予約したときの特典（サンプル表示用。本番は設定シートの値が使われます） */
   BOOK_START: "2026-11-19",   /* お店の掲載と予約の受付開始日。この日までは「デモ体験版」で、予約ボタンは押せません（URLに ?test=1 を付けると予約も試せます） */
   LAUNCH: "2027-02-15"        /* 本番スタート日。この日までは、札幌市中央区のお店だけ */
 };
@@ -522,7 +526,7 @@ const SLOTS = [["am","午前（〜12時）",9,12],["noon","昼（12〜15時）",
 const WHENS = [["soon","今日・明日"],["week","今週中"],["next","来週くらい"],["someday","日にちは決まってない"]];
 function whenLabel(k){ return (WHENS.find(x=>x[0]===k)||[,""])[1]; }
 function ymdLocal(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-/* お店が「ピタリスト サロン窓口」で登録した空き日（今週・来週） */
+/* お店が「ぴたリスト サロン窓口」で登録した空き日（今週・来週） */
 function mdLabel(ymd){ const d=new Date(ymd+"T12:00"); return (d.getMonth()+1)+"/"+d.getDate()+"("+DAYS[d.getDay()]+")"; }
 function availMatch(s){
   const a=(s.avail||[]).filter(d=>d>=ymdLocal(new Date())); if (!a.length || !COND) return "";
@@ -974,7 +978,7 @@ const TENSIONS = [
   ["lifelong","ずっと任せられる「生涯の美容師」を見つけたい"],
   ["casual","気軽にフラッと行ける美容室を探したい"],
   ["explore","いつもの店はあるけど、たまには違うところも試したい"],
-  ["model","モデル（カット・カラーなど）で、お得にそれなりのクオリティで"]
+  ["model","モデルとして、お得に施術を受けたい（カット・カラーなど）"]
 ];
 function tensionLabel(k){ return (TENSIONS.find(x=>x[0]===k)||[,""])[1]; }
 let draft = {tension:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
@@ -986,8 +990,9 @@ const INTRO = [
     say:v=>({lifelong:"いいね。じゃあ、腕だけじゃなくて「人」も見て選ぶよ。", casual:"了解。通いやすさと気軽さ、ちゃんと見ておく。", explore:"たまの冒険、いいじゃん。いつもと違う良さがある店を探そう。", model:"なるほど。モデルの募集があるかは、予約のときにお店が確かめてくれるよ。"})[v] },
   { key:"menus", kind:"many", pose:"think", q:"今回、やりたいメニューは？", sub:"いくつでも。そのメニューが一押しのお店から探すよ", opts:()=>MENU_CATS.map(c=>[c[0],c[1]]), none:"まだ決めてない", required:true },
   { key:"when", kind:"one", pose:"pocket", q:"いつ頃行きたい？", opts:()=>WHENS,
-    say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。11月19日からは、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はピタリストのLINEに保存して、あとから予約できるよ。") : "" },
-  { key:"zones", kind:"many", pose:"open", q:"行けるエリアは？", sub:PRE ? "いくつでも。2月15日までは、札幌市中央区のお店だけを紹介しています" : "いくつでも。選ばなければ札幌市内どこでも",
+    say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。11月19日からは、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はぴたリストのLINEに保存して、あとから予約できるよ。") : "" },
+  { key:"zones", kind:"many", pose:"open", q:"行けるエリアは？", sub:PRE ? "いくつでも選べるよ" : "いくつでも。選ばなければ札幌市内どこでも",
+    notice:PRE ? `<b>${LAUNCH_TEXT.replace(/^\d+年/,"")}まで</b>は、札幌市中央区のお店だけをご紹介しています` : "",
     opts:()=>PRE ? ZONES.filter(z=>["center","station","west"].includes(z[0])) : ZONES, none:"どこでもOK" },
   { key:"days", kind:"many", pose:"think", q:"行ける曜日は？", sub:"いくつでも。日付が決まっていれば、日付でもいいよ", opts:()=>DAYS.map((l,i)=>[String(i), l+"曜"]), none:"いつでもOK", date:true },
   { key:"slots", kind:"many", pose:"peace", q:"時間帯は？", sub:"いくつでも", opts:()=>SLOTS.map(x=>[x[0],x[1]]), none:"いつでもOK" },
@@ -1009,7 +1014,8 @@ function renderIntro(prevSay){
         <p class="qno">はじめに ${introIdx+1}<span style="opacity:.6"> / ${INTRO.length}</span></p>
         ${prevSay?`<p class="aside">${esc(prevSay)}</p>`:""}
         <p class="voice">${esc(it.q).replace(/\n/g,"<br>")}</p>
-        ${it.sub?`<p class="note" style="margin:6px 0 0;font-size:.8rem">${esc(it.sub)}</p>`:""}
+        ${it.sub?`<p class="qsub">${esc(it.sub)}</p>`:""}
+        ${it.notice?`<p class="qnotice">${it.notice}</p>`:""}
       </div>
       <div class="chips aff ${it.wide?"wide":""}" id="introChips">
         ${it.opts().map(([v,l])=>`<button type="button" class="chip ${isOn(v)?"on":""}" data-v="${esc(v)}" aria-pressed="${isOn(v)}">${esc(l)}</button>`).join("")}
@@ -1533,11 +1539,17 @@ const TALK = [
     O("仕上がりの満足感", "もう一歩、満足したいってことだね。", {you:"もう一歩上の仕上がりがほしい", please:["再現性（家でも同じに）"], value:["切る前に長さ・仕上がりを確認する"], ask:"いつもの店に足りないもの：仕上がりの満足感"}),
     O("話しやすさ", "居心地も、仕上がりと同じくらい大事だよね。", {you:"もっと話しやすいお店がいい", affBoost:1, value:["会話の量をお客様に合わせる"], ask:"いつもの店に足りないもの：話しやすさ"}),
     O("特にない（気分転換したい）", "たまには違う景色を見たい。それで十分だよ。", {ask:"いつもの店に足りないもの：特になし（気分転換）"})]},
-  {id:"t_model", tension:"model", lead:"モデルで行くなら、先に確認させて。", q:"モデルの条件で、いちばん近いのは？", opts:[
-    O("デザインはお任せでOK", "任せてもらえると、美容師も腕がなるよ。", {please:["似合わせの提案"], ask:"モデル：デザインはお任せでOK"}),
-    O("写真撮影・SNS掲載もOK", "撮影もOKなら、お店も喜ぶと思う。", {ask:"モデル：写真撮影・SNS掲載OK"}),
-    O("時間がかかってもOK", "時間に余裕があるのは、大きいね。", {ask:"モデル：時間がかかってもOK"}),
-    O("希望の長さや色は守りたい", "そこは大事にしよう。ちゃんと伝えるね。", {value:["切る前に長さ・仕上がりを確認する"], ask:"モデル：希望の長さ・色は守りたい"})]},
+  {id:"t_model_who", tension:"model", lead:"モデルで行くなら、先に確認させて。", q:"モデルの施術は、デビュー前のアシスタントさんが担当することも多いんだ。担当する人の希望はある？", opts:[
+    O("アシスタントさんでも大丈夫", "ありがとう。練習中の人にとって、モデルさんは本当にありがたい存在なんだ。少し時間がかかることもあるから、余裕のある日だと安心だよ。", {ask:"モデル：アシスタントの担当でもOK"}),
+    O("できればスタイリストにお願いしたい", "了解。スタイリストが担当できるかどうか、予約のときにお店に確かめてもらうね。", {ask:"モデル：できればスタイリストに担当してほしい"})]},
+  {id:"t_model", tension:"model", q:"仕上がりのイメージは、どこまでお任せできる？", opts:[
+    O("デザインはお任せでOK", "任せてもらえると、美容師も腕が鳴るよ。", {please:["似合わせの提案"], ask:"モデル：デザインはお任せでOK"}),
+    O("長さや色の希望だけは守りたい", "そこは大事にしよう。ちゃんと伝えるね。", {value:["切る前に長さ・仕上がりを確認する"], ask:"モデル：長さ・色の希望は守りたい"}),
+    O("やりたい髪型が決まっている", "なりたい形がはっきりしてるんだね。写真があると、もっと伝わりやすいよ。", {value:["写真でイメージを共有する"], ask:"モデル：やりたい髪型が決まっている"})]},
+  {id:"t_model_photo", tension:"model", q:"モデルだと、仕上がりの写真撮影をお願いされることが多いよ。撮影やSNSへの掲載は大丈夫？", opts:[
+    O("撮影もSNS掲載もOK", "撮影もOKなら、お店もすごく助かると思う。", {ask:"モデル：写真撮影・SNS掲載OK"}),
+    O("撮影はOK。顔は出したくない", "顔出しなしでも、ちゃんと伝えておくね。", {ask:"モデル：撮影OK・顔出しはNG"}),
+    O("撮影はちょっと苦手", "大丈夫。撮影なしでも受けられるか、お店に確かめてもらうね。", {ask:"モデル：撮影はできれば避けたい"})]},
   {id:"t_hc1", lead:"ここからは、家での髪のこと。", q:"家でのケア、自分の髪に合ってる自信ある？", opts:[
     O("自信ある", "いいね。今のケアを活かしてくれる人を選ぶよ。", {ask:"ホームケア：今のケアに自信あり"}),
     O("あまりない", "なんとなく選んでる人、すごく多いんだ。", {you:"家でのケアが自分に合っているか自信がない", value:["家でのケア方法を教える"], ask:"ホームケア：合っているか自信がない"}),
@@ -1558,9 +1570,10 @@ const TALK = [
   {id:"t_price", q:"当日、思ったより料金が上がるのは不安？", opts:[
     O("不安。先に教えてほしい", "分かる。会計のときにドキッとするの、嫌だよね。", {you:"追加料金は先に知っておきたい", value:["追加料金は事前に説明する"], ask:"料金：追加があれば施術前に説明してほしい"}),
     O("あまり気にしない", "了解。仕上がり優先でいこう。", {})]},
-  {id:"t_assist", q:"シャンプーやカラーを塗るのは、アシスタントさんでも大丈夫？", opts:[
-    O("大丈夫", "OK。チームで見てくれるお店も選べるね。", {}),
-    O("できれば担当の人に最後まで見てほしい", "最初から最後まで同じ人がいい。それも、ちゃんと伝えておく。", {you:"最初から最後まで同じ人に見てほしい", value:["最初から最後まで自分が担当する"], ask:"担当：できれば最後まで同じ人に見てほしい"})]},
+  {id:"t_assist", skip:()=>S.cond && S.cond.tension==="model", q:"シャンプーやカラーを塗るところは、アシスタントさんが手伝うこともあるよ。どこまでなら大丈夫？", opts:[
+    O("どちらも手伝ってもらって大丈夫", "OK。チームで見てくれるお店も選べるね。", {}),
+    O("シャンプーはOK。カラーは担当の人に塗ってほしい", "仕上がりに関わるところは、担当の人に任せたいんだね。伝えておく。", {you:"カラーは担当の人に塗ってほしい", value:["最初から最後まで自分が担当する"], ask:"担当：シャンプーはアシスタントでもOK、カラーは担当者に塗ってほしい"}),
+    O("最初から最後まで、担当の人にお願いしたい", "最初から最後まで同じ人がいい。それも、ちゃんと伝えておく。", {you:"最初から最後まで同じ人に見てほしい", value:["最初から最後まで自分が担当する"], ask:"担当：最初から最後まで同じ人に見てほしい"})]},
   {id:"t_body", q:"シャンプー台で、首や腰がつらくなることはある？", opts:[
     O("ある", "言いにくいよね。お店に伝えて、気づかってもらおう。", {ask:"体：シャンプー台で首・腰がつらくなりやすい（気づかってほしい）"}),
     O("ない", "了解。", {})]}
@@ -1735,9 +1748,9 @@ function renderResult(){
           <p class="qno">${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
           <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。ほかの2軒も、近いところを選んだ。" : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、この3軒が一番近い。"}</p>
         </div>
-        ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。</p>` : ""}
+        ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。${S.talk && S.talk.t_model_who===1 ? "スタイリストが担当できるかも、あわせて確かめてもらうよ。" : "ここで紹介しているのはお店のスタイリストだけど、モデルの施術はアシスタントさんが担当することもあるよ。"}</p>` : ""}
         ${(()=>{ const ms=(S.cond.menus||[]); if(!ms.length) return ""; const k=r.filter(x=>!menuMatch(x.salon,ms).missing.length).length;
-          return k<r.length ? `<p class="note">「${esc(ms.map(catLabel).join("・"))}」が一押しメニューにあるお店は、いまピタリストで${k}軒。残りは、それ以外で近いお店だよ。</p>` : ""; })()}
+          return k<r.length ? `<p class="note">「${esc(ms.map(catLabel).join("・"))}」が一押しメニューにあるお店は、いまぴたリストで${k}軒。残りは、それ以外で近いお店だよ。</p>` : ""; })()}
         ${!reached ? `<div class="warnbox">マッチ率85%に届きませんでした。${bn?`ネックになった条件：<b>${esc(bn.label)}</b>。`:""}条件を少しゆるめると、選択肢が広がります。</div>`:""}
       </div>
     </div>
@@ -1796,7 +1809,7 @@ function cardHTML(x,i){
       <div class="area">受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</div>
       ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
       ${s.rating && s.rating.n >= 3 ? `<div class="rate">★${s.rating.avg.toFixed(1)}<small>（来店したお客さま ${s.rating.n}人${s.rating.again!=null?` ・ また行きたい ${s.rating.again}%`:""}）</small></div>`:""}
-      ${s.perk ? `<div class="perk">ピタリストのLINEで予約すると：${esc(s.perk)}</div>`:""}
+      ${s.perk ? `<div class="perk">ぴたリストのLINEで予約すると：${esc(s.perk)}</div>`:""}
       ${x.issues && x.issues.length ? `<div class="offcond">選んだ条件と合わない点：${x.issues.join("・")}</div>`:""}
     </div>
     <div class="card-b">

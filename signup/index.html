@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>ピタリスト お店の情報入力</title>
-<meta name="description" content="ピタリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
-<meta property="og:title" content="ピタリスト 美容室コネクトサービス｜サロン情報の入力">
-<meta property="og:description" content="ピタリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
+<title>ぴたリスト お店の情報入力</title>
+<meta name="description" content="ぴたリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
+<meta property="og:title" content="ぴたリスト 美容室コネクトサービス｜サロン情報の入力">
+<meta property="og:description" content="ぴたリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kumamichan.github.io/aisi/signup/">
 <meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
@@ -86,7 +86,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
 </head>
 <body>
 <header><div class="hin">
-  <div class="logo">ピタリスト<small>お店の情報入力</small></div>
+  <div class="logo">ぴたリスト<small>お店の情報入力</small></div>
   <h1 id="title">お店の情報入力</h1>
   <p class="sub" id="sub">入力は1分ほど。送信すると、その場で「登録コード」が表示されます。</p>
 </div></header>
@@ -128,7 +128,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
     <section style="margin-top:16px">
       <h2>プラン</h2>
       <div class="campbox" id="campBox"><b>初回キャンペーン｜札幌市中央区・先着50店<span id="campLeft"></span></b>
-        <span>掲載を始めた月から6か月間、掲載料0円。LINEに登録するスタッフ1人あたり月300円と、ピタリストからの予約でご来店があった分だけ1件300円（キャンセルは0円）。7か月目からは、下で選んだプランになります（成果報酬はなし）。続けるかどうかは、その時点で決められます。</span></div>
+        <span>掲載を始めた月から6か月間、掲載料0円。LINEに登録するスタッフ1人あたり月300円と、ぴたリストからの予約でご来店があった分だけ1件300円（キャンセルは0円）。7か月目からは、下で選んだプランになります（成果報酬はなし）。続けるかどうかは、その時点で決められます。</span></div>
       <p class="fine" id="planLead" style="margin:0 0 6px">7か月目からのプランを選んでください。</p>
       <div class="plans" role="radiogroup" aria-label="希望のプラン">
         <label class="plan" id="plan3000"><input type="radio" name="plan" value="オープニングキャンペーン（月3,000円）"><div><b>オープニングキャンペーン 月3,000円</b><span>分析レポートプランと同じ内容を、期間限定の価格で</span></div></label>
@@ -139,7 +139,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
       <label class="f" for="dealer">紹介してくれた代理店（任意）<small>代理店の紹介で入力する場合は、会社名と担当者名を入れてください</small><input type="text" id="dealer" maxlength="60"></label>
     </section>
     <section style="margin-top:16px">
-      <label class="agree" for="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">お店向け利用規約</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意し、入力した内容をピタリストの運営が確認すること、登録コードを入力したメールアドレスに送ることに同意します。</span></label>
+      <label class="agree" for="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">お店向け利用規約</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意し、入力した内容をぴたリストの運営が確認すること、登録コードを入力したメールアドレスに送ることに同意します。</span></label>
       <div class="hp" aria-hidden="true"><label for="hp">この欄は空のままにしてください</label><input type="text" id="hp" tabindex="-1" autocomplete="off"></div>
       <p class="msg" id="err" hidden></p>
       <button class="btn" type="submit" id="go" disabled>入力して、登録コードを受け取る</button>
@@ -160,7 +160,7 @@ div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
     <button class="copy" type="button" id="copy">コードをコピー</button>
     <p class="fine" id="mailed">同じ内容を、入力したメールアドレスにもお送りしました。</p>
     <div class="howto">
-      <div><i>1</i><span>下のボタンから、お店用LINE「ピタリスト サロンさま窓口」を友だち追加</span></div>
+      <div><i>1</i><span>下のボタンから、お店用LINE「ぴたリスト サロンさま窓口」を友だち追加</span></div>
       <div><i>2</i><span>トークで <span class="send" id="send">登録 S0000</span> と送る</span></div>
       <div><i>3</i><span>出てきたボタンから「管理者」を押す</span></div>
       <div><i>4</i><span>届いたリンクを開いて、お店の写真・コンセプト・一押しメニュー・スタッフを入力して保存</span></div>
