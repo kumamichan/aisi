@@ -98,17 +98,25 @@ textarea{min-height:84px;resize:vertical}
 .wz-open img{width:64px;height:64px;object-fit:cover;object-position:top;border-radius:50%;background:var(--night-2)}
 .wz-open b{display:block;font-size:1rem}
 .wz-open small{color:#c9ced8;font-size:.8rem}
-.wz{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--paper);display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+.wz{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--paper);display:grid;grid-template-rows:auto minmax(0,1fr)}
+.wz-body{position:relative;min-height:0;display:flex}
 .wz-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);font-size:.85rem}
 .wz-h button{font:inherit;background:transparent;color:var(--paper);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 12px;cursor:pointer}
-.wz-log{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-width:640px;width:100%;margin:0 auto}
+.wz-log{position:relative;flex:1;min-width:0;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:16px max(18px,calc(50% - 320px)) calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+.wz-log::-webkit-scrollbar{display:none}
+/* スクロールできることが分かるように、右に細いバーをいつも出す（スマホでも消えない） */
+.wz-bar{position:absolute;top:8px;bottom:8px;right:4px;width:5px;border-radius:3px;background:rgba(255,255,255,.12);pointer-events:none}
+.wz-bar i{position:absolute;left:0;right:0;top:0;min-height:24px;border-radius:3px;background:rgba(255,255,255,.6)}
+.wz-more{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);font:inherit;font-size:.78rem;background:rgba(15,18,26,.88);color:var(--paper);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:5px 14px;cursor:pointer}
 .wz-m{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:end}
 .wz-m img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:top;background:var(--night-2)}
 .wz-m p{margin:0;background:var(--paper);color:var(--ink);border-radius:14px 14px 14px 4px;padding:10px 13px;font-family:var(--font-voice);font-size:.95rem;line-height:1.7}
 .wz-me{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-radius:14px 14px 4px 14px;padding:8px 13px;font-size:.88rem;font-weight:700;max-width:85%}
 .wz-sum{background:#fff6e5;color:var(--ink);border:1px solid #ecd3a4;border-radius:10px;padding:12px;font-size:.9rem;line-height:1.8}
-.wz-a{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid rgba(255,255,255,.1);background:var(--night-2);max-height:48vh;overflow-y:auto}
-.wz-ain{max-width:640px;margin:0 auto;display:grid;gap:10px}
+/* 回答欄は、AISIの質問のすぐ下（会話の流れの中）に出す */
+.wz-a{padding:12px;margin-top:2px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:var(--night-2);scroll-margin-bottom:24px}
+.wz-a:empty{display:none}
+.wz-ain{display:grid;gap:10px}
 .wz-a .chip{background:rgba(243,241,236,.92);border-color:transparent;padding:8px 14px;font-size:.9rem}
 .wz-a .chip.on{background:var(--accent);color:var(--accent-ink)}
 .wz-a .row{display:flex;gap:8px}
@@ -476,13 +484,42 @@ let wzI = 0, wzA = {};
 function wzLog(html, me){ const log = $("wzLog"); const d = document.createElement("div");
   if (me){ d.className = "wz-me"; d.textContent = html; }
   else { d.className = "wz-m"; d.innerHTML = `<img src="${pickOne(WZ_IMG)}" alt=""><p>${esc(html)}</p>`; }
-  log.appendChild(d); log.scrollTop = log.scrollHeight; }
+  log.insertBefore(d, $("wzAns")); wzScrollEnd(); }
+/* 会話のいちばん下まで送る */
+function wzScrollEnd(){ const log = $("wzLog"); if (log) log.scrollTo({top: log.scrollHeight, behavior:"smooth"}); }
+/* 質問を出したら：AISIの質問が上に見える位置まで送る（選択肢はその下。多いときはスクロールで見る） */
+function wzShowQuestion(){
+  const log = $("wzLog"), ans = $("wzAns"); if (!log || !ans) return;
+  const q = ans.previousElementSibling;
+  const max = log.scrollHeight - log.clientHeight;
+  const top = q ? q.offsetTop - 12 : max;
+  log.scrollTo({top: Math.max(0, Math.min(top, max)), behavior:"smooth"});
+  setTimeout(wzBarUpdate, 400);
+}
+/* 右のバーと「下に続きがあります」を、スクロールの位置に合わせて動かす */
+function wzBarUpdate(){
+  const log = $("wzLog"), bar = $("wzBar"), more = $("wzMore"); if (!log || !bar) return;
+  const h = log.clientHeight, sh = log.scrollHeight, over = sh > h + 4;
+  bar.hidden = !over;
+  if (over){
+    const th = Math.max(24, (bar.clientHeight) * h / sh);
+    const y = (bar.clientHeight - th) * (log.scrollTop / (sh - h));
+    const i = bar.firstElementChild; i.style.height = th + "px"; i.style.transform = `translateY(${y}px)`;
+  }
+  more.hidden = !(over && log.scrollTop + h < sh - 24);
+}
 function openWizard(){
   wzI = 0; wzA = {};
   const el = document.createElement("div"); el.className = "wz"; el.id = "wz"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","AISIと話しながら入力する");
-  el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力</span><button type="button" id="wzClose">閉じる</button></div><div class="wz-log" id="wzLog"></div><div class="wz-a"><div class="wz-ain" id="wzAns"></div></div>`;
+  el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力</span><button type="button" id="wzClose">閉じる</button></div><div class="wz-body"><div class="wz-log" id="wzLog"><div class="wz-a wz-ain" id="wzAns"></div></div><div class="wz-bar" id="wzBar" hidden><i></i></div><button class="wz-more" type="button" id="wzMore" hidden>▼ 下に続きがあります</button></div>`;
   document.body.appendChild(el); document.body.style.overflow = "hidden";
   $("wzClose").onclick = closeWizard;
+  const log = $("wzLog");
+  log.addEventListener("scroll", wzBarUpdate, {passive:true});
+  window.addEventListener("resize", wzBarUpdate);
+  if (window.ResizeObserver) new ResizeObserver(wzBarUpdate).observe(log);
+  if (window.MutationObserver) new MutationObserver(() => requestAnimationFrame(wzBarUpdate)).observe(log, {childList:true, subtree:true});
+  $("wzMore").onclick = () => log.scrollTo({top: log.scrollHeight, behavior:"smooth"});
   wzLog(`${D.name}さん、はじめまして。AISIです。いくつか質問するから、気軽に答えて。答えたくないものは飛ばしていいよ。`);
   setTimeout(wzAsk, 350);
 }
@@ -505,6 +542,7 @@ function wzAsk(){
     const opts = (typeof st.opts === "function" ? st.opts() : st.opts).map(o => Array.isArray(o) ? o : [o, o]);
     box.innerHTML = `<div class="chips">${opts.map(([l,v],i)=>`<button type="button" class="chip" data-i="${i}">${esc(l)}</button>`).join("")}</div>
       <div class="row">${skipBtn}${st.type==="many" ? `<button class="btn" type="button" id="wzGo">これで決定</button>` : ""}</div>`;
+    if (st.type === "many") box.insertAdjacentHTML("afterbegin", `<small style="color:#c9ced8">選んだら「これで決定」を押してね${st.max ? `（${st.max}つまで）` : ""}</small>`);
     box.querySelectorAll(".chip").forEach(b => b.onclick = () => {
       if (st.type === "one"){ const [l,v] = opts[+b.dataset.i]; return wzDone(st, v, l); }
       if (!b.classList.contains("on") && st.max && box.querySelectorAll(".chip.on").length >= st.max) return;
@@ -512,10 +550,11 @@ function wzAsk(){
     });
     if (st.type === "many") $("wzGo").onclick = () => { const on = [...box.querySelectorAll(".chip.on")].map(b => opts[+b.dataset.i][1]); if (!on.length) return; wzDone(st, on, on.join("・")); };
   }
-  $("wzSkip").onclick = () => { wzLog("あとで", true); box.innerHTML = ""; wzI++; setTimeout(wzAsk, 300); };
+  $("wzSkip").onclick = () => { box.innerHTML = ""; wzLog("あとで", true); wzI++; setTimeout(wzAsk, 300); };
+  wzShowQuestion();
 }
 function wzDone(st, v, label){
-  wzA[st.key] = v; wzLog(label, true); $("wzAns").innerHTML = "";
+  wzA[st.key] = v; $("wzAns").innerHTML = ""; wzLog(label, true);
   setTimeout(() => { wzLog(st.say(v)); wzI++; setTimeout(wzAsk, 700); }, 350);
 }
 /* 第三者から見た紹介文（120字まで）。答えた内容だけで組み立てる */
@@ -537,9 +576,10 @@ function wzSummary(){
   wzLog("ありがとう。聞いた話から、お客さんから見たあなたをまとめてみた。");
   const log = $("wzLog"), d = document.createElement("div"); d.className = "wz-sum";
   d.innerHTML = `<b>第三者から見た${esc(D.name)}さん</b><br>${esc(bio || "（答えが少なかったので、まとめられませんでした）")}${spec?`<br><small>得意なこと：${esc(spec)}</small>`:""}`;
-  log.appendChild(d); log.scrollTop = log.scrollHeight;
+  log.insertBefore(d, $("wzAns")); wzScrollEnd();
   setTimeout(() => wzLog("こんな感じの人だよね。これで大丈夫？　あとから下のフォームで、いつでも直せるよ。"), 300);
   $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzRedo">最初からやり直す</button><button class="btn" type="button" id="wzOk">これでOK</button></div>`;
+  setTimeout(wzScrollEnd, 350);
   $("wzRedo").onclick = () => { closeWizard(); openWizard(); };
   $("wzOk").onclick = () => { wzApply(bio, spec); closeWizard();
     const m = $("msg"); m.className = "msg ok"; m.textContent = "変更があります。AISIとの会話の内容を入れたので、確認して「保存する」を押してください。";
