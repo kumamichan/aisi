@@ -335,26 +335,6 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 .sitefoot{text-align:center;padding:18px 16px 28px;font-size:.75rem}
 .sitefoot a{color:var(--silver)}
 .modal-c label.agree a{color:inherit}
-/* 質問コース */
-.chip .rec{display:inline-block;margin-left:8px;font-size:.66rem;letter-spacing:.08em;background:var(--night);color:var(--accent);border-radius:999px;padding:1px 8px;vertical-align:2px}
-.chip.on .rec{background:var(--accent-ink)}
-.chip small.cs{display:block;font-size:.74rem;font-weight:400;opacity:.8;margin-top:2px}
-.early{background:none;border:1px dashed rgba(217,183,122,.6);color:var(--accent);border-radius:999px;padding:6px 14px;font:inherit;font-size:.8rem;margin-left:24px;width:max-content;cursor:pointer}
-.coursebadge{display:inline-block;font-size:.7rem;border:1px solid rgba(217,183,122,.6);color:var(--accent);border-radius:999px;padding:0 8px;margin-left:6px}
-.upbox{display:grid;gap:8px;justify-items:center;text-align:center;width:100%}
-.upbox p{margin:0;font-size:.8rem;color:var(--silver)}
-/* お店に伝える内容（予約の前に選ぶ） */
-.share{border:1px solid #ddd8cd;border-radius:8px;background:#fbfaf7;padding:10px 12px;display:grid;gap:8px}
-.share>b{font-size:.86rem}
-.share p{margin:0;font-size:.76rem;color:#5a6274;line-height:1.6}
-.share ul{list-style:none;margin:0;padding:0 4px 0 0;display:grid;gap:6px;max-height:42vh;overflow-y:auto;overscroll-behavior:contain}
-.share li{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;justify-items:start;font-size:.82rem;line-height:1.5;border-top:1px solid #ece7dc;padding-top:6px}
-.share li.off span{color:#9aa0ab;text-decoration:line-through}
-.share li em{font-style:normal;font-size:.7rem;color:#8a6a2e;display:block}
-.sw{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid #cfc9bd;border-radius:999px;overflow:hidden;font-size:.72rem}
-.sw button{font:inherit;border:0;background:#fff;color:#5a6274;padding:4px 9px;cursor:pointer}
-.sw button.on{background:var(--night-2,#1e2738);color:#fff;font-weight:700}
-.share .fixed{font-size:.76rem;color:#5a6274}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <script src="js/bx.js"></script>
@@ -376,7 +356,6 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <div class="code" id="mCode">AISI-0000</div>
       <div class="perkbox" id="mPerk" hidden></div>
       <p id="mText"></p>
-      <div class="share" id="mShare" hidden></div>
       <a class="btn line linkbtn" id="mLine" href="#" target="_blank" rel="noopener">LINEで予約する（500円引き）</a>
       <p class="fine" id="mLineNote">LINEが開いたら、画面上の「追加」で友だち追加してから送信してください。お店からの返事がLINEに届きます。</p>
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
@@ -415,7 +394,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
         <div class="fimg-list" id="fImgList"></div>
         <small>画像は、予約が確定したときにお店に届きます。顔が写っている場合は、できれば隠してください。</small></div>
       <label for="fNote">ご要望（任意）<textarea id="fNote" rows="3" maxlength="300" placeholder="例：前髪は短めにしたい"></textarea></label>
-      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスと、診断で答えた内容のうち「伝える」にした項目は、予約が確定したあとにだけ伝わります。<a href="privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました</label>
+      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスは、予約が確定したあとにだけ伝わります。<a href="privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました</label>
       <p class="ferr" id="fErr" hidden></p>
       <button class="btn book" type="submit" id="fSend">リクエストを送る</button>
       <button class="btn more" type="button" id="fBack">戻る</button>
@@ -535,9 +514,6 @@ SALONS.forEach((s,i)=>{ s.sample=true; s.bookUrl=""; s.perk=CONFIG.PERK; s.menus
 /* サンプルのスタイリストの「美容師としての価値」（喜ばれること・大事にしていること・得意な悩み・ホームケア提案） */
 const SAMPLE_VALUES = {"s1a": [["色の美しさ・透明感", "似合わせの提案"], ["写真でイメージを共有する", "家でのケア方法を教える"], ["ブリーチ毛", "ダメージ毛"], "しっかり提案する"], "s1b": [["似合わせの提案", "再現性（家でも同じに）"], ["切る前に長さ・仕上がりを確認する", "最初から最後まで自分が担当する"], ["似合う髪型が分からない", "前の美容室での失敗"], "聞かれたら提案する"], "s2a": [["扱いやすさ", "傷ませない"], ["髪の状態を正直に伝える", "会話の量をお客様に合わせる"], ["くせ毛・うねり", "ダメージ毛"], "聞かれたら提案する"], "s2b": [["傷ませない", "扱いやすさ"], ["無理なすすめはしない", "追加料金は事前に説明する"], ["ダメージ毛", "くせ毛・うねり"], "すすめない"], "s3a": [["時短", "再現性（家でも同じに）"], ["追加料金は事前に説明する", "切る前に長さ・仕上がりを確認する"], ["白髪", "多い髪・広がり"], "聞かれたら提案する"], "s3b": [["似合わせの提案", "リラックス・癒し"], ["会話の量をお客様に合わせる", "写真でイメージを共有する"], ["似合う髪型が分からない", "細い髪・ボリューム不足"], "聞かれたら提案する"], "s4a": [["若々しさ・エイジングケア", "扱いやすさ"], ["髪の状態を正直に伝える", "家でのケア方法を教える"], ["白髪", "細い髪・ボリューム不足", "頭皮の悩み"], "しっかり提案する"], "s4b": [["再現性（家でも同じに）", "扱いやすさ"], ["無理なすすめはしない", "会話の量をお客様に合わせる"], ["くせ毛・うねり", "多い髪・広がり"], "すすめない"], "s5a": [["色の美しさ・透明感", "似合わせの提案"], ["写真でイメージを共有する", "最初から最後まで自分が担当する"], ["ブリーチ毛", "前の美容室での失敗"], "聞かれたら提案する"], "s5b": [["傷ませない", "色の美しさ・透明感"], ["追加料金は事前に説明する", "写真でイメージを共有する"], ["ダメージ毛", "ブリーチ毛"], "しっかり提案する"], "s6a": [["時短", "リラックス・癒し"], ["会話の量をお客様に合わせる", "追加料金は事前に説明する"], ["似合う髪型が分からない", "多い髪・広がり"], "すすめない"], "s6b": [["扱いやすさ", "再現性（家でも同じに）"], ["切る前に長さ・仕上がりを確認する", "無理なすすめはしない"], ["くせ毛・うねり", "前の美容室での失敗"], "聞かれたら提案する"], "s7a": [["似合わせの提案", "若々しさ・エイジングケア"], ["切る前に長さ・仕上がりを確認する", "髪の状態を正直に伝える"], ["似合う髪型が分からない", "前の美容室での失敗"], "聞かれたら提案する"]};
 SALONS.forEach(s=>s.staff.forEach(st=>{ const v=SAMPLE_VALUES[st.id]; if (v) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]}); }));
-/* サンプルのスタイリストの「AISIと話しながら入力」の答え（マッチ用タグ）の見本 */
-const SAMPLE_TAGS = {"s1a": ["color_often", "taste_casual", "taste_street", "len_medium", "talk_free", "tension_explore", "age_20代"], "s1b": ["praise_shape", "len_short", "omakase", "plan", "tension_lifelong", "age_30代"], "s2a": ["straight_hist", "quick_style", "praise_shine", "hair_only", "long_last", "tension_lifelong", "age_30代", "age_40代"], "s2b": ["straight_hist", "praise_shine", "budget_fit", "hair_only", "age_20代"], "s3a": ["quick_style", "rule_fit", "budget_fit", "long_last", "tension_casual", "age_30代", "age_40代"], "s3b": ["styling_teach", "taste_casual", "taste_natural", "talk_free", "tension_casual", "age_20代", "age_10代"], "s4a": ["praise_shine", "len_short", "len_bob", "long_last", "plan", "tension_lifelong", "age_40代", "age_50代以上"], "s4b": ["taste_natural", "quick_style", "omakase", "hair_only", "tension_explore"], "s5a": ["color_often", "taste_street", "omakase", "talk_free", "tension_explore", "tension_model", "age_20代"], "s5b": ["color_often", "praise_shine", "taste_casual", "iron_teach", "tension_model", "age_20代", "age_10代"], "s6a": ["quick_style", "budget_fit", "rule_fit", "talk_free", "tension_casual", "age_30代"], "s6b": ["straight_hist", "len_short", "budget_fit", "tension_casual", "age_20代"], "s7a": ["praise_shape", "omakase", "plan", "long_last", "tension_lifelong", "age_40代", "age_50代以上"], "s7b": ["praise_shine", "taste_clean", "plan", "tension_lifelong", "age_30代", "age_40代"], "s8a": ["hair_only", "tension_lifelong", "age_30代", "age_40代"], "s8b": ["talk_free", "tension_casual", "age_20代"], "s9a": ["straight_hist", "quick_style", "iron_teach", "tension_lifelong", "age_20代", "age_30代"], "s9b": ["straight_hist", "praise_shine", "color_often", "hair_only", "age_30代", "age_40代"], "s10a": ["taste_casual", "taste_street", "styling_teach", "talk_free", "tension_model", "age_10代", "age_20代"], "s10b": ["quick_style", "long_last", "budget_fit", "tension_casual", "age_30代"], "s11a": ["len_bob", "len_short", "praise_shape", "hair_only", "plan", "tension_lifelong", "age_40代", "age_50代以上"], "s11b": ["len_bob", "praise_shine", "taste_clean", "tension_explore", "age_30代"], "s12a": ["long_last", "plan", "budget_fit", "tension_lifelong", "age_40代", "age_50代以上"], "s12b": ["taste_natural", "quick_style", "budget_fit", "tension_casual", "age_20代"]};
-SALONS.forEach(s=>s.staff.forEach(st=>{ if (SAMPLE_TAGS[st.id]) st.p.tags = SAMPLE_TAGS[st.id]; }));
 
 /* ============ 場所・日にち・時間（最初にお客様が選ぶ条件） ============ */
 const ZONES = [["center","大通・すすきの"],["station","札幌駅周辺"],["west","円山・西区・琴似"],["south","豊平・平岸・南区"],["east","白石・厚別・新札幌"],["north","北区・東区"]];
@@ -697,26 +673,8 @@ const THEMES = {
   spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}}
 };
 const MIN_Q = 13, MAX_Q = 25, GOAL = 85;
-/* ============ 質問コース（熱量で選ぶ）============
- base＝基本の質問の上限、minq＝基本の質問の最低数、fol＝深掘りの回数（99＝すべて）、talk＝先に聞いておくことの数（ids＝聞くものを決めている）、
- jk＝じっくり質問の数、aff＝相性の質問の数、early＝何問目から「ここまでで結果を見る」を出すか（null＝出さない） */
-const COURSES = {
-  lite: {label:"ちょっと見る", time:"3分", n:"約10問", base:8,  minq:6,  fol:0,  talk:2,  ids:["t_talk","t_fail"], jk:0,  aff:0, early:null},
-  std:  {label:"ちゃんと探す", time:"5分", n:"約25問", base:15, minq:11, fol:3,  talk:5,  jk:0,  aff:2, early:15},
-  full: {label:"本気で探す",   time:"10分", n:"約50問", base:25, minq:18, fol:99, talk:99, jk:12, aff:6, early:25}
-};
-const COURSE_ORDER = ["lite","std","full"];
-/* 探し方ごとの「おすすめ」 */
-const COURSE_REC = {lifelong:"full", explore:"std", casual:"lite", model:"lite"};
-function C(){ return COURSES[(S && S.course) || "std"]; }
-function courseLabel(k){ const c = COURSES[k]; return c ? c.label : ""; }
 /* やりたいメニューで答えが分かった分だけ、最低質問数を減らす（最大3問） */
-function minQ(){ return (S && S.course ? C().minq : MIN_Q) - Math.min(3, ((S && S.preset) || []).length); }
-/* 答えた画面の合計（基本の質問・深掘り・先に聞いたこと・じっくり質問・相性） */
-function totalAns(){ if (!S) return 0; return S.n + Object.keys(S.fol||{}).length + Object.keys(S.talk||{}).length + Object.keys(S.jk||{}).length + (S.affN||0); }
-/* 「ここまでで結果を見る」ボタン */
-function earlyBtn(){ const e = C().early; return e != null && totalAns() >= e ? `<button class="early" type="button" id="earlyBtn">ここまでで結果を見る</button>` : ""; }
-function wireEarly(){ const b = document.getElementById("earlyBtn"); if (b) b.onclick = () => { S.early = true; finish(); }; }
+function minQ(){ return MIN_Q - Math.min(3, ((S && S.preset) || []).length); }
 /* 2つの段階：①お店の質問でマッチ率80%まで → ②「ちょっと個人的なこと聞いていい？」で担当者まで決める */
 const PHASE1_GOAL = 80, PHASE1_MAX = 20, PERSONAL_MAX = 4;
 /* マッチ率のゆるさ。値を変えると全体の点数の出方が変わります
@@ -835,10 +793,8 @@ function goalPool(r){
 }
 /* 第1段階の終わり：上位3店がマッチ率80%以上、または20問 */
 function phase1Done(answers, theme, n){
-  const max = S && S.course ? C().base : PHASE1_MAX;
-  if (n >= max) return true;
+  if (n >= PHASE1_MAX) return true;
   if (n < minQ()) return false;
-  if (S && S.upTo && n < S.upTo) return false;     /* 上のコースに進んだときは、もう少し聞く */
   const all = scoreAll(answers, theme), r = goalPool(all);
   if (r.length && r[Math.min(3, r.length) - 1].score >= PHASE1_GOAL) return true;
   /* 1位がはっきり見えたら、残りは担当者の質問で詰める（同じ所で足踏みさせない） */
@@ -902,8 +858,7 @@ function loadData(){
   dataReady = fetch(CONFIG.GAS_URL + "?action=data").then(r=>r.json()).then(d=>{
     if (d && Array.isArray(d.salons) && d.salons.length >= 3) SALONS = d.salons;
     /* サンプルのお店で、まだ「価値」が入っていないスタイリストには、見本の値を入れておく */
-    SALONS.forEach(x=>(x.staff||[]).forEach(st=>{ const v=SAMPLE_VALUES[st.id]; st.p=st.p||{}; if (x.sample && v && !(st.p.please||[]).length) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]});
-      if (x.sample && SAMPLE_TAGS[st.id] && !(st.p.tags||[]).length) st.p.tags = SAMPLE_TAGS[st.id]; }));
+    SALONS.forEach(x=>(x.staff||[]).forEach(st=>{ const v=SAMPLE_VALUES[st.id]; st.p=st.p||{}; if (x.sample && v && !(st.p.please||[]).length) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]}); }));
   }).catch(()=>{ /* 読めなければサンプルで動かす */ });
 }
 
@@ -1005,7 +960,7 @@ function renderTheme(){
         <button class="choice" type="button" data-theme="salon">${THEMES.salon.label}</button>
         ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
       </div>
-      <p class="note">質問の数は、3分・5分・10分のコースから選べます。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
+      <p class="note">質問は最大25問。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
       ${DEMO?`<p class="warnbox" style="margin-top:4px">いまは<b>デモ体験版</b>です（サンプルのお店）。${BOOK_TEXT}から、札幌市中央区のお店の掲載と予約がスタートします。診断は何回でも試せるので、たくさん体験してみてください。</p>`
         : PRE?`<p class="warnbox" style="margin-top:4px">いまは<b>札幌市中央区のお店</b>から先行スタート中です。${LAUNCH_TEXT}から札幌全域のお店に広がります。</p>`:""}
     </div>
@@ -1022,16 +977,13 @@ const TENSIONS = [
   ["model","モデル（カット・カラーなど）で、お得にそれなりのクオリティで"]
 ];
 function tensionLabel(k){ return (TENSIONS.find(x=>x[0]===k)||[,""])[1]; }
-let draft = {tension:"", course:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
+let draft = {tension:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
 
 /* ============ はじめの質問（AISIとの会話で1問ずつ） ============ */
 /* kind：one＝1つ選ぶとすぐ次へ ／ many＝いくつでも選んで「これで決定」 */
 const INTRO = [
   { key:"tension", kind:"one", pose:"open", q:"最初に聞かせて。\n今回は、どんな気持ちで美容室を探してる？", opts:()=>TENSIONS, wide:true,
     say:v=>({lifelong:"いいね。じゃあ、腕だけじゃなくて「人」も見て選ぶよ。", casual:"了解。通いやすさと気軽さ、ちゃんと見ておく。", explore:"たまの冒険、いいじゃん。いつもと違う良さがある店を探そう。", model:"なるほど。モデルの募集があるかは、予約のときにお店が確かめてくれるよ。"})[v] },
-  { key:"course", kind:"one", pose:"point", q:"今日は、\nどのくらい付き合ってくれる？\nじっくり答えてくれるほど、\n君にぴったりの人が見つかるよ。", wide:true,
-    opts:()=>COURSE_ORDER.map(k=>[k, COURSES[k].label]), sub2:k=>`${COURSES[k].time}・${COURSES[k].n}`, rec:()=>COURSE_REC[draft.tension]||"",
-    say:v=>({lite:"了解。サクッと、大事なところだけ聞くね。", std:"いいね。ちょうどいいところまで、ちゃんと聞くよ。", full:"……本気だね。俺も本気で探す。"})[v] },
   { key:"menus", kind:"many", pose:"think", q:"今回、やりたいメニューは？", sub:"いくつでも。そのメニューが一押しのお店から探すよ", opts:()=>MENU_CATS.map(c=>[c[0],c[1]]), none:"まだ決めてない", required:true },
   { key:"when", kind:"one", pose:"pocket", q:"いつ頃行きたい？", opts:()=>WHENS,
     say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。11月19日からは、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はぴたリストのLINEに保存して、あとから予約できるよ。") : "" },
@@ -1060,7 +1012,7 @@ function renderIntro(prevSay){
         ${it.sub?`<p class="note" style="margin:6px 0 0;font-size:.8rem">${esc(it.sub)}</p>`:""}
       </div>
       <div class="chips aff ${it.wide?"wide":""}" id="introChips">
-        ${it.opts().map(([v,l])=>`<button type="button" class="chip ${isOn(v)?"on":""}" data-v="${esc(v)}" aria-pressed="${isOn(v)}">${esc(l)}${it.rec && it.rec()===v?`<span class="rec">おすすめ</span>`:""}${it.sub2?`<small class="cs">${esc(it.sub2(v))}</small>`:""}</button>`).join("")}
+        ${it.opts().map(([v,l])=>`<button type="button" class="chip ${isOn(v)?"on":""}" data-v="${esc(v)}" aria-pressed="${isOn(v)}">${esc(l)}</button>`).join("")}
         ${it.none?`<button type="button" class="chip ${noneOn?"on":""}" data-v="__none" aria-pressed="${!!noneOn}">${esc(it.none)}</button>`:""}
       </div>
       ${it.date?`<label class="datel" for="cDate">日付で指定 <input type="date" id="cDate" value="${d.date}"></label>`:""}
@@ -1110,16 +1062,15 @@ function introGo(kind, say){
     if (introIdx < INTRO.length - 1){ introIdx++; return renderIntro(say); }
     const d = draft;
     await dataReady;
-    start(introTheme, {tension: d.tension && d.tension!=="__none" ? d.tension : "", course: COURSES[d.course] ? d.course : "std", menus:MENU_CATS.map(c=>c[0]).filter(k=>d.menus.includes(k)), when:(d.when && d.when!=="__none") ? d.when : "week",
+    start(introTheme, {tension: d.tension && d.tension!=="__none" ? d.tension : "", menus:MENU_CATS.map(c=>c[0]).filter(k=>d.menus.includes(k)), when:(d.when && d.when!=="__none") ? d.when : "week",
       age: d.age && d.age!=="__none" ? d.age : "", zones:[...d.zones], days:[...d.days].sort(), slots:[...d.slots], date:d.date});
   }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
 }
 
 function start(theme, cond){
   COND = cond;
-  S = {sid:newSid(), theme, cond, course:cond.course||"std", course0:cond.course||"std", answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false,
-       fol:{}, talk:{}, jk:{}, jkAns:{}, affN:0, say:"", need:null, early:false, upTo:0};
-  send("start", {theme:THEMES[theme].label, tension:tensionLabel(cond.tension), course:courseLabel(S.course), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
+  S = {sid:newSid(), theme, cond, answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, say:"", need:null};
+  send("start", {theme:THEMES[theme].label, tension:tensionLabel(cond.tension), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
     days: cond.date ? cond.date.replace(/-/g,"/") : (cond.days.map(d=>DAYS[d]+"曜").join("、")||"こだわらない"),
     slots: cond.slots.map(k=>SLOTS.find(x=>x[0]===k)[1]).join("、")||"こだわらない",
     device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
@@ -1163,7 +1114,7 @@ function renderQ(){
     <div class="panel">
       ${meterHTML(S.meter)}
       <div class="bubble">
-        <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${C().base}</span><span class="coursebadge">${esc(C().label)}</span></p>
+        <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${PHASE1_MAX}</span></p>
         ${S.say?`<p class="aside">${esc(S.say)}</p>`:asideFor(n)?`<p class="aside">${asideFor(n)}</p>`:""}
         <p class="voice">${esc(qText(q))}</p>
       </div>
@@ -1171,11 +1122,9 @@ function renderQ(){
         ${ANSWERS.map(([l],i)=>`<button class="choice" type="button" data-i="${i}">${l}</button>`).join("")}
       </div>
       <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
-      ${earlyBtn()}
     </div>
   </section>`;
   S.say = "";
-  wireEarly();
   typeVoice($app.querySelector(".bubble .voice"));
   $app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{
     if ($app.querySelector(".choices.locked")) return;
@@ -1195,13 +1144,13 @@ function answer(v){
   S.n++;
   S.meter = nextMeter(S.meter, S.answers, S.theme);
   /* 「はい」と答えた質問は、理由や本音をもう1つだけ聞く */
-  if (v >= .75 && FOLLOW[q.id] && !(q.id in S.fol) && Object.keys(S.fol).length < C().fol) return renderFollow(q.id);
+  if (v >= .75 && FOLLOW[q.id] && !(q.id in S.fol)) return renderFollow(q.id);
   next();
 }
 function next(){
   if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
   /* 切り札：9問を過ぎてもまだ絞れていなければ、1回だけ写真を見せてもらう */
-  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= C().base-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
+  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= PHASE1_MAX-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
     S.photoAsked = true; return renderPhoto();
   }
   const nq = nextQuestion(S.answers, S.theme, S.n);
@@ -1224,7 +1173,7 @@ function renderPhoto(msg){
     <div class="aisi">${aisiImg("think")}</div>
     <div class="panel">
       <div class="bubble">
-        <p class="qno">質問 ${S.n+1}<span style="opacity:.6"> / 最大${C().base} ・ 切り札</span></p>
+        <p class="qno">質問 ${S.n+1}<span style="opacity:.6"> / 最大${MAX_Q} ・ 切り札</span></p>
         <p class="voice">${msg || "……あと一歩なんだ。<br>なりたい髪型の写真、持ってる？"}</p>
       </div>
       <div class="choices">
@@ -1355,7 +1304,7 @@ function staffValues(st, key){
   return v && v!=="いない" && v!=="その他" ? [v] : [];
 }
 /* 聞く価値のある質問（候補のスタイリストの誰かが登録している項目） */
-function affQuestions(top, max){
+function affQuestions(top){
   const staff = top.flatMap(r=>r.salon.staff);
   return AFF_Q.map(a=>{
     const vals = {}; staff.forEach(st=>staffValues(st,a.key).forEach(v=>vals[v]=(vals[v]||0)+1));
@@ -1365,7 +1314,7 @@ function affQuestions(top, max){
     const always = AFF_ALWAYS[a.key] || [];
     const opts = always.concat(found.filter(v=>!always.includes(v))).slice(0, always.length ? 16 : 10);
     return Object.assign({}, a, {opts, spread: keys.length});
-  }).filter(a=>a.spread>=1).sort((x,y)=>y.spread-x.spread).slice(0, (max||PERSONAL_MAX) + 4);
+  }).filter(a=>a.spread>=1).sort((x,y)=>y.spread-x.spread).slice(0, PERSONAL_MAX);
 }
 const normName = s => String(s||"").replace(/（例）|\s|　/g,"").toLowerCase();
 function affinity(st, A){
@@ -1392,7 +1341,7 @@ const TECH_WORDS = {q_kusege:["縮毛矯正","髪質改善","ストレート"], 
   q_perm:["パーマ"], q_care:["スパ","頭皮"], q_gray:["白髪","グレイ"], q_damage:["トリートメント","髪質改善","ダメージ"], q_mens:["メンズ"], q_volume:["毛量","すき"], q_thin:["ボリューム","細毛"], q_bangs:["前髪"], q_easy:["似合わせ","骨格","扱いやすい"], q_long:["ロング","毛先"], q_change:["レイヤー","似合わせ","ハイトーン"]};
 function staffReasons(st, ans){
   const out = [];
-  if (S && S.need){ const vf = valueFit(st, S.need); [...new Set(vf.hits.flatMap(h => h.tags.map(tagText)))].slice(0,3).forEach(t => out.push(t)); if (vf.home) out.push(vf.home); (vf.extra||[]).forEach(t => out.push(t)); }
+  if (S && S.need){ const vf = valueFit(st, S.need); [...new Set(vf.hits.flatMap(h => h.tags.map(tagText)))].slice(0,2).forEach(t => out.push(t)); if (vf.home) out.push(vf.home); }
   const text = [st.spec].concat((st.p&&st.p.tech)||[]).join(" ");
   QUESTIONS.filter(q => q.deep && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`${q.label}が得意`));
   for (const [qid, words] of Object.entries(TECH_WORDS)){
@@ -1412,16 +1361,13 @@ let affQueue = [], affIdx = 0, meterStart = 80, meterFinal = 90;
 /* 第2段階：「ちょっと個人的なこと聞いていい？」 */
 function startPersonal(){
   if (!S.talkDone) return startTalk();
-  if (!S.jkDone) return startJK();
   if (S.affDone) return finish();
   S.affDone = true;
-  const room = C().aff - (S.affN || 0);
-  if (room <= 0) return finish();
   const ranked = scoreAll(S.answers, S.theme);
-  const qs = affQuestions(ranked.slice(0,3), room).filter(a => !(S.aff && a.key in S.aff)).slice(0, room);
+  const qs = affQuestions(ranked.slice(0,3)).slice(0, PERSONAL_MAX);
   S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL, ranked[0].score));
   if (!qs.length) return finish();
-  affQueue = qs; affIdx = 0; S.aff = S.aff || {};
+  affQueue = qs; affIdx = 0; S.aff = {};
   meterStart = S.meter;
   view="aff-intro";
   $app.innerHTML = `
@@ -1482,10 +1428,8 @@ function renderAff(){
       <div class="chips aff">${opts.map(o=>`<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>
       ${a.name?`<label class="datel oshiname" for="affName" hidden>推しの名前（任意）<input type="text" id="affName" maxlength="40" placeholder="グループ名・チーム名など"></label>`:""}
       <div class="choices"><button class="choice primary" type="button" id="affNext">${a.multi?"これで決定":"次へ"}</button><button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
-      ${earlyBtn()}
     </div>
   </section>`;
-  wireEarly();
   const box = $app.querySelector(".chips.aff");
   box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
     const v = b.dataset.v;
@@ -1500,7 +1444,7 @@ function renderAff(){
     affGo(any ? "yes" : "maybeNo");
   };
   typeVoice($app.querySelector(".bubble .voice"));
-  document.getElementById("affSkip").onclick=()=>{ S.affN = (S.affN||0) + 1; affIdx++; affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone(); };
+  document.getElementById("affSkip").onclick=()=>{ affIdx++; affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone(); };
 }
 /* 個人的な質問：選んだらAISIが反応して、少し待ってから次へ */
 function affGo(kind){
@@ -1515,7 +1459,6 @@ function affNext(){
   const sel = [...$app.querySelectorAll(".chips.aff .chip.on")].map(b=>b.dataset.v).filter(v=>v!==a.none);
   if (a.multi) S.aff[a.key] = sel; else if (sel[0]) S.aff[a.key] = sel[0];
   if (a.name){ const n = (document.getElementById("affName")||{}).value; if (n) S.aff.oshi = n.trim(); }
-  S.affN = (S.affN||0) + 1;
   affIdx++;
   affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone();
 }
@@ -1536,237 +1479,121 @@ const VAL_TXT = {
     "最初から最後まで自分が担当する":"最初から最後まで、自分で担当してくれる", "会話の量をお客様に合わせる":"会話の量を、お客さんに合わせてくれる"},
   worry: {"くせ毛・うねり":"くせ毛やうねりの悩みが得意", "ダメージ毛":"傷んだ髪のケアが得意", "ブリーチ毛":"ブリーチした髪の扱いが得意", "白髪":"白髪の悩みが得意",
     "細い髪・ボリューム不足":"細い髪やボリューム不足の悩みが得意", "多い髪・広がり":"多い髪や広がりの悩みが得意", "頭皮の悩み":"頭皮の悩みにも詳しい",
-    "似合う髪型が分からない":"似合う髪型を一緒に見つけるのが得意", "前の美容室での失敗":"ほかのお店でうまくいかなかった髪のやり直しが得意",
-    "冬の乾燥・静電気":"冬の乾燥や静電気の悩みにも強い"},
-  /* スタッフが「AISIと話しながら入力」で答えた内容（マッチ用タグ）。登録ページ（register.html）の WZ_TAGS とそろえる */
-  tag: {color_often:"カラーを続けても傷みにくい施術が得意", straight_hist:"縮毛矯正をくり返した髪の扱いに慣れている", quick_style:"朝5分で決まる髪づくりが得意",
-    iron_teach:"アイロンやコテの、髪を傷めない使い方を教えてくれる", styling_teach:"スタイリング剤のつけ方まで教えてくれる", rule_fit:"仕事や学校の決まりに合わせた提案が得意",
-    taste_clean:"きれいめな雰囲気の髪が得意", taste_casual:"カジュアルな雰囲気の髪が得意", taste_street:"ストリート・モード系の髪が得意", taste_natural:"ナチュラルな雰囲気の髪が得意",
-    praise_shine:"ツヤと手触りを出すのが得意", praise_shape:"形やシルエットづくりにこだわる", len_short:"ショートが得意", len_bob:"ボブが得意", len_medium:"ミディアムが得意", len_long:"ロングを大事に育てるのが得意",
-    omakase:"似合う髪型を一緒に考えるのが好き", long_last:"伸びても崩れにくい髪づくりが得意", budget_fit:"予算の中で最善を考えてくれる", plan:"次の来店時期まで一緒に計画してくれる",
-    talk_free:"どんな話題でも楽しく話せる", hair_only:"髪の話に集中して、静かに過ごさせてくれる", body_care:"シャンプー台での気づかいが細やか"}
+    "似合う髪型が分からない":"似合う髪型を一緒に見つけるのが得意", "前の美容室での失敗":"ほかのお店でうまくいかなかった髪のやり直しが得意"}
 };
-const TENSION_FIT = {lifelong:"長く通ってくれるお客さまとの付き合いを大事にしている", casual:"気軽に来てくれるお客さまを大事にしている", explore:"新しいことを試したいお客さまが得意", model:"モデルのお客さまの担当にも慣れている"};
 const O = (label, say, need) => ({label, say, need: need || {}});
 const FOLLOW = {
   q_damage: {q:"それって、どこから来てると思う？", opts:[
-    O("カラーやブリーチを繰り返してる", "好きな色は続けたい、でも傷ませたくない……ってことだよね。", {you:"好きな色は続けたい、でも傷ませたくない", worry:["ダメージ毛","ブリーチ毛"], please:["傷ませない"], ask:"カラーは続けながら、ダメージを抑えたい"}),
-    O("アイロンやコテを毎日使ってる", "スタイリングはやめたくない。だから、髪の守り方を知りたいってことだね。", {you:"毎日のスタイリングは続けたい、でも髪は守りたい", worry:["ダメージ毛"], please:["傷ませない"], value:["家でのケア方法を教える"], ask:"毎日のアイロンを続けながら、髪を守りたい"}),
-    O("縮毛矯正やパーマのあとから", "前の施術のダメージから、立て直したいんだね。", {you:"前の施術のダメージから、髪を立て直したい", worry:["ダメージ毛"], please:["傷ませない"], ask:"前の施術で傷んだ髪を、立て直したい"}),
-    O("正直、よく分からない", "原因が分からないのが、いちばん不安だよね。ちゃんと髪を診てくれる人を探すよ。", {you:"ダメージの原因が分からなくて不安", worry:["ダメージ毛"], value:["髪の状態を正直に伝える"], ask:"髪の状態を診て、ダメージの原因を教えてほしい"})]},
+    O("カラーやブリーチを繰り返してる", "好きな色は続けたい、でも傷ませたくない……ってことだよね。", {you:"好きな色は続けたい、でも傷ませたくない", worry:["ダメージ毛","ブリーチ毛"], please:["傷ませない"], ask:"ダメージの原因：カラー・ブリーチの繰り返し"}),
+    O("アイロンやコテを毎日使ってる", "スタイリングはやめたくない。だから、髪の守り方を知りたいってことだね。", {you:"毎日のスタイリングは続けたい、でも髪は守りたい", worry:["ダメージ毛"], please:["傷ませない"], value:["家でのケア方法を教える"], ask:"ダメージの原因：毎日のアイロン・コテ"}),
+    O("縮毛矯正やパーマのあとから", "前の施術のダメージから、立て直したいんだね。", {you:"前の施術のダメージから、髪を立て直したい", worry:["ダメージ毛"], please:["傷ませない"], ask:"ダメージの原因：縮毛矯正・パーマ"}),
+    O("正直、よく分からない", "原因が分からないのが、いちばん不安だよね。ちゃんと髪を診てくれる人を探すよ。", {you:"ダメージの原因が分からなくて不安", worry:["ダメージ毛"], value:["髪の状態を正直に伝える"], ask:"ダメージの原因：本人も分からない（髪の状態を診てほしい）"})]},
   q_kusege: {q:"くせでいちばんつらいのは、どんなとき？", opts:[
-    O("雨や湿気の日に広がる", "天気に振り回されない髪にしたい、ってことだよね。", {you:"天気に左右されない髪にしたい", worry:["くせ毛・うねり"], please:["扱いやすさ"], ask:"湿気の日も広がらない髪にしたい"}),
-    O("毎朝のアイロンに時間がかかる", "朝の時間を取り戻したいんだね。それ、大事。", {you:"毎朝のアイロンの時間を減らしたい", worry:["くせ毛・うねり"], please:["扱いやすさ","時短"], ask:"毎朝のアイロンの時間を減らしたい"}),
-    O("前髪や顔まわりだけ、言うことを聞かない", "全部じゃなくて、気になるところだけ何とかしたいんだね。", {you:"前髪や顔まわりのくせだけ何とかしたい", worry:["くせ毛・うねり"], please:["再現性（家でも同じに）"], ask:"前髪・顔まわりのくせを何とかしたい"}),
-    O("伸ばしたいけど、ピンとしすぎるのはイヤ", "くせは伸ばしたい、でも不自然にはしたくない。そこ、分かるよ。", {you:"くせは伸ばしたい、でも不自然にはしたくない", worry:["くせ毛・うねり"], please:["扱いやすさ"], value:["写真でイメージを共有する"], ask:"くせは伸ばしたいが、自然な仕上がりが希望"})]},
+    O("雨や湿気の日に広がる", "天気に振り回されない髪にしたい、ってことだよね。", {you:"天気に左右されない髪にしたい", worry:["くせ毛・うねり"], please:["扱いやすさ"], ask:"くせ：湿気で広がるのがつらい"}),
+    O("毎朝のアイロンに時間がかかる", "朝の時間を取り戻したいんだね。それ、大事。", {you:"毎朝のアイロンの時間を減らしたい", worry:["くせ毛・うねり"], please:["扱いやすさ","時短"], ask:"くせ：毎朝のアイロンが大変"}),
+    O("前髪や顔まわりだけ、言うことを聞かない", "全部じゃなくて、気になるところだけ何とかしたいんだね。", {you:"前髪や顔まわりのくせだけ何とかしたい", worry:["くせ毛・うねり"], please:["再現性（家でも同じに）"], ask:"くせ：前髪・顔まわりが気になる"}),
+    O("伸ばしたいけど、ピンとしすぎるのはイヤ", "くせは伸ばしたい、でも不自然にはしたくない。そこ、分かるよ。", {you:"くせは伸ばしたい、でも不自然にはしたくない", worry:["くせ毛・うねり"], please:["扱いやすさ"], value:["写真でイメージを共有する"], ask:"くせ：自然な仕上がりを希望"})]},
   q_change: {q:"変わりたいって思った、きっかけはある？", opts:[
-    O("新しい環境が始まる（仕事・学校など）", "新しい場所で、新しい自分で始めたいんだね。", {you:"新しい環境で、新しい自分で始めたい", please:["似合わせの提案"], ask:"新しい環境に合わせて、イメージを変えたい"}),
-    O("今の髪型に飽きた", "今の髪型から、そろそろ抜け出したいってことだね。", {you:"今の髪型から抜け出したい", please:["似合わせの提案"], value:["写真でイメージを共有する"], ask:"今の髪型から、ガラッと変えたい"}),
-    O("気分を変えたいことがあった", "髪を変えると、気持ちも切り替わるよね。", {you:"髪と一緒に、気持ちも切り替えたい", please:["似合わせの提案","リラックス・癒し"], ask:"髪と一緒に、気分も切り替えたい"}),
-    O("なんとなく、ずっと変えたかった", "その「なんとなく」、大事にしよう。", {you:"ずっと変えたかった髪に、やっと踏み出したい", please:["似合わせの提案"], value:["切る前に長さ・仕上がりを確認する"], ask:"ずっと変えたかった髪に、挑戦したい"})]},
+    O("新しい環境が始まる（仕事・学校など）", "新しい場所で、新しい自分で始めたいんだね。", {you:"新しい環境で、新しい自分で始めたい", please:["似合わせの提案"], ask:"イメチェンのきっかけ：新しい環境"}),
+    O("今の髪型に飽きた", "今の髪型から、そろそろ抜け出したいってことだね。", {you:"今の髪型から抜け出したい", please:["似合わせの提案"], value:["写真でイメージを共有する"], ask:"イメチェンのきっかけ：今の髪型に飽きた"}),
+    O("気分を変えたいことがあった", "髪を変えると、気持ちも切り替わるよね。", {you:"髪と一緒に、気持ちも切り替えたい", please:["似合わせの提案","リラックス・癒し"], ask:"イメチェンのきっかけ：気分を変えたい"}),
+    O("なんとなく、ずっと変えたかった", "その「なんとなく」、大事にしよう。", {you:"ずっと変えたかった髪に、やっと踏み出したい", please:["似合わせの提案"], value:["切る前に長さ・仕上がりを確認する"], ask:"イメチェンのきっかけ：ずっと変えたかった"})]},
   q_gray: {q:"白髪とは、どうつきあっていきたい？", opts:[
-    O("しっかり染めて隠したい", "しっかり隠して、すっきりしたいんだね。", {you:"白髪はしっかり隠したい", worry:["白髪"], please:["若々しさ・エイジングケア"], ask:"白髪はしっかり染めたい"}),
-    O("なじませて、目立たなくしたい", "染めてる感じは出さずに、自然になじませたいってことだね。", {you:"白髪を自然になじませたい", worry:["白髪"], please:["色の美しさ・透明感"], ask:"白髪は、ぼかして自然になじませたい"}),
-    O("いつかは活かしたい", "白髪とも上手につきあっていきたい。いい考え方だと思う。", {you:"白髪とも上手につきあっていきたい", worry:["白髪"], value:["髪の状態を正直に伝える"], ask:"白髪とは、いずれ上手に付き合っていきたい"})]},
+    O("しっかり染めて隠したい", "しっかり隠して、すっきりしたいんだね。", {you:"白髪はしっかり隠したい", worry:["白髪"], please:["若々しさ・エイジングケア"], ask:"白髪：しっかり染めたい"}),
+    O("なじませて、目立たなくしたい", "染めてる感じは出さずに、自然になじませたいってことだね。", {you:"白髪を自然になじませたい", worry:["白髪"], please:["色の美しさ・透明感"], ask:"白髪：ぼかし・なじませたい"}),
+    O("いつかは活かしたい", "白髪とも上手につきあっていきたい。いい考え方だと思う。", {you:"白髪とも上手につきあっていきたい", worry:["白髪"], value:["髪の状態を正直に伝える"], ask:"白髪：いずれ活かしたい"})]},
   q_thin: {q:"ボリュームの悩み、いちばんはどこ？", opts:[
-    O("トップがぺたんとする", "トップにふんわり感がほしいんだね。", {you:"トップにふんわり感がほしい", worry:["細い髪・ボリューム不足"], please:["扱いやすさ"], ask:"トップにふんわり感がほしい"}),
-    O("髪全体が細くなってきた気がする", "それ、気になるよね。髪と頭皮の両方から見てくれる人がいい。", {you:"髪が細くなってきたのが気になる", worry:["細い髪・ボリューム不足","頭皮の悩み"], please:["若々しさ・エイジングケア"], value:["家でのケア方法を教える"], ask:"髪と頭皮の両方から、ボリュームを出したい"})]},
+    O("トップがぺたんとする", "トップにふんわり感がほしいんだね。", {you:"トップにふんわり感がほしい", worry:["細い髪・ボリューム不足"], please:["扱いやすさ"], ask:"ボリューム：トップがぺたんとする"}),
+    O("髪全体が細くなってきた気がする", "それ、気になるよね。髪と頭皮の両方から見てくれる人がいい。", {you:"髪が細くなってきたのが気になる", worry:["細い髪・ボリューム不足","頭皮の悩み"], please:["若々しさ・エイジングケア"], value:["家でのケア方法を教える"], ask:"ボリューム：髪が細くなってきた"})]},
   q_volume: {q:"広がりやすい髪、どうなるのがいちばんいい？", opts:[
-    O("乾かすだけで、まとまってほしい", "手間をかけずにまとまる髪。いちばん大事なところだね。", {you:"乾かすだけでまとまる髪にしたい", worry:["多い髪・広がり"], please:["扱いやすさ","再現性（家でも同じに）"], ask:"乾かすだけでまとまる髪にしたい"}),
-    O("軽くしたいけど、すきすぎはイヤ", "軽くはしたい、でもすかれすぎるのは怖い。そこ、ちゃんと伝えるね。", {you:"軽くしたい、でもすきすぎは避けたい", worry:["多い髪・広がり"], value:["切る前に長さ・仕上がりを確認する"], ask:"軽くしたいが、すきすぎは避けたい"})]},
+    O("乾かすだけで、まとまってほしい", "手間をかけずにまとまる髪。いちばん大事なところだね。", {you:"乾かすだけでまとまる髪にしたい", worry:["多い髪・広がり"], please:["扱いやすさ","再現性（家でも同じに）"], ask:"広がり：乾かすだけでまとまってほしい"}),
+    O("軽くしたいけど、すきすぎはイヤ", "軽くはしたい、でもすかれすぎるのは怖い。そこ、ちゃんと伝えるね。", {you:"軽くしたい、でもすきすぎは避けたい", worry:["多い髪・広がり"], value:["切る前に長さ・仕上がりを確認する"], ask:"広がり：すきすぎは避けたい"})]},
   q_short: {q:"短くするとき、いちばん不安なことは？", opts:[
-    O("短くなりすぎないか", "短くなりすぎるのが怖いんだね。切る前に確認してくれる人を選ぶよ。", {you:"短くなりすぎるのが不安", value:["切る前に長さ・仕上がりを確認する"], ask:"長さは、切る前に確認してほしい"}),
-    O("本当に似合うかどうか", "似合うかどうか、それがいちばん大事だよね。", {you:"ショートが本当に似合うか不安", please:["似合わせの提案"], worry:["似合う髪型が分からない"], ask:"似合うショートを、一緒に考えてほしい"}),
-    O("家でうまくまとまるか", "サロンの日だけじゃなくて、毎日のことだもんね。", {you:"家でもまとまるか不安", please:["再現性（家でも同じに）","扱いやすさ"], ask:"家でもまとまるショートにしたい"})]},
+    O("短くなりすぎないか", "短くなりすぎるのが怖いんだね。切る前に確認してくれる人を選ぶよ。", {you:"短くなりすぎるのが不安", value:["切る前に長さ・仕上がりを確認する"], ask:"ショート：短くなりすぎが不安"}),
+    O("本当に似合うかどうか", "似合うかどうか、それがいちばん大事だよね。", {you:"ショートが本当に似合うか不安", please:["似合わせの提案"], worry:["似合う髪型が分からない"], ask:"ショート：似合うか不安"}),
+    O("家でうまくまとまるか", "サロンの日だけじゃなくて、毎日のことだもんね。", {you:"家でもまとまるか不安", please:["再現性（家でも同じに）","扱いやすさ"], ask:"ショート：家でまとまるか不安"})]},
   q_propose: {q:"どんなふうに提案してほしい？", opts:[
-    O("写真を見ながら決めたい", "言葉だけより、目で見て決めたいんだね。", {you:"写真を見ながら決めたい", value:["写真でイメージを共有する"], ask:"写真を見ながら、スタイルを決めたい"}),
-    O("似合う理由も一緒に聞きたい", "なぜ似合うのか、理由まで知りたいんだね。", {you:"似合う理由まで知りたい", please:["似合わせの提案"], value:["髪の状態を正直に伝える"], ask:"似合う理由も聞きながら決めたい"}),
-    O("思い切ってお任せしたい", "任せてみたい。いいね、その気持ち。", {you:"思い切って任せてみたい", please:["似合わせの提案"], ask:"スタイルはおまかせしたい"})]}
+    O("写真を見ながら決めたい", "言葉だけより、目で見て決めたいんだね。", {you:"写真を見ながら決めたい", value:["写真でイメージを共有する"], ask:"提案：写真を見ながら決めたい"}),
+    O("似合う理由も一緒に聞きたい", "なぜ似合うのか、理由まで知りたいんだね。", {you:"似合う理由まで知りたい", please:["似合わせの提案"], value:["髪の状態を正直に伝える"], ask:"提案：似合う理由も聞きたい"}),
+    O("思い切ってお任せしたい", "任せてみたい。いいね、その気持ち。", {you:"思い切って任せてみたい", please:["似合わせの提案"], ask:"提案：お任せしたい"})]}
 };
 const TALK = [
   {id:"t_life", tension:"lifelong", lead:"生涯の美容師を探してるなら、ここは聞いておきたい。", q:"長く通うなら、いちばん大事にしたいのは？", opts:[
-    O("技術の確かさ", "長く任せられる、確かな技術だね。", {you:"長く任せられる確かな技術", please:["似合わせの提案"], value:["髪の状態を正直に伝える"], ask:"長く通える、確かな技術の担当を探している"}),
-    O("話しやすさ・相性", "相性って、長く通うほど大事になるよね。", {you:"話しやすさと相性", affBoost:1, value:["会話の量をお客様に合わせる"], ask:"長く通える、話しやすい担当を探している"}),
-    O("悩みが変わっても相談できること", "年齢や生活が変わっても、ずっと相談できる人がいいんだね。", {you:"髪の悩みが変わっても相談できること", value:["髪の状態を正直に伝える","家でのケア方法を教える"], ask:"髪の悩みが変わっても、ずっと相談したい"}),
-    O("毎回、新しい提案をくれること", "通うたびに、新しい自分に会いたいんだね。", {you:"通うたびに新しい提案がほしい", please:["似合わせの提案"], ask:"通うたびに、新しい提案がほしい"})]},
+    O("技術の確かさ", "長く任せられる、確かな技術だね。", {you:"長く任せられる確かな技術", please:["似合わせの提案"], value:["髪の状態を正直に伝える"], ask:"長く通うなら：技術の確かさ"}),
+    O("話しやすさ・相性", "相性って、長く通うほど大事になるよね。", {you:"話しやすさと相性", affBoost:1, value:["会話の量をお客様に合わせる"], ask:"長く通うなら：話しやすさ・相性"}),
+    O("悩みが変わっても相談できること", "年齢や生活が変わっても、ずっと相談できる人がいいんだね。", {you:"髪の悩みが変わっても相談できること", value:["髪の状態を正直に伝える","家でのケア方法を教える"], ask:"長く通うなら：悩みが変わっても相談できること"}),
+    O("毎回、新しい提案をくれること", "通うたびに、新しい自分に会いたいんだね。", {you:"通うたびに新しい提案がほしい", please:["似合わせの提案"], ask:"長く通うなら：毎回の新しい提案"})]},
   {id:"t_casual", tension:"casual", lead:"フラッと行けるお店なら、ここが大事。", q:"気軽に行くとき、いちばんうれしいのは？", opts:[
-    O("さっと終わる", "時間をかけずに、さっと整えたいんだね。", {you:"さっと終わること", please:["時短"], ask:"施術はさっと終わるとうれしい"}),
-    O("気をつかわずに過ごせる", "肩の力を抜いて過ごせるのがいちばん、だね。", {you:"気をつかわずに過ごせること", please:["リラックス・癒し"], value:["会話の量をお客様に合わせる"], ask:"気をつかわずに、気楽に過ごしたい"}),
-    O("毎回、同じ仕上がりになる", "安定感がほしいんだね。", {you:"毎回、同じ仕上がりになること", please:["再現性（家でも同じに）"], ask:"毎回、安定した仕上がりがうれしい"}),
-    O("料金が分かりやすい", "会計のときにドキッとしたくないよね。", {you:"料金が分かりやすいこと", value:["追加料金は事前に説明する"], ask:"料金が分かりやすいとうれしい"})]},
+    O("さっと終わる", "時間をかけずに、さっと整えたいんだね。", {you:"さっと終わること", please:["時短"], ask:"気軽に行くなら：さっと終わる"}),
+    O("気をつかわずに過ごせる", "肩の力を抜いて過ごせるのがいちばん、だね。", {you:"気をつかわずに過ごせること", please:["リラックス・癒し"], value:["会話の量をお客様に合わせる"], ask:"気軽に行くなら：気をつかわずに過ごしたい"}),
+    O("毎回、同じ仕上がりになる", "安定感がほしいんだね。", {you:"毎回、同じ仕上がりになること", please:["再現性（家でも同じに）"], ask:"気軽に行くなら：毎回同じ仕上がり"}),
+    O("料金が分かりやすい", "会計のときにドキッとしたくないよね。", {you:"料金が分かりやすいこと", value:["追加料金は事前に説明する"], ask:"気軽に行くなら：料金が分かりやすい"})]},
   {id:"t_explore", tension:"explore", lead:"いつものお店があるなら、ちょっと聞かせて。", q:"いつものお店に、ちょっと足りないものって何？", opts:[
-    O("新しい提案", "そろそろ、新しい自分に会いたいんだね。", {you:"いつものお店にはない、新しい提案がほしい", please:["似合わせの提案"], ask:"いつもと違う、新しい提案がほしい"}),
-    O("仕上がりの満足感", "もう一歩、満足したいってことだね。", {you:"もう一歩上の仕上がりがほしい", please:["再現性（家でも同じに）"], value:["切る前に長さ・仕上がりを確認する"], ask:"いつもより一歩上の仕上がりを期待している"}),
-    O("話しやすさ", "居心地も、仕上がりと同じくらい大事だよね。", {you:"もっと話しやすいお店がいい", affBoost:1, value:["会話の量をお客様に合わせる"], ask:"話しやすい雰囲気だとうれしい"}),
-    O("特にない（気分転換したい）", "たまには違う景色を見たい。それで十分だよ。", {ask:"気分転換に、新しいお店を試したい"})]},
+    O("新しい提案", "そろそろ、新しい自分に会いたいんだね。", {you:"いつものお店にはない、新しい提案がほしい", please:["似合わせの提案"], ask:"いつもの店に足りないもの：新しい提案"}),
+    O("仕上がりの満足感", "もう一歩、満足したいってことだね。", {you:"もう一歩上の仕上がりがほしい", please:["再現性（家でも同じに）"], value:["切る前に長さ・仕上がりを確認する"], ask:"いつもの店に足りないもの：仕上がりの満足感"}),
+    O("話しやすさ", "居心地も、仕上がりと同じくらい大事だよね。", {you:"もっと話しやすいお店がいい", affBoost:1, value:["会話の量をお客様に合わせる"], ask:"いつもの店に足りないもの：話しやすさ"}),
+    O("特にない（気分転換したい）", "たまには違う景色を見たい。それで十分だよ。", {ask:"いつもの店に足りないもの：特になし（気分転換）"})]},
   {id:"t_model", tension:"model", lead:"モデルで行くなら、先に確認させて。", q:"モデルの条件で、いちばん近いのは？", opts:[
-    O("デザインはお任せでOK", "任せてもらえると、美容師も腕がなるよ。", {please:["似合わせの提案"], ask:"モデル：デザインはおまかせでOK"}),
-    O("写真撮影・SNS掲載もOK", "撮影もOKなら、お店も喜ぶと思う。", {ask:"モデル：写真撮影・SNS掲載もOK"}),
+    O("デザインはお任せでOK", "任せてもらえると、美容師も腕がなるよ。", {please:["似合わせの提案"], ask:"モデル：デザインはお任せでOK"}),
+    O("写真撮影・SNS掲載もOK", "撮影もOKなら、お店も喜ぶと思う。", {ask:"モデル：写真撮影・SNS掲載OK"}),
     O("時間がかかってもOK", "時間に余裕があるのは、大きいね。", {ask:"モデル：時間がかかってもOK"}),
-    O("希望の長さや色は守りたい", "そこは大事にしよう。ちゃんと伝えるね。", {value:["切る前に長さ・仕上がりを確認する"], ask:"モデル：長さや色は、先に相談したい"})]},
+    O("希望の長さや色は守りたい", "そこは大事にしよう。ちゃんと伝えるね。", {value:["切る前に長さ・仕上がりを確認する"], ask:"モデル：希望の長さ・色は守りたい"})]},
   {id:"t_hc1", lead:"ここからは、家での髪のこと。", q:"家でのケア、自分の髪に合ってる自信ある？", opts:[
-    O("自信ある", "いいね。今のケアを活かしてくれる人を選ぶよ。", {ask:"今のホームケアを活かしたい"}),
-    O("あまりない", "なんとなく選んでる人、すごく多いんだ。", {you:"家でのケアが自分に合っているか自信がない", value:["家でのケア方法を教える"], ask:"自分に合うホームケアを知りたい"}),
-    O("何を使えばいいか分からない", "それなら、プロに理由つきで教えてもらうのがいちばん早い。", {you:"家で何を使えばいいか分からない", value:["家でのケア方法を教える"], ask:"家で使うものを、理由つきで教えてほしい"})]},
+    O("自信ある", "いいね。今のケアを活かしてくれる人を選ぶよ。", {ask:"ホームケア：今のケアに自信あり"}),
+    O("あまりない", "なんとなく選んでる人、すごく多いんだ。", {you:"家でのケアが自分に合っているか自信がない", value:["家でのケア方法を教える"], ask:"ホームケア：合っているか自信がない"}),
+    O("何を使えばいいか分からない", "それなら、プロに理由つきで教えてもらうのがいちばん早い。", {you:"家で何を使えばいいか分からない", value:["家でのケア方法を教える"], ask:"ホームケア：何を使えばいいか分からない"})]},
   {id:"t_hc2", q:"もし自分に必要だって分かったら、サロンのシャンプーやトリートメントも試してみたい？", opts:[
-    O("理由が分かれば、試してみたい", "納得できれば試したい。いちばん健全な選び方だと思う。", {you:"必要な理由が分かれば、サロンのケア用品も試したい", homecare:"want", ask:"サロンのケア用品も、理由が分かれば試したい"}),
-    O("まずは話だけ聞きたい", "まずは知るところから、だね。", {homecare:"listen", ask:"ケア用品は、まず話を聞いてみたい"}),
-    O("すすめられたくない", "大丈夫。無理にすすめない人を選ぶね。", {you:"ケア用品を無理にすすめられたくない", homecare:"no", value:["無理なすすめはしない"], ask:"ケア用品のおすすめは控えめが希望"})]},
+    O("理由が分かれば、試してみたい", "納得できれば試したい。いちばん健全な選び方だと思う。", {you:"必要な理由が分かれば、サロンのケア用品も試したい", homecare:"want", ask:"ケア用品：理由が分かれば試したい"}),
+    O("まずは話だけ聞きたい", "まずは知るところから、だね。", {homecare:"listen", ask:"ケア用品：まずは話だけ聞きたい"}),
+    O("すすめられたくない", "大丈夫。無理にすすめない人を選ぶね。", {you:"ケア用品を無理にすすめられたくない", homecare:"no", value:["無理なすすめはしない"], ask:"ケア用品：すすめられたくない"})]},
   {id:"t_talk", skip:()=>S.answers.q_quiet!=null, lead:"ここからは、美容室で直接は言いにくいこと。俺が先に聞いて、予約が決まったらお店にそっと伝えておくね。", q:"施術中の会話、どうしたい？", opts:[
-    O("いっぱい話したい", "話しながら過ごしたいんだね。", {talk:1, ask:"施術中は、たくさん話したい"}),
-    O("相手に合わせたい", "そのときの気分で、ってことだね。", {value:["会話の量をお客様に合わせる"], ask:"会話はその日の気分に合わせたい"}),
-    O("そっとしておいてほしい", "それ、なかなか言えないよね。ちゃんと伝えておく。", {you:"施術中は静かに過ごしたい", talk:0, value:["会話の量をお客様に合わせる"], ask:"施術中は、静かに過ごしたい"})]},
+    O("いっぱい話したい", "話しながら過ごしたいんだね。", {talk:1, ask:"会話：たくさん話したい"}),
+    O("相手に合わせたい", "そのときの気分で、ってことだね。", {value:["会話の量をお客様に合わせる"], ask:"会話：その日の気分に合わせたい"}),
+    O("そっとしておいてほしい", "それ、なかなか言えないよね。ちゃんと伝えておく。", {you:"施術中は静かに過ごしたい", talk:0, value:["会話の量をお客様に合わせる"], ask:"会話：静かに過ごしたい"})]},
   {id:"t_fail", leadIf:()=>S.answers.q_quiet!=null, lead:"ここからは、美容室で直接は言いにくいこと。俺が先に聞いて、予約が決まったらお店にそっと伝えておくね。", q:"前に美容室で、イメージと違ったことある？", opts:[
-    O("思ったより短く切られた", "それ、すごく嫌だったよね。切る前に長さをしっかり確認してくれる人を選ぶ。", {you:"前に、思ったより短く切られたことがある", value:["切る前に長さ・仕上がりを確認する"], worry:["前の美容室での失敗"], ask:"長さは、切る前に確認してほしい"}),
-    O("色が思っていたのと違った", "色って、言葉だけだとズレやすいんだ。写真ですり合わせてくれる人がいい。", {you:"前に、色がイメージと違ったことがある", value:["写真でイメージを共有する"], worry:["前の美容室での失敗"], ask:"色は、写真などで先にすり合わせたい"}),
-    O("伝えたことが、伝わらなかった", "伝わらないのって、いちばんモヤモヤするよね。", {you:"前に、希望がうまく伝わらなかった", value:["写真でイメージを共有する"], please:["似合わせの提案"], worry:["前の美容室での失敗"], ask:"希望をじっくり聞いてもらえるとうれしい"}),
+    O("思ったより短く切られた", "それ、すごく嫌だったよね。切る前に長さをしっかり確認してくれる人を選ぶ。", {you:"前に、思ったより短く切られたことがある", value:["切る前に長さ・仕上がりを確認する"], worry:["前の美容室での失敗"], ask:"前回の失敗：思ったより短く切られた"}),
+    O("色が思っていたのと違った", "色って、言葉だけだとズレやすいんだ。写真ですり合わせてくれる人がいい。", {you:"前に、色がイメージと違ったことがある", value:["写真でイメージを共有する"], worry:["前の美容室での失敗"], ask:"前回の失敗：色がイメージと違った"}),
+    O("伝えたことが、伝わらなかった", "伝わらないのって、いちばんモヤモヤするよね。", {you:"前に、希望がうまく伝わらなかった", value:["写真でイメージを共有する"], please:["似合わせの提案"], worry:["前の美容室での失敗"], ask:"前回の失敗：希望が伝わらなかった"}),
     O("特にない", "よかった。その感じのまま、いいお店を選ぶね。", {})]},
   {id:"t_price", q:"当日、思ったより料金が上がるのは不安？", opts:[
-    O("不安。先に教えてほしい", "分かる。会計のときにドキッとするの、嫌だよね。", {you:"追加料金は先に知っておきたい", value:["追加料金は事前に説明する"], ask:"追加料金があれば、施術前に教えてほしい"}),
+    O("不安。先に教えてほしい", "分かる。会計のときにドキッとするの、嫌だよね。", {you:"追加料金は先に知っておきたい", value:["追加料金は事前に説明する"], ask:"料金：追加があれば施術前に説明してほしい"}),
     O("あまり気にしない", "了解。仕上がり優先でいこう。", {})]},
   {id:"t_assist", q:"シャンプーやカラーを塗るのは、アシスタントさんでも大丈夫？", opts:[
     O("大丈夫", "OK。チームで見てくれるお店も選べるね。", {}),
-    O("できれば担当の人に最後まで見てほしい", "最初から最後まで同じ人がいい。それも、ちゃんと伝えておく。", {you:"最初から最後まで同じ人に見てほしい", value:["最初から最後まで自分が担当する"], ask:"できれば最初から最後まで、同じ方に担当してほしい"})]},
+    O("できれば担当の人に最後まで見てほしい", "最初から最後まで同じ人がいい。それも、ちゃんと伝えておく。", {you:"最初から最後まで同じ人に見てほしい", value:["最初から最後まで自分が担当する"], ask:"担当：できれば最後まで同じ人に見てほしい"})]},
   {id:"t_body", q:"シャンプー台で、首や腰がつらくなることはある？", opts:[
-    O("ある", "言いにくいよね。お店に伝えて、気づかってもらおう。", {tag:["body_care"], ask:"シャンプー台で配慮希望"}),
+    O("ある", "言いにくいよね。お店に伝えて、気づかってもらおう。", {ask:"体：シャンプー台で首・腰がつらくなりやすい（気づかってほしい）"}),
     O("ない", "了解。", {})]}
 ];
 const TALK_LEAD_ID = "t_talk";
-/* コースで数をしぼるときの優先順（先にあるものから聞く） */
-const TALK_PRIORITY = ["t_life","t_casual","t_explore","t_model","t_fail","t_talk","t_hc1","t_price","t_hc2","t_assist","t_body"];
 function talkQueue(){
-  const ten = S.cond && S.cond.tension, c = C();
-  let q = TALK.filter(t => (!t.tension || t.tension === ten) && !(t.skip && t.skip()) && !(t.id in S.talk));
-  if (c.ids) q = q.filter(t => c.ids.includes(t.id));
-  const room = Math.max(0, c.talk - Object.keys(S.talk).length);
-  if (room < q.length){
-    const keep = new Set(q.slice().sort((a,b) => TALK_PRIORITY.indexOf(a.id) - TALK_PRIORITY.indexOf(b.id)).slice(0, room).map(t => t.id));
-    q = q.filter(t => keep.has(t.id));
-  }
-  return q;
-}
-
-/* ============ じっくり質問（本気で探すコース）============
- 18問の候補から、答えに合わせて12問前後を選ぶ。pr＝優先順（小さいほど先に選ぶ）
- need.tag … スタッフが「AISIと話しながら入力」で答えた内容（マッチ用タグ）と1対1でつながる
- need.ans … 基本の質問の答えとしても使う（まだ答えていないときだけ） */
-const JK_LEAD = {hist:"ここからは、もう少しじっくり聞かせて。まずは、君の髪の履歴から。", daily:"次は、毎日の髪のこと。", pref:"ここからは、君の好みのこと。", visit:"最後に、美容室への通い方のこと。"};
-const JK = [
- {id:"jk_colorfreq", cat:"hist", pr:3, q:"この1年で、カラーやパーマは何回くらいした？", opts:[
-   O("していない", "まっさらな髪なんだね。どんな色も形も、選びやすいよ。", {ask:"この1年、カラー・パーマはしていない"}),
-   O("1〜3回", "ほどよいペースだね。髪の履歴、ちゃんと担当に伝えておく。", {ask:"この1年のカラー・パーマは1〜3回"}),
-   O("4回以上", "おしゃれを楽しんでる証拠だね。続けても傷みにくい施術が得意な人を選ぶよ。", {you:"カラーを続けながら、髪もきれいに保ちたい", tag:["color_often"], please:["傷ませない"], ask:"カラーを続けても傷みにくい施術を希望（この1年で4回以上）"})]},
- {id:"jk_bleach", cat:"hist", pr:4, skip:()=>S.answers.q_color===0 && !(S.answers.q_design>=.75), q:"ブリーチをしたことはある？", opts:[
-   O("今もブリーチした部分がある", "ブリーチ毛は、扱いに慣れているかどうかで差が出るんだ。得意な人を選ぶね。", {you:"ブリーチした髪を、上手に扱ってほしい", worry:["ブリーチ毛"], ask:"今もブリーチした部分がある"}),
-   O("前にしたことがある", "毛先に残っているかもしれないね。それも伝えておく。", {worry:["ブリーチ毛"], ask:"以前にブリーチの経験あり"}),
-   O("したことない", "了解。", {})]},
- {id:"jk_straight", cat:"hist", pr:6, skip:()=>S.answers.q_kusege===0, q:"縮毛矯正をしたことはある？", opts:[
-   O("定期的にかけている", "重ねてかけた髪は、扱いが難しくなりやすい。経験のある人がいいね。", {you:"縮毛矯正を続けている髪を、上手に扱ってほしい", tag:["straight_hist"], worry:["くせ毛・うねり"], ask:"縮毛矯正を定期的にかけている"}),
-   O("前に1回だけ", "前の矯正が残っているところ、ちゃんと見てもらおう。", {tag:["straight_hist"], ask:"以前に縮毛矯正の経験あり"}),
-   O("したことない", "了解。", {})]},
- {id:"jk_morning", cat:"daily", pr:1, q:"朝、髪にかけられる時間はどれくらい？", opts:[
-   O("5分以内", "朝は1分でも惜しいよね。乾かすだけで決まる髪をつくれる人を探す。", {you:"朝5分で決まる髪にしたい", tag:["quick_style"], please:["扱いやすさ","時短"], ans:{q_easy:1}, ask:"朝5分で決まる髪だとうれしい"}),
-   O("10〜15分", "少し整える時間はある、ってことだね。", {please:["再現性（家でも同じに）"], ask:"朝は10〜15分で整えたい"}),
-   O("30分以上かけられる", "スタイリングも楽しめる人だね。アレンジの幅も広がる。", {ask:"スタイリングも楽しみたい（朝30分以上かけられる）"})]},
- {id:"jk_iron", cat:"daily", pr:9, skip:()=>S.fol.q_damage===1, q:"アイロンやコテは使う？", opts:[
-   O("毎日使う", "毎日だと、熱のダメージも気になるよね。守り方まで教えてくれる人を選ぶ。", {you:"毎日のアイロンでも、髪を守りたい", tag:["iron_teach"], value:["家でのケア方法を教える"], ask:"アイロン・コテを毎日使う（髪の守り方も知りたい）"}),
-   O("ときどき使う", "了解。", {}),
-   O("使わない", "乾かすだけ派だね。", {})]},
- {id:"jk_styling", cat:"daily", pr:11, q:"スタイリング剤（ワックスやオイル）は使う？", opts:[
-   O("毎日使う", "使い慣れてるんだね。", {}),
-   O("ときどき使う", "了解。", {}),
-   O("使い方がよく分からない", "それ、すごく多いんだ。つけ方から教えてくれる人がいいね。", {you:"スタイリング剤の使い方を教えてほしい", tag:["styling_teach"], value:["家でのケア方法を教える"], ask:"スタイリング剤のつけ方を教えてほしい"}),
-   O("使わない", "了解。", {})]},
- {id:"jk_season", cat:"daily", pr:2, q:"季節によって、髪が困ることってある？", opts:[
-   O("冬の乾燥・静電気", "札幌の冬は手ごわいよね。乾燥と静電気に強い人を選ぶ。", {you:"冬の乾燥や静電気を何とかしたい", worry:["冬の乾燥・静電気"], ask:"冬の乾燥・静電気の対策を知りたい"}),
-   O("夏の湿気で広がる・うねる", "湿気の日は、朝の努力が台なしだもんね。", {you:"夏の湿気でも広がらない髪にしたい", worry:["くせ毛・うねり","多い髪・広がり"], ask:"夏の湿気でも広がらない髪にしたい"}),
-   O("汗や頭皮のべたつき", "頭皮のことまで見てくれる人がいいね。", {worry:["頭皮の悩み"], ask:"頭皮ケアの提案があればうれしい"}),
-   O("特にない", "よかった。", {})]},
- {id:"jk_rule", cat:"daily", pr:10, q:"仕事や学校で、髪の決まりはある？", opts:[
-   O("色の明るさに決まりがある", "決まりの中で、いちばんきれいに見せてくれる人を選ぶね。", {you:"決まりの範囲で、おしゃれを楽しみたい", tag:["rule_fit"], ask:"髪色の明るさに決まりがある（範囲内で楽しみたい）"}),
-   O("長さやまとめ髪に決まりがある", "結んでもかわいい、を考えてくれる人がいいね。", {you:"まとめ髪でもきれいに見える髪にしたい", tag:["rule_fit"], ask:"長さ・まとめ髪に決まりがある（結んでもきれいだとうれしい）"}),
-   O("特にない", "自由に選べるね。", {})]},
- {id:"jk_fashion", cat:"pref", pr:5, q:"ふだんの服装は、どの雰囲気に近い？", opts:[
-   O("きれいめ", "上品にまとまる髪が合いそうだね。", {tag:["taste_clean"], ask:"服装はきれいめ"}),
-   O("カジュアル", "ラフでも決まる髪がいいね。", {tag:["taste_casual"], ask:"服装はカジュアル"}),
-   O("ストリート・モード", "かっこいい系だね。俺とも話が合いそうだ。", {tag:["taste_street"], ask:"服装はストリート・モード"}),
-   O("ナチュラル", "やわらかい雰囲気の髪が似合いそう。", {tag:["taste_natural"], ask:"服装はナチュラル"})]},
- {id:"jk_praise", cat:"pref", pr:7, q:"髪で、いちばんほめられたいところは？", opts:[
-   O("ツヤ・手触り", "思わず触りたくなる髪、だね。", {you:"ツヤと手触りでほめられたい", tag:["praise_shine"], please:["傷ませない"], ask:"ツヤ・手触りを大事にしたい"}),
-   O("色", "色って、印象がいちばん変わるところだよね。", {you:"色をほめられたい", please:["色の美しさ・透明感"], ask:"色のきれいさを大事にしたい"}),
-   O("形・シルエット", "形がきれいだと、毎日がラクになるよ。", {you:"形やシルエットをほめられたい", tag:["praise_shape"], please:["似合わせの提案"], ask:"形・シルエットを大事にしたい"}),
-   O("若々しさ", "年齢に合わせた髪づくりが得意な人を探す。", {you:"若々しく見られたい", please:["若々しさ・エイジングケア"], ask:"若々しく見える髪にしたい"})]},
- {id:"jk_length", cat:"pref", pr:8, skip:()=>S.answers.q_short>=.75 || S.answers.d_cut_short>=.75, q:"最終的には、どのくらいの長さにしたい？", opts:[
-   O("ショート", "ショートは、腕の差が出やすいんだ。得意な人を選ぶ。", {tag:["len_short"], ask:"目指す長さはショート"}),
-   O("ボブ", "ボブ、いいね。形が命だ。", {tag:["len_bob"], ask:"目指す長さはボブ"}),
-   O("ミディアム", "アレンジもしやすい長さだね。", {tag:["len_medium"], ask:"目指す長さはミディアム"}),
-   O("ロング", "伸ばしていく髪を、大事にしてくれる人がいいね。", {tag:["len_long"], ask:"目指す長さはロング"}),
-   O("まだ決めてない", "それなら、一緒に考えてくれる人を選ぶよ。", {you:"似合う長さを一緒に考えてほしい", tag:["omakase"], please:["似合わせの提案"], ask:"長さは相談して決めたい"})]},
- {id:"jk_photo", cat:"pref", pr:12, skip:()=>!!S.photo, q:"なりたい髪型の写真って、ある？", opts:[
-   O("ある", "それがいちばん確実。写真でイメージを合わせてくれる人を選ぶね。", {you:"写真でイメージを合わせたい", value:["写真でイメージを共有する"], ask:"なりたい髪型の写真を見せたい"}),
-   O("なんとなくある", "なんとなく、で十分。そこから一緒にふくらませよう。", {value:["写真でイメージを共有する"], ask:"イメージに近い写真を参考にしたい"}),
-   O("ない・おまかせしたい", "任せられる人、ちゃんと探すよ。", {you:"似合う髪型をおまかせしたい", tag:["omakase"], please:["似合わせの提案"], ask:"似合う髪型を提案してほしい"})]},
- {id:"jk_joy", cat:"pref", pr:13, q:"美容室で、いちばんうれしい瞬間は？", opts:[
-   O("仕上がりを鏡で見たとき", "あの瞬間のために行くんだよね。", {please:["似合わせの提案"]}),
-   O("シャンプーやヘッドスパの時間", "あの時間、ほんとに癒されるよね。", {you:"美容室で、ゆっくり癒されたい", please:["リラックス・癒し"], ask:"シャンプーやスパの時間も楽しみにしている"}),
-   O("話して気分が晴れたとき", "美容室の会話って、ちょっと特別だよね。", {you:"話して、気分も晴れる時間にしたい", affBoost:1, talk:.85, ask:"会話も楽しみにしている"}),
-   O("家でも同じようにできたとき", "サロンの日だけじゃない、毎日の髪だもんね。", {you:"家でも同じ髪を再現したい", please:["再現性（家でも同じに）"], ask:"家での再現のしかたも知りたい"})]},
- {id:"jk_cycle", cat:"visit", pr:14, q:"美容室には、どのくらいの間隔で行くことが多い？", opts:[
-   O("1か月くらい", "こまめに整えたいタイプだね。", {ask:"ふだんは1か月くらいで通っている"}),
-   O("2か月くらい", "了解。", {ask:"ふだんは2か月くらいで通っている"}),
-   O("3か月くらい", "それなら、伸びてもきれいな髪をつくれる人がいい。", {you:"伸びてもきれいな髪にしたい", tag:["long_last"], ask:"伸びてもきれいだとうれしい（3か月くらいで通っている）"}),
-   O("半年以上", "久しぶりの美容室だね。伸びても崩れにくい髪が得意な人を選ぶ。", {you:"伸びても崩れにくい髪にしたい", tag:["long_last"], ask:"もちの良さを大事にしたい（半年以上あくことも）"})]},
- {id:"jk_budget", cat:"visit", pr:15, skip:()=>S.answers.q_budget!=null, q:"1回の予算は、どのくらい？", opts:[
-   O("〜6,000円", "了解。予算の中で、いちばんいい形を考えてくれる人を選ぶね。", {tag:["budget_fit"], ans:{q_budget:1}, ask:"ご予算は1回6,000円くらいまで"}),
-   O("〜10,000円", "了解。予算の中で、ちゃんと満足できるお店を選ぶね。", {tag:["budget_fit"], ans:{q_budget:1}, ask:"ご予算は1回10,000円くらいまで"}),
-   O("〜15,000円", "了解。", {ans:{q_budget:.25}, ask:"ご予算は1回15,000円くらいまで"}),
-   O("それ以上でもいい", "いいものには、ちゃんとかけたいんだね。", {ans:{q_budget:0}, ask:"内容しだいで15,000円以上も可"})]},
- {id:"jk_next", cat:"visit", pr:17, q:"次の予約、その場で決めたいほう？", opts:[
-   O("その場で決めたい", "次の来店まで、一緒に計画してくれる人がいいね。", {you:"次の来店まで一緒に計画したい", tag:["plan"], ask:"次回の予約は、その場で決めたい"}),
-   O("そのときによる", "了解。", {}),
-   O("あとで自分で決めたい", "大丈夫。無理にすすめない人を選ぶね。", {value:["無理なすすめはしない"], ask:"次回の予約は、あとで自分で決めたい"})]},
- {id:"jk_private", cat:"visit", pr:16, skip:()=>S.answers.q_quiet>=.75 || S.talk.t_talk===2, q:"施術中、プライベートの話はどこまでならOK？", opts:[
-   O("なんでも話せる", "話し上手な人と、きっと楽しい時間になるよ。", {talk:.9, affBoost:1, tag:["talk_free"], ask:"プライベートの話も歓迎"}),
-   O("趣味の話くらいまで", "ほどよい距離感、大事だよね。", {value:["会話の量をお客様に合わせる"], ask:"会話は趣味の話くらいまでが心地よい"}),
-   O("髪の話だけがいい", "それ、なかなか言えないよね。ちゃんと伝えておく。", {you:"会話は髪の話を中心にしたい", talk:.2, tag:["hair_only"], value:["会話の量をお客様に合わせる"], ask:"会話は髪の話を中心にしたい"})]},
- {id:"jk_scalp", cat:"visit", pr:18, q:"頭皮のべたつきやにおい、気になることはある？", opts:[
-   O("気になる", "話してくれてありがとう。頭皮にも詳しい人を選ぶね。", {you:"頭皮の状態も見てほしい", worry:["頭皮の悩み"], ask:"頭皮ケアの提案があればうれしい"}),
-   O("少しだけ", "了解。頭皮のことも気にかけてもらおう。", {worry:["頭皮の悩み"], ask:"頭皮ケアにも少し関心あり"}),
-   O("気にならない", "了解。", {})]}
-];
-function jkQueue(){
-  const room = Math.max(0, C().jk - Object.keys(S.jk).length);
-  if (!room) return [];
-  const el = JK.filter(j => !(j.skip && j.skip()) && !(j.id in S.jk));
-  const keep = new Set(el.slice().sort((a,b) => a.pr - b.pr).slice(0, room).map(j => j.id));
-  return el.filter(j => keep.has(j.id));
+  const ten = S.cond && S.cond.tension;
+  return TALK.filter(t => (!t.tension || t.tension === ten) && !(t.skip && t.skip()));
 }
 /* 答えから「お客様が求めていること」を組み立てる */
 function buildNeed(){
   if (!S) return null;
-  const N = {please:{}, value:{}, worry:{}, tag:{}, items:[], asked:[], homecare:"", talk:null, affBoost:0};
+  const N = {please:{}, value:{}, worry:{}, items:[], asked:[], homecare:"", talk:null, affBoost:0};
   const add = (n, src) => {
     if (!n) return;
-    ["please","value","worry","tag"].forEach(k => (n[k]||[]).forEach(t => N[k][t] = (N[k][t]||0) + 1));
+    ["please","value","worry"].forEach(k => (n[k]||[]).forEach(t => N[k][t] = (N[k][t]||0) + 1));
     if (n.homecare) N.homecare = n.homecare;
     if (n.talk != null) N.talk = n.talk;
     if (n.affBoost) N.affBoost = 1;
-    if (n.ask && !N.asked.includes(n.ask)) N.asked.push(n.ask);
-    if (n.you) N.items.push({you:n.you, please:n.please||[], value:n.value||[], worry:n.worry||[], tag:n.tag||[], src});
-    else if ((n.tag||[]).length) N.items.push({you:"", please:[], value:[], worry:[], tag:n.tag, src});
+    if (n.ask) N.asked.push(n.ask);
+    if (n.you) N.items.push({you:n.you, please:n.please||[], value:n.value||[], worry:n.worry||[], src});
   };
   Object.entries(S.fol||{}).forEach(([k,i]) => { const f = FOLLOW[k]; if (f && f.opts[i]) add(f.opts[i].need, "fol"); });
   Object.entries(S.talk||{}).forEach(([k,i]) => { const t = TALK.find(x=>x.id===k); if (t && t.opts[i]) add(t.opts[i].need, "talk"); });
-  Object.entries(S.jk||{}).forEach(([k,i]) => { const t = JK.find(x=>x.id===k); if (t && t.opts[i]) add(t.opts[i].need, "jk"); });
   return (N.items.length || N.asked.length || N.homecare || N.talk!=null) ? N : null;
 }
 /* スタッフの「価値」とお客様の求めていることの重なり */
 function valueFit(st, N){
   if (!N) return {score:0, hits:[], home:""};
-  const p = st.p || {}, has = (k, t) => (k === "tag" ? (p.tags||[]) : (p[k]||[])).includes(t);
-  let got = 0, want = 0; const hits = [], extra = [];
+  const p = st.p || {}, has = (k, t) => (p[k]||[]).includes(t);
+  let got = 0, want = 0; const hits = [];
   N.items.forEach(it => {
-    const tags = [].concat(it.worry.map(t=>["worry",t]), it.please.map(t=>["please",t]), it.value.map(t=>["value",t]), (it.tag||[]).map(t=>["tag",t]));
+    const tags = [].concat(it.worry.map(t=>["worry",t]), it.please.map(t=>["please",t]), it.value.map(t=>["value",t]));
     if (!tags.length) return;
     want += 1;
     const m = tags.filter(([k,t]) => has(k, t));
@@ -1781,13 +1608,7 @@ function valueFit(st, N){
     else if (N.homecare==="no"){ got -= .3; }
   }
   if (N.talk != null && st.talk != null){ want += .5; got += .5 * (1 - Math.abs(N.talk - st.talk)); }
-  /* スタッフが「こんなお客様と合う」と答えた内容（探し方・年代）と重なれば、少し上げる */
-  let bonus = 0; const tg = p.tags || [];
-  if (S && S.cond){
-    if (S.cond.tension && tg.includes("tension_" + S.cond.tension)){ bonus += .08; extra.push(TENSION_FIT[S.cond.tension]); }
-    if (S.cond.age && tg.includes("age_" + S.cond.age)){ bonus += .05; extra.push(`${S.cond.age}のお客さまの担当が得意`); }
-  }
-  return {score: want ? Math.max(0, Math.min(1, got / want + bonus)) : Math.min(1, bonus), hits:hits.filter(h=>h.you || h.tags.length), home, extra};
+  return {score: want ? Math.max(0, Math.min(1, got / want)) : 0, hits, home};
 }
 const tagText = ([k,t]) => (VAL_TXT[k] && VAL_TXT[k][t]) || t;
 /* マッチの中身（◎○△）。測っていないものは出さない */
@@ -1807,7 +1628,7 @@ function storyFor(x){
   const used = new Set();
   const wish = y => /[いたるだ]$/.test(y) ? y : y + "を大事にしたい";
   vf.hits.forEach(h => {
-    if (out.length >= 2 || !h.you) return;
+    if (out.length >= 2) return;
     const t = [...new Set(h.tags.map(tagText))].filter(z => !used.has(z));
     if (!t.length) return;
     t.slice(0, 2).forEach(z => used.add(z));
@@ -1833,10 +1654,8 @@ function renderFollow(qid){
       </div>
       <div class="choices">${f.opts.map((o,i)=>`<button class="choice" type="button" data-f="${i}">${esc(o.label)}</button>`).join("")}</div>
       <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
-      ${earlyBtn()}
     </div>
   </section>`;
-  wireEarly();
   typeVoice($app.querySelector(".bubble .voice"));
   $app.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
     if ($app.querySelector(".choices.locked")) return;
@@ -1874,11 +1693,9 @@ function renderTalk(){
       </div>
       <div class="choices">${t.opts.map((o,i)=>`<button class="choice" type="button" data-t="${i}">${esc(o.label)}</button>`).join("")}</div>
       <button class="back" type="button" id="backBtn" ${talkIdx?"":"disabled"}>← 前の質問に戻る</button>
-      ${talkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います（伝える内容は、予約のときに選べます）。</p>`:""}
-      ${earlyBtn()}
+      ${talkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います。</p>`:""}
     </div>
   </section>`;
-  wireEarly();
   typeVoice($app.querySelector(".bubble .voice"));
   $app.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
     if ($app.querySelector(".choices.locked")) return;
@@ -1893,70 +1710,8 @@ function renderTalk(){
   });
   document.getElementById("backBtn").onclick = () => { if (!talkIdx) return; talkIdx--; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); renderTalk(); };
 }
-/* じっくり質問（本気で探すコース） */
-let jkQ = [], jkIdx = 0;
-function startJK(){
-  S.jkDone = true;
-  jkQ = jkQueue(); jkIdx = 0;
-  if (!jkQ.length) return startPersonal();
-  renderJK();
-}
-function renderJK(){
-  view = "jk";
-  const t = jkQ[jkIdx], prev = jkQ[jkIdx-1];
-  const lead = !prev || prev.cat !== t.cat ? JK_LEAD[t.cat] : "";
-  const say = S.say; S.say = "";
-  $app.innerHTML = `
-  <section class="stage">
-    <div class="aisi">${aisiImg(jkIdx%2 ? "think" : "open")}</div>
-    <div class="panel">
-      ${meterHTML(S.meter)}
-      <div class="bubble">
-        <p class="qno">じっくり質問 ${jkIdx+1} / ${jkQ.length}<span class="coursebadge">${esc(C().label)}</span></p>
-        ${say?`<p class="aside">${esc(say)}</p>`:""}
-        ${lead?`<p class="aside">${esc(lead)}</p>`:""}
-        <p class="voice">${esc(t.q)}</p>
-      </div>
-      <div class="choices">${t.opts.map((o,i)=>`<button class="choice" type="button" data-j="${i}">${esc(o.label)}</button>`).join("")}</div>
-      <button class="back" type="button" id="backBtn" ${jkIdx?"":"disabled"}>← 前の質問に戻る</button>
-      ${earlyBtn()}
-    </div>
-  </section>`;
-  wireEarly();
-  typeVoice($app.querySelector(".bubble .voice"));
-  $app.querySelectorAll("[data-j]").forEach(b => b.onclick = () => {
-    if ($app.querySelector(".choices.locked")) return;
-    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
-    document.getElementById("backBtn").disabled = true;
-    const o = t.opts[+b.dataset.j];
-    S.jk[t.id] = +b.dataset.j; S.say = o.say;
-    /* 基本の質問の答えとしても使う（まだ答えていないものだけ。戻ったら元に戻す） */
-    S.jkAns[t.id] = Object.entries(o.need.ans || {}).filter(([k]) => S.answers[k] == null).map(([k,v]) => { S.answers[k] = v; return k; });
-    S.need = buildNeed();
-    const top = scoreAll(S.answers, S.theme)[0].score;
-    S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL + 8, S.meter + (Math.min(99.9, top) - S.meter) / (jkQ.length - jkIdx + 2)));
-    aisiReact(Object.keys(o.need).length ? "yes" : "maybeNo");
-    setTimeout(() => { jkIdx++; jkIdx < jkQ.length ? renderJK() : startPersonal(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
-  });
-  document.getElementById("backBtn").onclick = () => { if (!jkIdx) return; jkIdx--; const id = jkQ[jkIdx].id;
-    (S.jkAns[id] || []).forEach(k => delete S.answers[k]); delete S.jkAns[id]; delete S.jk[id]; S.say = ""; S.need = buildNeed(); renderJK(); };
-}
 
 /* ============ 結果 ============ */
-/* 答えたコース（上のコースに進んだら「ちょっと見る→本気で探す」） */
-function courseHist(){ return S.course0 && S.course0 !== S.course ? courseLabel(S.course0) + "→" + courseLabel(S.course) : courseLabel(S.course); }
-/* 結果を見たあと、上のコースで続きの質問に答える */
-function upgrade(k){
-  const old = C();
-  S.course = k; S.early = false;
-  S.talkDone = false; S.jkDone = false; S.affDone = false;
-  /* 基本の質問は、新しいコースの上限まで（最低でも5問は増やす） */
-  S.upTo = Math.min(C().base, S.n + Math.max(5, C().base - old.base));
-  send("course", {course:courseHist()});
-  const nq = S.n < C().base ? nextQuestion(S.answers, S.theme, S.n) : null;
-  if (nq){ S.current = nq; S.say = "じゃあ、続きを聞かせて。"; return renderQ(); }
-  startPersonal();
-}
 function wantsOf(ans){ return QUESTIONS.filter(q=>ans[q.id]!=null && ans[q.id]>=.75).map(q=>q.label); }
 function finish(){
   S.affDone = true; S.talkDone = true; S.need = buildNeed();
@@ -1964,7 +1719,7 @@ function finish(){
   S.results = ranked.slice(0,3);
   S.code = S.code || newCode();
   const top = S.results[0].score;
-  send("finish", {qCount:totalAns(), course:courseHist(), course0:courseLabel(S.course0), full:!S.early, code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
+  send("finish", {qCount:S.n, code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
     answers:S.answers, results:S.results.map(r=>({id:r.salon.id, name:r.salon.name, score:r.score}))});
   view="result"; renderResult();
 }
@@ -1977,7 +1732,7 @@ function renderResult(){
       <div class="aisi">${aisiImg("point")}</div>
       <div class="panel">
         <div class="bubble">
-          <p class="qno">${esc(C().label)}コース・${totalAns()}問で判定 ・ ${esc(condText(S.cond))}</p>
+          <p class="qno">${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
           <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。ほかの2軒も、近いところを選んだ。" : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、この3軒が一番近い。"}</p>
         </div>
         ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。</p>` : ""}
@@ -1988,16 +1743,13 @@ function renderResult(){
     </div>
     <div class="cards">${r.map((x,i)=>cardHTML(x,i)).join("")}</div>
     <div class="after">
-      ${(()=>{ const up = COURSE_ORDER.slice(COURSE_ORDER.indexOf(S.course)+1);
-        if (up.length) return `<div class="upbox"><p>もっと答えると、君にぴったりの人がさらに見つかるよ。いままでの答えはそのまま、続きから聞くね。</p>${up.map(k=>`<button class="choice" type="button" data-up="${k}">${esc(COURSES[k].label)}コースで続きに答える（${esc(COURSES[k].time)}）</button>`).join("")}</div>`;
-        return S.n < MAX_Q ? `<button class="choice" type="button" id="moreQ">ピンとこない。もう少し聞いて</button>` : ""; })()}
+      ${S.n < MAX_Q ? `<button class="choice" type="button" id="moreQ">ピンとこない。もう少し聞いて</button>`:""}
       <button class="choice primary" type="button" id="again">もう一度診断する</button>
     </div>
   </section>`;
   aisiReact("result");
   $app.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>toggleMore(b));
   $app.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>book(b.dataset.book));
-  $app.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>upgrade(b.dataset.up));
   const mq = document.getElementById("moreQ");
   if (mq) mq.onclick=()=>{ S.extra += 3; const nq = nextQuestion(S.answers,S.theme,S.n); if(!nq) return; S.current=nq; renderQ(); };
   document.getElementById("again").onclick=renderTheme;
@@ -2090,50 +1842,11 @@ function toggleMore(b){
   }
 }
 let bookTarget = null;
-/* ============ お店に伝える内容（お客様が項目ごとに選ぶ）============
- ・予約が確定したあとにだけ、お店（スタッフのLINE・メール）に届く。最初はすべて「伝える」
- ・g：種類（tension 探し方 / wants 髪の希望 / common 担当との共通点 / asked AISIが先に聞いたこと）
- ・予約の内容・質問コース・AISIが選んだ理由・モデル希望は、いつも伝わる（fixed） */
-function shareItems(r){
-  const it = [], add = (g, t, label) => { if (t && !it.some(x => x.g === g && x.t === t)) it.push({g, t, label}); };
-  if (S.cond.tension && S.cond.tension !== "model") add("tension", tensionLabel(S.cond.tension), "探し方");
-  const w = wantsOf(S.answers); if (w.length) add("wants", w.slice(0, 8).join("、"), "髪の希望");
-  if ((r.common||[]).length) add("common", r.common.slice(0, 4).join("、"), "担当との共通点");
-  (S.need ? S.need.asked : []).forEach(a => add("asked", a, "AISIが先に聞いておいたこと"));
-  return it;
-}
-function shareKey(x){ return x.g + "|" + x.t; }
-function shareData(r){
-  S.shareOff = S.shareOff || {};
-  const reasons = [...new Set(staffReasons(r.staff, S.answers).concat(reasonsFor(r, S.answers)))].slice(0, 6);
-  return [{g:"course", t:courseHist(), on:true, fixed:true}]
-    .concat(S.cond.tension === "model" ? [{g:"model", t:"モデル希望", on:true, fixed:true}] : [])
-    .concat(reasons.length ? [{g:"reasons", t:reasons.join("、"), on:true, fixed:true}] : [])
-    .concat(shareItems(r).map(x => ({g:x.g, t:x.t, on:!S.shareOff[shareKey(x)]})));
-}
-function renderShare(r){
-  const box = document.getElementById("mShare"), items = shareItems(r);
-  S.shareOff = S.shareOff || {};
-  box.innerHTML = `<b>お店に伝えること（予約が確定したあとだけ）</b>
-    <p>カウンセリングの参考として、予約が確定したあと、お店のスタッフのLINEにも届きます。伝えたくない項目は「伝えない」にしてね。お名前・電話番号も、確定したあとにだけ届きます。</p>
-    ${items.length ? `<ul>${items.map((x,i)=>{ const on = !S.shareOff[shareKey(x)];
-      return `<li class="${on?"":"off"}"><span><em>${esc(x.label)}</em>${esc(x.t)}</span><span class="sw" role="group" aria-label="${esc(x.label)}"><button type="button" data-sh="${i}" data-on="1" class="${on?"on":""}" aria-pressed="${on}">伝える</button><button type="button" data-sh="${i}" data-on="0" class="${on?"":"on"}" aria-pressed="${!on}">伝えない</button></span></li>`; }).join("")}</ul>` : ""}
-    <p class="fixed">いつも伝わること：予約の内容（メニュー・日時・担当）、答えた質問コース（${esc(courseHist())}）、AISIがこの担当を選んだ理由${S.cond.tension==="model"?"、モデル希望":""}</p>`;
-  box.hidden = false;
-  box.querySelectorAll("[data-sh]").forEach(b => b.onclick = () => {
-    const x = items[+b.dataset.sh], k = shareKey(x), off = b.dataset.on === "0";
-    if (!!S.shareOff[k] === off) return;
-    if (off) S.shareOff[k] = true; else delete S.shareOff[k];
-    renderShare(r);
-    clearTimeout(renderShare.t); renderShare.t = setTimeout(() => send("share", {salon:r.salon.name, share:shareData(r)}), 600);
-  });
-}
 function showView(id){ ["vCode","vForm","vDone"].forEach(v=>document.getElementById(v).hidden = v!==id); document.querySelector(".modal-c").scrollTop=0; }
 function book(salonId){
   const r = S.results.find(x=>x.salon.id===salonId);
   bookTarget = r;
-  send("book", {salon:r.salon.name, staff:r.staff.name, common:(r.common||[]).slice(0,8), reasons:[...new Set(staffReasons(r.staff, S.answers).concat(reasonsFor(r, S.answers)))].slice(0,8), share:shareData(r)});
-  renderShare(r);
+  send("book", {salon:r.salon.name, staff:r.staff.name, common:(r.common||[]).slice(0,8), asked:(S.need?S.need.asked:[]).slice(0,12), reasons:[...new Set(staffReasons(r.staff, S.answers).concat(reasonsFor(r, S.answers)))].slice(0,8)});
   document.getElementById("mCode").textContent = S.code;
   const pk = document.getElementById("mPerk");
   if (r.salon.perk){ pk.innerHTML = `LINEで予約すると<br><b>${esc(r.salon.perk)}</b><br><small>※メールやホットペッパーからの予約は対象外です</small>`; pk.hidden=false; } else pk.hidden=true;

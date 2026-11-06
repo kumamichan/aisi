@@ -168,8 +168,8 @@ function card(q){
       ${q.note ? `<span>ご要望：<b>${esc(q.note)}</b></span>` : ""}
       <span>診断コード ${esc(q.code)} ・ ${esc(q.channel)} ・ 受付 ${esc(fmt(q.created))}</span>
     </div>
-    ${q.model ? `<div class="about"><span><b>モデル希望</b>（モデルの募集があるか、ご確認をお願いします）</span></div>` : ""}
-    ${(q.about||[]).filter(l=>!/^モデル希望/.test(l)).length ? `<div class="about"><b>お客様のこと（ぴたリスト診断より）</b>${q.about.filter(l=>!/^モデル希望/.test(l)).map(l=>`<span style="white-space:pre-line">${esc(l)}</span>`).join("")}<span style="color:#5a6274">参考情報です。当日の様子に合わせてください。</span></div>` : ""}
+    ${q.tension ? `<div class="about"><span>探し方：<b>${esc(q.tension)}</b></span></div>` : ""}
+    ${(q.about||[]).filter(l=>!/^探し方：/.test(l)).length ? `<div class="about"><b>お客様のこと（AISI診断より）</b>${q.about.filter(l=>!/^探し方：/.test(l)).map(l=>`<span>${esc(l)}</span>`).join("")}</div>` : ""}
     ${(q.images||[]).length ? `<div class="imgs"><b>イメージ画像</b><div>${q.images.map((u,k)=>`<a href="${esc(u.replace(/sz=w\d+/, "sz=w1600"))}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="お客様のイメージ画像${k+1}" loading="lazy"></a>`).join("")}</div></div>` : q.imgN ? `<div class="imgs"><small>イメージ画像 ${q.imgN}枚（予約が確定すると表示されます）</small></div>` : ""}
     ${q.star ? `<div class="sv">来店後アンケート：${"★".repeat(q.star)}${"☆".repeat(5-q.star)}${q.again ? " ・ また行きたい：" + esc(q.again) : ""}${q.voice ? "<br>「" + esc(q.voice) + "」" : ""}</div>` : ""}
     ${acts}
