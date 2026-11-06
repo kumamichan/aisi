@@ -89,6 +89,8 @@ textarea{min-height:84px;resize:vertical}
 .wz-open small{color:#c9ced8;font-size:.8rem}
 .wz{position:fixed;inset:0;z-index:50;background:var(--night);color:var(--paper);display:grid;grid-template-rows:auto minmax(0,1fr) auto}
 .wz-h{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.1);font-size:.85rem}
+.wz-hb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.wz-h{gap:8px}
 .wz-h button{font:inherit;background:transparent;color:var(--paper);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 12px;cursor:pointer}
 .wz-log{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-width:640px;width:100%;margin:0 auto}
 .wz-m{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:end}
@@ -148,7 +150,7 @@ const OPT = {
   holiday: ["家でゆっくり","カフェ巡り","ショッピング","アウトドア","旅行","スポーツ観戦","ライブ・推し活","ジム・運動","家族と過ごす","温泉・サウナ"],
   please: ["扱いやすさ","傷ませない","似合わせの提案","色の美しさ・透明感","再現性（家でも同じに）","時短","リラックス・癒し","若々しさ・エイジングケア"],
   value: ["切る前に長さ・仕上がりを確認する","写真でイメージを共有する","追加料金は事前に説明する","髪の状態を正直に伝える","無理なすすめはしない","家でのケア方法を教える","最初から最後まで自分が担当する","会話の量をお客様に合わせる"],
-  worry: ["くせ毛・うねり","ダメージ毛","ブリーチ毛","白髪","細い髪・ボリューム不足","多い髪・広がり","頭皮の悩み","似合う髪型が分からない","前の美容室での失敗"],
+  worry: ["くせ毛・うねり","ダメージ毛","ブリーチ毛","白髪","細い髪・ボリューム不足","多い髪・広がり","頭皮の悩み","似合う髪型が分からない","前の美容室での失敗","冬の乾燥・静電気"],
   homecare: ["しっかり提案する","聞かれたら提案する","すすめない"],
   music: ["J-POP","K-POP","洋楽","ロック","ヒップホップ","アニソン","ジャズ","クラシック","EDM","ボカロ","演歌・歌謡曲"]
 };
@@ -284,9 +286,10 @@ function collectSalon(){
 function pubBox(key){ const off=(D.hidden||[]).includes(key); return `<label class="pub"><input type="checkbox" data-pub="${key}" ${off?"":"checked"}> お客さまに公開する</label>`; }
 function renderStaff(){
   $("kind").textContent="スタッフ"; $("title").textContent=D.name+" さん（"+D.salon+"）";
-  meter(Number(D["プロフィール充実度"])||0, "入れた項目が多いほど、共通点のあるお客さまとマッチしやすくなります。");
+  const wzN = D.wz && typeof D.wz === "object" ? WZ.filter(st => { const v = D.wz[st.key]; return Array.isArray(v) || (v != null && v !== ""); }).length : 0;
+  meter(Number(D["プロフィール充実度"])||0, `AISIとの会話：${wzN} / ${WZ_TOTAL}問 回答。答えた数が多いほど充実度が上がり、合うお客さまとマッチしやすくなります（全部答えなくても掲載できます）。`);
   $("app").innerHTML = `
-  <button class="wz-open" type="button" id="wzOpen"><img src="img/aisi_peace.webp" alt=""><span><b>AISIと話しながら入力する（おすすめ）</b><small>質問に答えていくだけで、あなたらしいプロフィールができます。最後に「第三者から見たあなた」をAISIがまとめます。</small></span></button>
+  <button class="wz-open" type="button" id="wzOpen"><img src="img/aisi_peace.webp" alt=""><span><b>AISIと話しながら入力する（おすすめ・約50問）</b><small>${D.wz && D.wz._i > 0 && D.wz._i < WZ_TOTAL ? `前回の続き（${D.wz._i + 1}問目）から再開できます。` : "質問に答えていくだけで、あなたらしいプロフィールができます。"}途中で保存して、続きはあとからでも大丈夫。最後に「第三者から見たあなた」をAISIがまとめます。</small></span></button>
   <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容は、ぴたリストのマッチングに使い、「公開する」にした項目はお客さまに表示されることに同意します。公開したくない項目は、いつでも「公開する」を外したり、消したりできます。</label></div>
 
   <section><h2>顔写真</h2>
@@ -366,72 +369,161 @@ function collectStaff(){
     "推しのジャンル":$("oshiG").value, "推しの名前":$("oshi").value, "部活":$("club").value,
     "ペット":chipVal("pets"), "趣味":chipVal("hobby"), "休日の過ごし方":chipVal("holiday"), "好きな音楽":chipVal("music"),
     "ホットペッパー スタイルURL":$("hpbStyle").value.trim(), "得意な悩み":chipVal("worry").join("、"), "喜ばれること":chipVal("please").join("、"), "大事にしていること":chipVal("value").join("、"), "ホームケア提案":chipVal("homecare")[0]||"",
-    hidden: [...document.querySelectorAll("[data-pub]")].filter(c=>!c.checked).map(c=>c.dataset.pub)
+    hidden: [...document.querySelectorAll("[data-pub]")].filter(c=>!c.checked).map(c=>c.dataset.pub),
+    wz: D.wz && typeof D.wz === "object" ? D.wz : undefined
   };
 }
 
 
-/* ---------------- AISIと話しながら入力する（スタッフ） ----------------
+/* ---------------- AISIと話しながら入力する（スタッフ・約50問） ----------------
  ・AISIが1つずつ聞いて、答えるたびに「つまり、こういう人だよね」と受け止める
- ・答えは下のフォームにそのまま入る（最後に本人が確認して「保存する」）
+ ・5つのまとまり：技術と得意（12）／仕事の価値観（12）／接客のスタイル（8）／得意なお客様（8）／あなた自身（10）
+ ・j01〜j18 は、お客様の「じっくり質問」と1対1でつながっている（番号と選択肢のキーは index.html の JK とそろえてください）
+ ・途中で保存して、続きはあとから答えられる（まとまりが変わるときにも自動で保存）。答えた数が充実度になる
  ・最後に、第三者から見た紹介文（AISIのひとこと・120字まで）と「得意なこと」をAISIがまとめる */
 const WZ_IMG = ["img/aisi_think.webp","img/aisi_open.webp","img/aisi_pocket.webp","img/aisi_thumb.webp","img/aisi_peace.webp"];
 const pickOne = a => a[Math.floor(Math.random()*a.length)];
+const WZ_GROUPS = {tech:"技術と得意", work:"仕事の価値観", serve:"接客のスタイル", guest:"得意なお客様", you:"あなた自身"};
+/* お客様の「じっくり質問」とつながる選択肢（スタッフ側の言葉） */
+const STAFF_JK = {"j01":[["m1","毎月きっちり通うお客さん"],["m3","2〜3か月ごとに通うお客さん"],["m6","半年ぶりくらいのお客さん"],["y1","1年以上ぶりのお客さん"]],"j02":[["virgin","カラーやパーマをほとんどしていない髪のお客さん"],["color","カラーを繰り返している髪のお客さん"],["bleach","ブリーチ歴のある髪のお客さん"],["straight","縮毛矯正やパーマを繰り返している髪のお客さん"]],"j03":[["recent","セルフカラーのあとの髪のお客さん"],["past","昔のセルフカラーが残っている髪のお客さん"]],"j04":[["recent","長さを変えたばかりで、形を整えたいお客さん"],["same","ずっと同じ髪型で、変え方に迷っているお客さん"]],"j05":[["finish","仕上がりに満足できず、お店を探しているお客さん"],["mood","前のお店の居心地が合わなかったお客さん"],["price","料金の分かりやすさを大事にするお客さん"],["move","引っ越しなどで、新しいお店を探しているお客さん"]],"j06":[["m5","朝5分で決まる髪型にしたいお客さん"],["m15","朝10〜15分で整えたいお客さん"],["m30","スタイリングに時間をかけて楽しむお客さん"]],"j07":[["iron","毎日アイロンやコテを使うお客さん"],["tie","結ぶことが多いお客さん"],["wax","スタイリング剤で仕上げるお客さん"],["dry","乾かすだけで終わらせたいお客さん"]],"j08":[["strict","髪色や髪型にきまりがあるお客さん"]],"j09":[["yes","冬の乾燥や静電気で困っているお客さん"]],"j10":[["half","自然乾燥が多いお客さん"],["long","乾かすのに時間がかかる髪のお客さん"]],"j11":[["cute","かわいい雰囲気にしたいお客さん"],["cool","かっこいい雰囲気にしたいお客さん"],["elegant","大人っぽく上品にしたいお客さん"],["natural","ナチュラルにしたいお客さん"],["unique","個性的にしたいお客さん"]],"j12":[["make","前髪にこだわりたいお客さん"],["grow","前髪を伸ばしたい・なくしたいお客さん"],["ask","前髪をどうするか迷っているお客さん"]],"j13":[["airy","ふんわり軽めの質感が好きなお客さん"],["calm","しっとりまとまる質感が好きなお客さん"],["shine","ツヤを大事にしたいお客さん"],["move","動きや束感を出したいお客さん"]],"j14":[["suggest","似合う色を提案してほしいお客さん"],["fav","好きな色がはっきりしているお客さん"],["dark","暗めで落ち着いた色が好きなお客さん"],["bright","明るい色や透け感が好きなお客さん"]],"j15":[["m1","1か月ごとに整えたいお客さん"],["m2","2か月くらいで通うお客さん"],["m3","3か月以上もつ髪型にしたいお客さん"]],"j16":[["h1","1時間くらいで終えたいお客さん"],["h2","2時間くらいまでで終えたいお客さん"]],"j17":[["plan","次回の時期やメニューを提案してほしいお客さん"],["self","自分のペースで通いたいお客さん"]],"j18":[["line","来店後もLINEなどで気軽に相談したいお客さん"]]};
+const jkSay = a => a.length ? `「${a[0].replace(/のお客さん$|お客さん$/,"")}」人に強い、と。同じことを答えたお客さんと、ちゃんとつなぐね。` : "了解。無理に選ばなくて大丈夫。";
+const JQ = (id, g, q) => ({key:id, g, q: q + "（いくつでも）", type:"many", jk:1, none:"どれも当てはまらない", opts:()=>STAFF_JK[id].map(([k,l])=>[l,k]), say:jkSay});
+const O1 = (key, g, q, opts, say, extra) => Object.assign({key, g, q, type:"one", opts:opts.map(x=>[x,x]), say: say || (v => "なるほど。")}, extra||{});
+const OM = (key, g, q, opts, say, extra) => Object.assign({key, g, q, type:"many", opts:opts.map(x=>[x,x]), say: say || (a => "了解。")}, extra||{});
 const WZ = [
-  {key:"years", q:"まずは基本から。美容師になって、何年？", type:"one",
+  /* ===== 技術と得意（12） ===== */
+  {key:"years", g:"tech", q:"まずは基本から。美容師になって、何年？", type:"one",
    opts:[["1〜2年",2],["3〜5年",4],["6〜9年",7],["10〜14年",12],["15年以上",16]],
    say:v => v>=10 ? "たくさんの髪を見てきた人だね。その経験、ちゃんと伝わるようにする。" : v>=6 ? "腕も感覚も、いちばん乗ってくる時期だね。" : "お客さんと一緒に成長していける人、ってことだね。"},
-  {key:"tech", q:"得意な技術を教えて。いくつでもいいよ。", type:"many", opts:()=>OPT.tech,
+  {key:"tech", g:"tech", q:"得意な技術を教えて。いくつでもいいよ。", type:"many", opts:()=>OPT.tech,
    say:a => `${a.slice(0,2).join("と")}${a.length>2?"、ほかにも":""}が得意、と。技術で選ぶお客さんに、ちゃんと届けるね。`},
-  {key:"worry", q:"お客さんのどんな悩みを解決するのが得意？", type:"many", opts:()=>OPT.worry,
+  {key:"worry", g:"tech", q:"お客さんのどんな悩みを解決するのが得意？", type:"many", opts:()=>OPT.worry,
    say:a => `「${a[0]}」で困ってる人が、あなたに会えたら安心するね。`},
-  {key:"please", q:"お客さんに、いちばん喜ばれるのはどんなところ？　3つまで選んで。", type:"many", max:3, opts:()=>OPT.please,
+  JQ("j02","tech","どんな髪の履歴のお客さんが得意？"),
+  JQ("j03","tech","セルフカラーをしていた髪は？　得意なものを選んで"),
+  JQ("j13","tech","得意な質感は？"),
+  JQ("j14","tech","色の決め方、どんなお客さんが得意？"),
+  JQ("j11","tech","得意な雰囲気づくりは？"),
+  JQ("j12","tech","前髪の相談、どれが得意？"),
+  JQ("j06","tech","朝のスタイリング時間に合わせた髪型、どれが得意？"),
+  JQ("j07","tech","毎日の髪の扱い方、どんなお客さんに合わせるのが得意？"),
+  JQ("j10","tech","乾かし方に悩みがあるお客さんは？"),
+  /* ===== 仕事の価値観（12） ===== */
+  {key:"please", g:"work", q:"お客さんに、いちばん喜ばれるのはどんなところ？　3つまで選んで。", type:"many", max:3, opts:()=>OPT.please,
    say:a => `つまり、「${a[0]}」で選ばれる美容師ってことだね。`},
-  {key:"value", q:"施術で、必ず大事にしていることは？", type:"many", opts:()=>OPT.value,
+  {key:"value", g:"work", q:"施術で、必ず大事にしていることは？", type:"many", opts:()=>OPT.value,
    say:a => `「${a[0]}」。それ、お客さんが美容師に直接は言いにくいところなんだ。大事にしてる人だって伝えるね。`},
-  {key:"talk", q:"施術中の会話は、どんな感じが多い？", type:"one",
+  {key:"homecare", g:"work", q:"ホームケアやサロンの商品は、どうしてる？", type:"one", opts:()=>OPT.homecare.map(x=>[x,x]),
+   say:v => /しっかり/.test(v) ? "家でのケアまで面倒を見てくれる人。必要な理由が分かれば試したいお客さんと合いそうだ。" : /聞かれたら/.test(v) ? "押しつけない。でも聞けば教えてくれる。ちょうどいい距離感だね。" : "商品をすすめられるのが苦手なお客さんには、安心できる人だね。"},
+  O1("b_why","work","美容師になったきっかけに、いちばん近いのは？", ["人を笑顔にしたかった","ものづくりが好きだった","身近な美容師に憧れた","おしゃれが好きだった","ほかの仕事から転身した"],
+   v => `「${v}」。その気持ち、きっとお客さんにも伝わってるよ。`),
+  O1("b_motto","work","仕事でいちばん大切にしている考えに近いのは？", ["一人ひとりに丁寧に","似合うを一緒に見つける","髪の健康が第一","来たときより笑顔で帰ってもらう","正直に、誠実に"],
+   v => `「${v}」。いい言葉だね。`),
+  O1("b_learn","work","技術の勉強は、どのくらいしてる？", ["月に何度も講習や練習","月に1回くらい","気になる技術があるときに","今は現場での経験が中心"],
+   v => /何度も|1回/.test(v) ? "学び続けてる人は、お客さんにも分かるよ。" : "現場で積み上げた経験も、立派な武器だね。"),
+  O1("b_redo","work","ほかのお店でうまくいかなかった髪の相談は？", ["得意。どんどん任せてほしい","状態を見て、正直に相談しながら","できる範囲で対応する"],
+   v => /得意/.test(v) ? "頼もしい。困ってるお客さんの駆け込み先になれるね。" : "正直に話してくれる人、お客さんはすごく安心するんだ。"),
+  JQ("j05","work","前のお店から変えてきたお客さん。どんな理由の人に応えられる？"),
+  O1("b_counsel","work","カウンセリングは、どんな感じ？", ["時間をかけてじっくり","要点をしっかり、手短に","施術しながら少しずつ"],
+   v => /じっくり/.test(v) ? "最初にちゃんと聞いてくれる人、ってことだね。" : /手短/.test(v) ? "忙しいお客さんにはありがたい進め方だね。" : "話しながら形にしていくタイプだね。"),
+  JQ("j08","work","髪色や髪型にきまりがあるお客さんへの対応は？"),
+  JQ("j09","work","冬の乾燥や静電気で困っているお客さんへの対応は？"),
+  O1("b_goal","work","これからの目標に近いのは？", ["指名で通い続けてもらえる美容師","専門の技術を極める","お店や後輩を育てる","自分のお店を持つ"],
+   v => `「${v}」。応援してる。`),
+  /* ===== 接客のスタイル（8） ===== */
+  {key:"talk", g:"serve", q:"施術中の会話は、どんな感じが多い？", type:"one",
    opts:[["ほとんど話さない",1],["聞かれたら話す",2],["お客さんに合わせる",3],["けっこう話す",4],["たくさん話す",5]],
    say:v => v<=2 ? "静かに過ごしたいお客さんにとって、ありがたい人だね。" : v===3 ? "相手を見て合わせられる人。これ、できそうでできないんだ。" : "話していて楽しい人、ってことだね。"},
-  {key:"prop", q:"スタイルの決め方は、どっちに近い？", type:"one",
+  {key:"prop", g:"serve", q:"スタイルの決め方は、どっちに近い？", type:"one",
    opts:[["お客さんの希望に寄り添う",1],["少しだけ提案する",2],["半分ずつ",3],["積極的に提案する",4],["どんどん提案する",5]],
    say:v => v>=4 ? "迷っているお客さんの背中を押せる人だね。" : v<=2 ? "お客さんの「こうしたい」を、ちゃんと形にする人だね。" : "聞くことも、提案することもできる人だね。"},
-  {key:"homecare", q:"ホームケアやサロンの商品は、どうしてる？", type:"one", opts:()=>OPT.homecare.map(x=>[x,x]),
-   say:v => /しっかり/.test(v) ? "家でのケアまで面倒を見てくれる人。必要な理由が分かれば試したいお客さんと合いそうだ。" : /聞かれたら/.test(v) ? "押しつけない。でも聞けば教えてくれる。ちょうどいい距離感だね。" : "商品をすすめられるのが苦手なお客さんには、安心できる人だね。"},
-  {key:"home", q:"ここからは、あなた自身のこと。出身はどこ？", type:"one", opts:()=>OPT.home.map(x=>[x,x]), skip:true,
+  O1("b_assist","serve","施術の進め方は？", ["最初から最後まで自分で担当","アシスタントとチームで","どちらもできる"],
+   v => /最初から/.test(v) ? "ずっと同じ人に見てほしいお客さん、けっこう多いんだ。" : "チームで見てくれるのも、安心感があるね。"),
+  OM("b_photo","serve","仕上がりのイメージは、どうやってすり合わせる？（いくつでも）", ["写真を一緒に見る","自分のスタイル写真を見せて提案","言葉でじっくり確認","切る前に長さを指で示す"],
+   a => "イメージのずれが少ない人、ってことだね。"),
+  O1("b_nervous","serve","美容室が苦手・緊張しているお客さんには？", ["話しかけすぎず、ゆっくり","明るく話して緊張をほぐす","最初に流れを説明して安心してもらう"],
+   v => "そういう気づかい、初めてのお客さんにはすごく大きいよ。"),
+  JQ("j16","serve","施術時間の希望、どこまで応えられる？"),
+  JQ("j17","serve","次回の提案のしかたは？"),
+  JQ("j18","serve","来店後の相談は？"),
+  /* ===== 得意なお客様（8） ===== */
+  OM("b_age","guest","得意なお客さんの年代は？（いくつでも）", ["10代","20代","30代","40代","50代以上"], a => `${a.join("・")}のお客さんに強い、と。`),
+  OM("b_gender","guest","得意なお客さんは？（いくつでも）", ["女性","男性","キッズ"], a => "了解。"),
+  JQ("j01","guest","どんな通い方のお客さんが多い・得意？"),
+  JQ("j04","guest","長さの変化について、得意なお客さんは？"),
+  JQ("j15","guest","来店の間隔、どんなお客さんに合わせるのが得意？"),
+  O1("b_type","guest","こんなお客さんに来てほしい、に近いのは？", ["髪の悩みを根本から解決したい人","おしゃれを楽しみたい人","忙しくて手間をかけられない人","長く通ってくれる人"],
+   v => `「${v}」と出会えるように、ちゃんとつなぐね。`),
+  O1("b_model","guest","カットモデル・カラーモデルの募集は？", ["している","時期によってしている","していない"], v => "了解。モデル希望のお客さんの参考にするね。"),
+  O1("b_event","guest","結婚式や就活など、特別な日の髪の相談は？", ["得意","対応できる","あまりしていない"], v => /得意/.test(v) ? "特別な日を任せられる人、心強いね。" : "了解。"),
+  /* ===== あなた自身（10） ===== */
+  {key:"age", g:"you", q:"ここからは、あなた自身のこと。年代は？", type:"one", opts:()=>OPT.age.map(x=>[x,x]), skip:true, say:v => "了解。年の近い担当を探しているお客さんの参考にするね。"},
+  {key:"home", g:"you", q:"出身はどこ？", type:"one", opts:()=>OPT.home.map(x=>[x,x]), skip:true,
    say:v => `${v}出身ね。同じ出身のお客さん、きっと話が弾むよ。`},
-  {key:"club", q:"学生時代、部活は何をしてた？", type:"one", opts:()=>OPT.club.map(x=>[x,x]), skip:true,
+  {key:"club", g:"you", q:"学生時代、部活は何をしてた？", type:"one", opts:()=>OPT.club.map(x=>[x,x]), skip:true,
    say:v => v==="帰宅部" ? "帰宅部仲間、意外と多いんだ。それも立派な共通点。" : `${v}か。同じ部活だった人とは、一気に距離が縮まるね。`},
-  {key:"hobby", q:"好きなことや趣味は？　いくつでも。", type:"many", opts:()=>OPT.hobby, skip:true,
+  {key:"hobby", g:"you", q:"好きなことや趣味は？　いくつでも。", type:"many", opts:()=>OPT.hobby, skip:true,
    say:a => `${a.slice(0,2).join("と")}。施術中の話題には困らなそうだ。`},
-  {key:"oshiG", q:"推しはいる？", type:"one", opts:()=>OPT.oshi.map(x=>[x,x]), skip:true,
+  {key:"oshiG", g:"you", q:"推しはいる？", type:"one", opts:()=>OPT.oshi.map(x=>[x,x]), skip:true,
    say:v => v==="いない" ? "了解。推しがなくても、話題はほかにもたくさんあるよ。" : "推しが同じお客さんと出会えたら、それだけで特別な時間になるね。"},
-  {key:"hpbStyle", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタイリストページのURLを貼って。", type:"url", skip:true,
+  {key:"pets", g:"you", q:"ペットは飼ってる？（いくつでも）", type:"many", opts:()=>OPT.pets, skip:true, say:a => a[0]==="いない" ? "了解。" : `${a[0]}好きのお客さんとは、すぐ仲良くなれそうだ。`},
+  {key:"holiday", g:"you", q:"休日は、どう過ごすことが多い？", type:"many", opts:()=>OPT.holiday, skip:true, say:a => "いい休日だね。"},
+  {key:"music", g:"you", q:"よく聴く音楽は？", type:"many", opts:()=>OPT.music, skip:true, say:a => `${a[0]}好きのお客さん、きっといるよ。`},
+  O1("b_self","you","まわりから、どんな人だと言われる？", ["話しやすい","落ち着いている","明るい・元気","職人気質","面倒見がいい"], v => `「${v}」人、ってことだね。`, {skip:true}),
+  {key:"hpbStyle", g:"you", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタイリストページのURLを貼って。", type:"url", skip:true,
    say:v => "ありがとう。マッチしたお客さんが、あなたのスタイルを見てから予約できるようにするね。"}
 ];
+const WZ_TOTAL = WZ.length;
 let wzI = 0, wzA = {};
+const wzAnswered = () => WZ.filter(st => { const v = wzA[st.key]; return Array.isArray(v) ? true : v != null && v !== ""; }).length;
 function wzLog(html, me){ const log = $("wzLog"); const d = document.createElement("div");
   if (me){ d.className = "wz-me"; d.textContent = html; }
   else { d.className = "wz-m"; d.innerHTML = `<img src="${pickOne(WZ_IMG)}" alt=""><p>${esc(html)}</p>`; }
   log.appendChild(d); log.scrollTop = log.scrollHeight; }
+function wzProgress(){ const el = $("wzPg"); if (el) el.textContent = `${wzAnswered()} / ${WZ_TOTAL}問`; }
 function openWizard(){
+  const saved = (D.wz && typeof D.wz === "object") ? D.wz : {};
   wzI = 0; wzA = {};
   const el = document.createElement("div"); el.className = "wz"; el.id = "wz"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","AISIと話しながら入力する");
-  el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力</span><button type="button" id="wzClose">閉じる</button></div><div class="wz-log" id="wzLog"></div><div class="wz-a"><div class="wz-ain" id="wzAns"></div></div>`;
+  el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力 <small id="wzPg" style="opacity:.7"></small></span><span class="wz-hb"><button type="button" id="wzSave">保存して、続きはあとで</button><button type="button" id="wzClose">閉じる</button></span></div><div class="wz-log" id="wzLog"></div><div class="wz-a"><div class="wz-ain" id="wzAns"></div></div>`;
   document.body.appendChild(el); document.body.style.overflow = "hidden";
   $("wzClose").onclick = closeWizard;
-  wzLog(`${D.name}さん、はじめまして。AISIです。いくつか質問するから、気軽に答えて。答えたくないものは飛ばしていいよ。`);
-  setTimeout(wzAsk, 350);
+  $("wzSave").onclick = () => wzSave(false);
+  const startAt = Number(saved._i) || 0;
+  const begin = () => {
+    if (startAt > 0 && startAt < WZ_TOTAL){
+      wzLog(`${D.name}さん、おかえり。前回は ${startAt}問目まで答えてくれたよ。続きから始める？`);
+      $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzFresh">最初から</button><button class="btn" type="button" id="wzCont">続きから</button></div>`;
+      $("wzCont").onclick = () => { wzA = Object.assign({}, saved); delete wzA._i; wzI = startAt; wzLog("続きから", true); wzProgress(); setTimeout(wzAsk, 300); };
+      $("wzFresh").onclick = () => { wzA = Object.assign({}, saved); delete wzA._i; wzI = 0; wzLog("最初から", true); wzProgress(); setTimeout(wzAsk, 300); };
+      return;
+    }
+    wzA = Object.assign({}, saved); delete wzA._i;
+    wzLog(`${D.name}さん、はじめまして。AISIです。全部で${WZ_TOTAL}問、5つのテーマで聞いていくね。答えたくないものは飛ばしていいし、途中で保存して、続きはあとからでも大丈夫。答えた数が、そのままプロフィール充実度になるよ。`);
+    wzProgress(); setTimeout(wzAsk, 350);
+  };
+  /* 保存には同意が必要なので、まだのときは最初に確認する */
+  if (!$("agree").checked){
+    wzLog("始める前に1つだけ。ここで答えた内容は、ぴたリストのマッチングに使い、「公開する」にした項目はお客さんに表示されるよ。同意してくれる？（公開したくない項目は、あとからいつでも外せる）");
+    $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzNo">やめておく</button><button class="btn" type="button" id="wzAgree">同意して始める</button></div>`;
+    $("wzNo").onclick = closeWizard;
+    $("wzAgree").onclick = () => { $("agree").checked = true; dirty(); wzLog("同意して始める", true); $("wzAns").innerHTML = ""; setTimeout(begin, 300); };
+  } else begin();
 }
 function closeWizard(){ const el = $("wz"); if (el) el.remove(); document.body.style.overflow = ""; }
 function wzAsk(){
-  if (wzI >= WZ.length) return wzSummary();
-  const st = WZ[wzI];
+  if (wzI >= WZ_TOTAL) return wzSummary();
+  const st = WZ[wzI], prev = WZ[wzI-1];
+  /* テーマが変わるところで、自動で途中保存して、ひとこと添える */
+  if (prev && prev.g !== st.g){ wzSave(true); wzLog(`ここからは「${WZ_GROUPS[st.g]}」のこと。`); }
+  else if (!prev) wzLog(`まずは「${WZ_GROUPS[st.g]}」のこと。`);
   wzLog(st.q);
+  wzProgress();
   const box = $("wzAns");
   const skipBtn = `<button class="btn skip" type="button" id="wzSkip">${st.skip ? "答えずに次へ" : "あとで入れる"}</button>`;
   if (st.type === "url"){
     box.innerHTML = `<small style="color:#c9ced8">開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー（サロンボードではありません）</small>
-      <input type="url" id="wzUrl" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc($("hpbStyle").value)}">
+      <input type="url" id="wzUrl" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(wzA.hpbStyle || $("hpbStyle").value)}">
       <small id="wzUrlMsg" class="warnline" hidden></small>
       <div class="row">${skipBtn}<button class="btn" type="button" id="wzGo">これで決定</button></div>`;
     $("wzGo").onclick = () => { const v = $("wzUrl").value.trim(), m = $("wzUrlMsg");
@@ -439,49 +531,68 @@ function wzAsk(){
       wzDone(st, v, "URLを入れました"); };
   } else {
     const opts = (typeof st.opts === "function" ? st.opts() : st.opts).map(o => Array.isArray(o) ? o : [o, o]);
-    box.innerHTML = `<div class="chips">${opts.map(([l,v],i)=>`<button type="button" class="chip" data-i="${i}">${esc(l)}</button>`).join("")}</div>
-      <div class="row">${skipBtn}${st.type==="many" ? `<button class="btn" type="button" id="wzGo">これで決定</button>` : ""}</div>`;
+    const cur = wzA[st.key];
+    const isOn = v => Array.isArray(cur) ? cur.includes(v) : cur === v;
+    box.innerHTML = `<div class="chips">${opts.map(([l,v],i)=>`<button type="button" class="chip ${st.type==="many"&&isOn(v)?"on":""}" data-i="${i}">${esc(l)}</button>`).join("")}</div>
+      <div class="row">${skipBtn}${st.none ? `<button class="btn skip" type="button" id="wzNone">${esc(st.none)}</button>` : ""}${st.type==="many" ? `<button class="btn" type="button" id="wzGo">これで決定</button>` : ""}</div>`;
     box.querySelectorAll(".chip").forEach(b => b.onclick = () => {
       if (st.type === "one"){ const [l,v] = opts[+b.dataset.i]; return wzDone(st, v, l); }
       if (!b.classList.contains("on") && st.max && box.querySelectorAll(".chip.on").length >= st.max) return;
       b.classList.toggle("on");
     });
-    if (st.type === "many") $("wzGo").onclick = () => { const on = [...box.querySelectorAll(".chip.on")].map(b => opts[+b.dataset.i][1]); if (!on.length) return; wzDone(st, on, on.join("・")); };
+    if (st.type === "many") $("wzGo").onclick = () => { const on = [...box.querySelectorAll(".chip.on")]; if (!on.length) return;
+      wzDone(st, on.map(b => opts[+b.dataset.i][1]), on.map(b => opts[+b.dataset.i][0]).join("・")); };
+    if (st.none) $("wzNone").onclick = () => wzDone(st, [], st.none);
   }
   $("wzSkip").onclick = () => { wzLog("あとで", true); box.innerHTML = ""; wzI++; setTimeout(wzAsk, 300); };
 }
 function wzDone(st, v, label){
-  wzA[st.key] = v; wzLog(label, true); $("wzAns").innerHTML = "";
-  setTimeout(() => { wzLog(st.say(v)); wzI++; setTimeout(wzAsk, 700); }, 350);
+  wzA[st.key] = v; wzLog(label, true); $("wzAns").innerHTML = ""; wzProgress();
+  const say = Array.isArray(v) && !v.length ? (st.jk ? jkSay([]) : "了解。") : st.say(st.jk ? (Array.isArray(v) ? v.map(k => (STAFF_JK[st.key].find(x=>x[0]===k)||[,k])[1]) : v) : v);
+  setTimeout(() => { wzLog(say); wzI++; setTimeout(wzAsk, 700); }, 350);
+}
+/* 途中保存：答えをフォームに入れて保存し、どこまで答えたかも残す（silent＝テーマの切り替わりでの自動保存） */
+async function wzSave(silent){
+  if (!$("agree").checked){ if (!silent) wzLog("保存するには、ページのいちばん上の同意にチェックが必要だよ。"); return; }
+  wzApply(null, null);
+  D.wz = Object.assign({}, wzA, {_i: wzI});
+  const r = await api({type:"save_staff", key:KEY, data:collectStaff()});
+  if (r && r.ok){
+    if (r.done != null){ $("pct").textContent = r.done + "%"; $("bar").style.width = r.done + "%"; D["プロフィール充実度"] = r.done; }
+    const m = $("msg"); m.className = "msg ok"; m.textContent = `保存しました（AISIとの会話：${wzAnswered()} / ${WZ_TOTAL}問）。診断結果にすぐ反映されます。`;
+    if (!silent){ wzLog(`ここまで保存したよ（${wzAnswered()} / ${WZ_TOTAL}問）。続きは、このページの「AISIと話しながら入力する」から、いつでも再開できる。`); setTimeout(closeWizard, 1600); }
+  } else if (!silent) wzLog("保存できなかった。電波の良いところで、もう一度「保存して、続きはあとで」を押してね。");
 }
 /* 第三者から見た紹介文（120字まで）。答えた内容だけで組み立てる */
 function wzBio(){
   const A = wzA, parts = [];
   const head = (A.years>=10 ? "経験豊富な" : A.years>=6 ? "腕の確かな" : A.years ? "お客さんと一緒に成長していく" : "") + "美容師。";
   const sub = [];
-  if (A.worry) sub.push(`${A.worry[0]}の悩みが得意`);
-  if (A.please) sub.push(`「${A.please[0]}」で喜ばれている`);
+  if ((A.worry||[]).length) sub.push(`${A.worry[0]}の悩みが得意`);
+  if ((A.please||[]).length) sub.push(`「${A.please[0]}」で喜ばれている`);
   parts.push(sub.length ? sub.join("で、") + "、" + head : head);
-  if (A.value) parts.push(`施術では「${A.value[0]}」を大事にしている。`);
+  if ((A.value||[]).length) parts.push(`施術では「${A.value[0]}」を大事にしている。`);
+  if (A.b_motto) parts.push(`モットーは「${A.b_motto}」。`);
   if (A.talk) parts.push(A.talk<=2 ? "静かに過ごしたい人も安心。" : A.talk===3 ? "会話はお客さんに合わせてくれる。" : "話していて楽しい人。");
+  if (A.b_self) parts.push(`まわりからは「${A.b_self}」と言われる。`);
   let out = "";
-  for (const p of parts){ if ((out + p).length > 120) break; out += p; }
+  for (const p of parts){ if ((out + p).length > 120) continue; out += p; }
   return out;
 }
 function wzSummary(){
   const bio = wzBio(), spec = (wzA.tech||[]).slice(0,2).join("・");
-  wzLog("ありがとう。聞いた話から、お客さんから見たあなたをまとめてみた。");
+  wzLog(`おつかれさま。${wzAnswered()} / ${WZ_TOTAL}問 答えてくれたよ。聞いた話から、お客さんから見たあなたをまとめてみた。`);
   const log = $("wzLog"), d = document.createElement("div"); d.className = "wz-sum";
   d.innerHTML = `<b>第三者から見た${esc(D.name)}さん</b><br>${esc(bio || "（答えが少なかったので、まとめられませんでした）")}${spec?`<br><small>得意なこと：${esc(spec)}</small>`:""}`;
   log.appendChild(d); log.scrollTop = log.scrollHeight;
   setTimeout(() => wzLog("こんな感じの人だよね。これで大丈夫？　あとから下のフォームで、いつでも直せるよ。"), 300);
   $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzRedo">最初からやり直す</button><button class="btn" type="button" id="wzOk">これでOK</button></div>`;
-  $("wzRedo").onclick = () => { closeWizard(); openWizard(); };
-  $("wzOk").onclick = () => { wzApply(bio, spec); closeWizard();
+  $("wzRedo").onclick = () => { D.wz = Object.assign({}, wzA, {_i: 0}); closeWizard(); openWizard(); };
+  $("wzOk").onclick = () => { wzApply(bio, spec); D.wz = Object.assign({}, wzA, {_i: WZ_TOTAL}); closeWizard();
     const m = $("msg"); m.className = "msg ok"; m.textContent = "変更があります。AISIとの会話の内容を入れたので、確認して「保存する」を押してください。";
     $("agree").scrollIntoView({behavior:"smooth", block:"center"}); };
 }
-/* 会話の答えを、フォームに入れる */
+/* 会話の答えを、フォームに入れる（bio・spec は最後のまとめのときだけ） */
 function wzApply(bio, spec){
   const A = wzA;
   const setChips = (id, vals) => { const box = document.querySelector(`[data-chips="${id}"]`); if (!box || !vals) return;
@@ -496,10 +607,14 @@ function wzApply(bio, spec){
   if (A.homecare) setChips("homecare", [A.homecare]);
   if (A.talk) setSeg("talk", A.talk);
   if (A.prop) setSeg("prop", A.prop);
+  if (A.age) $("age").value = A.age;
   if (A.home) $("home").value = A.home;
   if (A.club) $("club").value = A.club;
   if (A.hobby) setChips("hobby", A.hobby);
   if (A.oshiG) $("oshiG").value = A.oshiG;
+  if (A.pets) setChips("pets", A.pets);
+  if (A.holiday) setChips("holiday", A.holiday);
+  if (A.music) setChips("music", A.music);
   if (A.hpbStyle){ $("hpbStyle").value = A.hpbStyle; }
   if (bio) $("line").value = bio;
   if (spec && !$("spec").value.trim()) $("spec").value = spec;

@@ -201,6 +201,13 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .fimg small{color:var(--ink-soft,#5a6274);font-size:.76rem}
 .modal-c label.agree{display:flex;gap:8px;align-items:flex-start;font-size:.8rem}
 .modal-c label.agree input{width:auto;margin-top:3px}
+.share{border:1px solid #d9d3c6;border-radius:6px;padding:10px 12px;display:grid;gap:6px;font-size:.82rem;color:#3b4252}
+.share small{font-size:.76rem;line-height:1.6}
+.shr{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px dashed #e2ddd2;padding-top:6px}
+.shr span{flex:1;line-height:1.5}
+.shr .sw{display:flex;flex-shrink:0;border:1px solid #cfc9bd;border-radius:999px;overflow:hidden}
+.shr .sw button{font:inherit;font-size:.76rem;border:0;background:#fff;color:#6b7280;padding:5px 10px;cursor:pointer}
+.shr .sw button.on{background:var(--ink);color:#fff;font-weight:700}
 .ferr{color:#b23b2a;font-size:.82rem;margin:0}
 .btn.line{background:#06c755;color:#fff;font-weight:700}
 @media (hover:hover){.btn.line:hover{background:#05b34c}}
@@ -394,6 +401,9 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
         <div class="fimg-list" id="fImgList"></div>
         <small>画像は、予約が確定したときにお店に届きます。顔が写っている場合は、できれば隠してください。</small></div>
       <label for="fNote">ご要望（任意）<textarea id="fNote" rows="3" maxlength="300" placeholder="例：前髪は短めにしたい"></textarea></label>
+      <div class="share" id="fShare"><b>お店に伝える内容（予約が確定したあとに届きます）</b>
+        <small>AISIの診断で答えたことを、カウンセリングの参考としてお店に伝えます。<b>お店のスタッフのLINEにも届きます。</b>伝えたくない項目は「伝えない」にしてください。</small>
+        <div id="fShareList"></div></div>
       <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスは、予約が確定したあとにだけ伝わります。<a href="privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました</label>
       <p class="ferr" id="fErr" hidden></p>
       <button class="btn book" type="submit" id="fSend">リクエストを送る</button>
@@ -672,11 +682,25 @@ const THEMES = {
   staff:{label:"担当スタイリストを探す",boost:{staff:1.5}},
   spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}}
 };
-const MIN_Q = 13, MAX_Q = 25, GOAL = 85;
+const GOAL = 85;
+/* ===== 熱量で選ぶ質問コース =====
+   min/max：お店の質問の数（最低・最大） fol：深掘りの数 talk：AISIが先に聞くこと（"all"＝全部／"tension"＝探し方別の1問）
+   jk：じっくり質問の数 personal：個人的な質問の数。数を変えるときは、ここだけ直せばOK */
+const COURSES = {
+  light: {label:"ちょっと見る", time:"3分", n:"約10問", min:6,  max:8,  fol:0, talk:["tension"], jk:0, personal:2, say:"サクッといこう。大事なところだけ聞くね。"},
+  normal:{label:"ちゃんと探す", time:"5分", n:"約25問", min:12, max:15, fol:3, talk:["tension","t_hc1","t_talk","t_fail","t_body"], jk:0, personal:4, say:"了解。ちゃんと見て、ちゃんと選ぶよ。"},
+  deep:  {label:"本気で探す",   time:"10分", n:"約50問", min:16, max:20, fol:8, talk:"all", jk:12, personal:4, say:"いいね、本気だ。髪の歴史から毎日のことまで、じっくり聞かせて。"}
+};
+const COURSE_ORDER = ["light","normal","deep"];
+/* 探し方ごとの「おすすめ」コース */
+const COURSE_REC = {lifelong:"deep", casual:"light", explore:"normal", model:"light"};
+function courseLabel(k){ const c = COURSES[k]; return c ? `${c.label}（${c.n}）` : ""; }
+function C(){ return COURSES[(S && S.course) || "normal"]; }
 /* やりたいメニューで答えが分かった分だけ、最低質問数を減らす（最大3問） */
-function minQ(){ return MIN_Q - Math.min(3, ((S && S.preset) || []).length); }
+function minQ(){ return Math.max(4, C().min - Math.min(3, ((S && S.preset) || []).length)); }
+const MAX_Q = 25;
 /* 2つの段階：①お店の質問でマッチ率80%まで → ②「ちょっと個人的なこと聞いていい？」で担当者まで決める */
-const PHASE1_GOAL = 80, PHASE1_MAX = 20, PERSONAL_MAX = 4;
+const PHASE1_GOAL = 80;
 /* マッチ率のゆるさ。値を変えると全体の点数の出方が変わります
    CURVE：小さなズレを許す度合い（1＝厳しい、大きいほどゆるい）
    HARD：エリア・予算・時間など大事な条件が外れたときの掛け率
@@ -793,7 +817,7 @@ function goalPool(r){
 }
 /* 第1段階の終わり：上位3店がマッチ率80%以上、または20問 */
 function phase1Done(answers, theme, n){
-  if (n >= PHASE1_MAX) return true;
+  if (n >= C().max) return true;
   if (n < minQ()) return false;
   const all = scoreAll(answers, theme), r = goalPool(all);
   if (r.length && r[Math.min(3, r.length) - 1].score >= PHASE1_GOAL) return true;
@@ -819,7 +843,7 @@ function meterHTML(v, label){
 }
 function shouldFinish(answers, theme, n){
   if (n >= MAX_Q) return true;
-  if (n < MIN_Q) return false;
+  if (n < minQ()) return false;
   /* マッチ率85%以上のお店が3軒そろったら結果へ */
   const r = scoreAll(answers, theme);
   return r.length >= 3 && r[2].score >= GOAL;
@@ -828,7 +852,7 @@ function confidence(answers, theme, n){
   if (!n) return 0;
   const r = scoreAll(answers, theme);            /* 3軒そろう見込み（3位の点数）で表示 */
   const third = (r[2] || r[0]).score;
-  return Math.min(99, Math.round(third * Math.min(1, n/MIN_Q)));
+  return Math.min(99, Math.round(third * Math.min(1, n/minQ())));
 }
 function reasonsFor(r, answers){
   const out=[];
@@ -859,6 +883,9 @@ function loadData(){
     if (d && Array.isArray(d.salons) && d.salons.length >= 3) SALONS = d.salons;
     /* サンプルのお店で、まだ「価値」が入っていないスタイリストには、見本の値を入れておく */
     SALONS.forEach(x=>(x.staff||[]).forEach(st=>{ const v=SAMPLE_VALUES[st.id]; st.p=st.p||{}; if (x.sample && v && !(st.p.please||[]).length) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]}); }));
+    /* サンプルのお店のスタッフには、じっくり質問の「得意なお客さん」も見本で入れておく（デモで違いが分かるように） */
+    SALONS.forEach(x=>{ if (!x.sample) return; (x.staff||[]).forEach(st=>{ st.p=st.p||{}; if (st.p.jk && Object.keys(st.p.jk).length) return;
+      st.p.jk = {}; JK.forEach(q=>{ const ks=[...new Set(q.opts.filter(o=>o.s).map(jkKey))]; const h=hashOf(st.id+q.id); st.p.jk[q.id] = ks.filter((k,i)=>((h>>i)&3)===0 || i===h%ks.length); }); }); });
   }).catch(()=>{ /* 読めなければサンプルで動かす */ });
 }
 
@@ -960,7 +987,7 @@ function renderTheme(){
         <button class="choice" type="button" data-theme="salon">${THEMES.salon.label}</button>
         ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
       </div>
-      <p class="note">質問は最大25問。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
+      <p class="note">性格診断や適性診断のように、質問に答えていくだけ。どのくらい答えるかは「ちょっと見る（約10問）」「ちゃんと探す（約25問）」「本気で探す（約50問）」から選べます。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
       ${DEMO?`<p class="warnbox" style="margin-top:4px">いまは<b>デモ体験版</b>です（サンプルのお店）。${BOOK_TEXT}から、札幌市中央区のお店の掲載と予約がスタートします。診断は何回でも試せるので、たくさん体験してみてください。</p>`
         : PRE?`<p class="warnbox" style="margin-top:4px">いまは<b>札幌市中央区のお店</b>から先行スタート中です。${LAUNCH_TEXT}から札幌全域のお店に広がります。</p>`:""}
     </div>
@@ -977,13 +1004,16 @@ const TENSIONS = [
   ["model","モデル（カット・カラーなど）で、お得にそれなりのクオリティで"]
 ];
 function tensionLabel(k){ return (TENSIONS.find(x=>x[0]===k)||[,""])[1]; }
-let draft = {tension:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
+let draft = {tension:"", course:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
 
 /* ============ はじめの質問（AISIとの会話で1問ずつ） ============ */
 /* kind：one＝1つ選ぶとすぐ次へ ／ many＝いくつでも選んで「これで決定」 */
 const INTRO = [
   { key:"tension", kind:"one", pose:"open", q:"最初に聞かせて。\n今回は、どんな気持ちで美容室を探してる？", opts:()=>TENSIONS, wide:true,
     say:v=>({lifelong:"いいね。じゃあ、腕だけじゃなくて「人」も見て選ぶよ。", casual:"了解。通いやすさと気軽さ、ちゃんと見ておく。", explore:"たまの冒険、いいじゃん。いつもと違う良さがある店を探そう。", model:"なるほど。モデルの募集があるかは、予約のときにお店が確かめてくれるよ。"})[v] },
+  { key:"course", kind:"one", pose:"think", q:"どのくらい、じっくり探す？", sub:"たくさん答えるほど、君に合う担当者まで細かく選べるよ。結果を見たあとで、続きを答えることもできる",
+    opts:()=>COURSE_ORDER.map(k=>[k, `${COURSES[k].label}（${COURSES[k].time}・${COURSES[k].n}）${COURSE_REC[draft.tension]===k?"　★おすすめ":""}`]), wide:true,
+    say:v=>COURSES[v] ? COURSES[v].say : "" },
   { key:"menus", kind:"many", pose:"think", q:"今回、やりたいメニューは？", sub:"いくつでも。そのメニューが一押しのお店から探すよ", opts:()=>MENU_CATS.map(c=>[c[0],c[1]]), none:"まだ決めてない", required:true },
   { key:"when", kind:"one", pose:"pocket", q:"いつ頃行きたい？", opts:()=>WHENS,
     say:v=>v==="soon" ? "今日・明日は、人気の店ほど埋まりがち。「空きあり」の店や直前に強い店を優先するね。" : v==="someday" ? (DEMO ? "日にちが決まってなくても大丈夫。11月19日からは、気になった店をそのまま予約できるよ。" : "日にちが決まってなくても大丈夫。結果はぴたリストのLINEに保存して、あとから予約できるよ。") : "" },
@@ -1062,15 +1092,15 @@ function introGo(kind, say){
     if (introIdx < INTRO.length - 1){ introIdx++; return renderIntro(say); }
     const d = draft;
     await dataReady;
-    start(introTheme, {tension: d.tension && d.tension!=="__none" ? d.tension : "", menus:MENU_CATS.map(c=>c[0]).filter(k=>d.menus.includes(k)), when:(d.when && d.when!=="__none") ? d.when : "week",
+    start(introTheme, {tension: d.tension && d.tension!=="__none" ? d.tension : "", course: COURSES[d.course] ? d.course : (COURSE_REC[d.tension] || "normal"), menus:MENU_CATS.map(c=>c[0]).filter(k=>d.menus.includes(k)), when:(d.when && d.when!=="__none") ? d.when : "week",
       age: d.age && d.age!=="__none" ? d.age : "", zones:[...d.zones], days:[...d.days].sort(), slots:[...d.slots], date:d.date});
   }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
 }
 
 function start(theme, cond){
   COND = cond;
-  S = {sid:newSid(), theme, cond, answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, say:"", need:null};
-  send("start", {theme:THEMES[theme].label, tension:tensionLabel(cond.tension), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
+  S = {sid:newSid(), theme, cond, course:cond.course || "normal", answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, jk:{}, affAsked:[], say:"", need:null};
+  send("start", {theme:THEMES[theme].label, tension:tensionLabel(cond.tension), course:courseLabel(S.course), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
     days: cond.date ? cond.date.replace(/-/g,"/") : (cond.days.map(d=>DAYS[d]+"曜").join("、")||"こだわらない"),
     slots: cond.slots.map(k=>SLOTS.find(x=>x[0]===k)[1]).join("、")||"こだわらない",
     device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
@@ -1114,7 +1144,7 @@ function renderQ(){
     <div class="panel">
       ${meterHTML(S.meter)}
       <div class="bubble">
-        <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${PHASE1_MAX}</span></p>
+        <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${C().max}</span></p>
         ${S.say?`<p class="aside">${esc(S.say)}</p>`:asideFor(n)?`<p class="aside">${asideFor(n)}</p>`:""}
         <p class="voice">${esc(qText(q))}</p>
       </div>
@@ -1144,13 +1174,13 @@ function answer(v){
   S.n++;
   S.meter = nextMeter(S.meter, S.answers, S.theme);
   /* 「はい」と答えた質問は、理由や本音をもう1つだけ聞く */
-  if (v >= .75 && FOLLOW[q.id] && !(q.id in S.fol)) return renderFollow(q.id);
+  if (v >= .75 && FOLLOW[q.id] && !(q.id in S.fol) && Object.keys(S.fol).length < C().fol) return renderFollow(q.id);
   next();
 }
 function next(){
   if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
   /* 切り札：9問を過ぎてもまだ絞れていなければ、1回だけ写真を見せてもらう */
-  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= PHASE1_MAX-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
+  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= C().max-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
     S.photoAsked = true; return renderPhoto();
   }
   const nq = nextQuestion(S.answers, S.theme, S.n);
@@ -1314,7 +1344,7 @@ function affQuestions(top){
     const always = AFF_ALWAYS[a.key] || [];
     const opts = always.concat(found.filter(v=>!always.includes(v))).slice(0, always.length ? 16 : 10);
     return Object.assign({}, a, {opts, spread: keys.length});
-  }).filter(a=>a.spread>=1).sort((x,y)=>y.spread-x.spread).slice(0, PERSONAL_MAX);
+  }).filter(a=>a.spread>=1).sort((x,y)=>y.spread-x.spread);
 }
 const normName = s => String(s||"").replace(/（例）|\s|　/g,"").toLowerCase();
 function affinity(st, A){
@@ -1361,13 +1391,15 @@ let affQueue = [], affIdx = 0, meterStart = 80, meterFinal = 90;
 /* 第2段階：「ちょっと個人的なこと聞いていい？」 */
 function startPersonal(){
   if (!S.talkDone) return startTalk();
+  if (!S.jkDone) return startJikkuri();
   if (S.affDone) return finish();
   S.affDone = true;
   const ranked = scoreAll(S.answers, S.theme);
-  const qs = affQuestions(ranked.slice(0,3)).slice(0, PERSONAL_MAX);
+  const asked = S.affAsked || [];
+  const qs = affQuestions(ranked.slice(0,3)).filter(a => !asked.includes(a.key)).slice(0, Math.max(0, C().personal - asked.length));
   S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL, ranked[0].score));
   if (!qs.length) return finish();
-  affQueue = qs; affIdx = 0; S.aff = {};
+  affQueue = qs; affIdx = 0;
   meterStart = S.meter;
   view="aff-intro";
   $app.innerHTML = `
@@ -1385,8 +1417,8 @@ function startPersonal(){
     </div>
   </section>`;
   aisiReact("personal"); typeVoice($app.querySelector(".bubble .voice"));
-  document.getElementById("pYes").onclick=renderAff;
-  document.getElementById("pNo").onclick=()=>{ S.aff = null; finish(); };
+  document.getElementById("pYes").onclick=()=>{ S.aff = S.aff || {}; S.affAsked = asked.concat(qs.map(a=>a.key)); renderAff(); };
+  document.getElementById("pNo").onclick=()=>{ if (S.aff && !Object.keys(S.aff).length) S.aff = null; finish(); };
 }
 /* 第2段階のマッチ率：答えるたびに、最終の点数に向かって上がる */
 function personalMeter(){
@@ -1479,7 +1511,7 @@ const VAL_TXT = {
     "最初から最後まで自分が担当する":"最初から最後まで、自分で担当してくれる", "会話の量をお客様に合わせる":"会話の量を、お客さんに合わせてくれる"},
   worry: {"くせ毛・うねり":"くせ毛やうねりの悩みが得意", "ダメージ毛":"傷んだ髪のケアが得意", "ブリーチ毛":"ブリーチした髪の扱いが得意", "白髪":"白髪の悩みが得意",
     "細い髪・ボリューム不足":"細い髪やボリューム不足の悩みが得意", "多い髪・広がり":"多い髪や広がりの悩みが得意", "頭皮の悩み":"頭皮の悩みにも詳しい",
-    "似合う髪型が分からない":"似合う髪型を一緒に見つけるのが得意", "前の美容室での失敗":"ほかのお店でうまくいかなかった髪のやり直しが得意"}
+    "似合う髪型が分からない":"似合う髪型を一緒に見つけるのが得意", "前の美容室での失敗":"ほかのお店でうまくいかなかった髪のやり直しが得意", "冬の乾燥・静電気":"冬の乾燥や静電気の悩みにも詳しい"}
 };
 const O = (label, say, need) => ({label, say, need: need || {}});
 const FOLLOW = {
@@ -1565,27 +1597,164 @@ const TALK = [
     O("ある", "言いにくいよね。お店に伝えて、気づかってもらおう。", {ask:"体：シャンプー台で首・腰がつらくなりやすい（気づかってほしい）"}),
     O("ない", "了解。", {})]}
 ];
+/* ===== じっくり質問（「本気で探す」コースだけ。18問の候補から12問前後を選んで聞く） =====
+   ・スタッフの「AISIと話しながら入力」と同じ番号（j01〜j18）で、1対1につながっている
+   ・選択肢の sk（なければ k）が、スタッフが「このお客さん、得意」と選んだものと重なると、担当者選びが上がる
+   ・s＝スタッフ側に見せる言葉（空なら、スタッフ側の選択肢にはしない） tell＝予約確定後にお店へ届ける要点（前向きな言い方で）
+   ※スタッフ側（register.html の JK）と、番号・k・sk をそろえてください */
+const JK_GROUPS = {hist:["髪の履歴","ここからは、じっくり質問。まずは、君の髪のこれまでを教えて。"], daily:["毎日のこと","次は、毎日の髪のこと。"], taste:["好み","好みのことも聞かせて。"], visit:["通い方","最後に、通い方のこと。"]};
+const J = (k, label, s, say, tell, need) => ({k, label, s, say, tell, need: need || {}});
+const JK = [
+  {id:"j01", g:"hist", pri:5, q:"前に美容室へ行ったのは、どのくらい前？", opts:[
+    J("m1","1か月以内","毎月きっちり通うお客さん","まめに整えてるんだね。","前回の美容室から1か月以内"),
+    J("m3","2〜3か月前","2〜3か月ごとに通うお客さん","ちょうどいいペースだね。","前回の美容室から2〜3か月"),
+    J("m6","半年くらい前","半年ぶりくらいのお客さん","久しぶりなんだね。今の髪の状態から、ちゃんと見てくれる人を選ぶ。","半年ぶりくらいの美容室"),
+    J("y1","1年以上前","1年以上ぶりのお客さん","久しぶりの美容室って、ちょっと勇気いるよね。安心して行けるお店にする。","1年以上ぶりの美容室。まずは整えるところから")]},
+  {id:"j02", g:"hist", pri:9, boost:m=>m.some(x=>["color","perm","straight"].includes(x))?3:0, q:"これまで、髪にどんなことをしてきた？", opts:[
+    J("virgin","ほとんど何もしていない","カラーやパーマをほとんどしていない髪のお客さん","まっさらな髪だね。いろんなことができるよ。","カラー・パーマはほとんど未経験"),
+    J("color","カラーを繰り返している","カラーを繰り返している髪のお客さん","色を楽しんできたんだね。今の髪の状態まで見てくれる人を選ぶ。","カラーを繰り返している髪",{worry:["ダメージ毛"]}),
+    J("bleach","ブリーチをしたことがある","ブリーチ歴のある髪のお客さん","ブリーチ毛の扱いに慣れてる人、大事だね。","ブリーチの履歴あり",{worry:["ブリーチ毛"]}),
+    J("straight","縮毛矯正やパーマを繰り返している","縮毛矯正やパーマを繰り返している髪のお客さん","履歴を分かったうえで施術してくれる人がいいね。","縮毛矯正・パーマの履歴あり",{worry:["ダメージ毛"]})]},
+  {id:"j03", g:"hist", pri:4, boost:m=>m.includes("color")?4:0, q:"自分で髪を染めたこと（セルフカラー）はある？", opts:[
+    J("recent","この半年くらいの間にある","セルフカラーのあとの髪のお客さん","教えてくれてありがとう。それ、お店にとってすごく大事な情報なんだ。","この半年ほどの間にセルフカラーあり"),
+    J("past","前にあるけど、最近はない","昔のセルフカラーが残っている髪のお客さん","了解。色の重なり方まで見てくれる人がいいね。","以前セルフカラーの経験あり"),
+    J("no","ない","","了解。","")]},
+  {id:"j04", g:"hist", pri:4, q:"髪の長さを最後に大きく変えたのは？", opts:[
+    J("recent","この1年以内","長さを変えたばかりで、形を整えたいお客さん","変えたばかりなんだね。今の形を育てていこう。","この1年以内に長さを大きく変えた"),
+    J("years","数年前","","了解。",""),
+    J("same","ずっと同じくらい","ずっと同じ髪型で、変え方に迷っているお客さん","ずっと同じだと、変え方に迷うよね。","ここ数年、長さはほぼ同じ")]},
+  {id:"j05", g:"hist", pri:7, q:"前の美容室を変えたくなった理由に、いちばん近いのは？", opts:[
+    J("finish","仕上がりがしっくりこなかった","仕上がりに満足できず、お店を探しているお客さん","仕上がりで、ちゃんと満足したいんだね。","仕上がりの満足感を大事にしたい",{value:["切る前に長さ・仕上がりを確認する"]}),
+    J("mood","居心地が合わなかった","前のお店の居心地が合わなかったお客さん","居心地って、通い続けるうえでいちばん大事かも。","居心地のよさを大事にしたい",{value:["会話の量をお客様に合わせる"]}),
+    J("price","料金が分かりにくかった","料金の分かりやすさを大事にするお客さん","会計のときにドキッとするの、嫌だよね。","料金が分かりやすいと安心",{value:["追加料金は事前に説明する"]}),
+    J("move","引っ越しなどで通いにくくなった","引っ越しなどで、新しいお店を探しているお客さん","新しい街で、新しい行きつけを見つけよう。","引っ越しなどで新しいお店を探している"),
+    J("none","特にない・初めて探す","","了解。","")]},
+  {id:"j06", g:"daily", pri:9, q:"朝、髪にかけられる時間はどのくらい？", opts:[
+    J("m5","5分以内","朝5分で決まる髪型にしたいお客さん","朝は1分でも惜しいよね。","朝のスタイリングは5分以内が希望",{please:["扱いやすさ"]}),
+    J("m15","10〜15分","朝10〜15分で整えたいお客さん","ちょうどいい時間だね。","朝のスタイリングは10〜15分ほど"),
+    J("m30","30分くらいかける","スタイリングに時間をかけて楽しむお客さん","スタイリングを楽しんでるんだね。","スタイリングに時間をかけるのが好き")]},
+  {id:"j07", g:"daily", pri:8, q:"毎日の髪、どうしていることが多い？", opts:[
+    J("iron","アイロンやコテを使う","毎日アイロンやコテを使うお客さん","毎日の熱から、髪を守ることも考えよう。","毎日アイロン・コテを使う"),
+    J("tie","結んでいることが多い","結ぶことが多いお客さん","結んでもきれいな髪型、大事だね。","結ぶことが多いので、結んでもきれいだとうれしい"),
+    J("wax","スタイリング剤で整える","スタイリング剤で仕上げるお客さん","仕上げまで楽しめる髪にしよう。","スタイリング剤で整えることが多い"),
+    J("dry","乾かすだけ","乾かすだけで終わらせたいお客さん","乾かすだけで決まる髪、いいよね。","乾かすだけで決まるとうれしい",{please:["扱いやすさ"]})]},
+  {id:"j08", g:"daily", pri:3, q:"仕事や学校で、髪色や髪型のきまりはある？", opts:[
+    J("strict","けっこう厳しい","髪色や髪型にきまりがあるお客さん","きまりの中で、いちばんかわいくしよう。","仕事・学校の髪色のきまりに合わせたい"),
+    {k:"some", sk:"strict", label:"少しある", s:"髪色や髪型にきまりがあるお客さん", say:"ちょうどいい明るさを探そう。", tell:"髪色に少しきまりがある", need:{}},
+    J("free","特にない","","自由なんだね。","")]},
+  {id:"j09", g:"daily", pri:7, q:"冬の乾燥や静電気で、髪がまとまらなくなる？", opts:[
+    J("yes","すごく困る","冬の乾燥や静電気で困っているお客さん","札幌の冬、髪にはきびしいよね。","冬の乾燥・静電気の対策も相談したい",{worry:["冬の乾燥・静電気"]}),
+    {k:"bit", sk:"yes", label:"少し気になる", s:"冬の乾燥や静電気で困っているお客さん", say:"冬のケアも聞けるといいね。", tell:"冬の乾燥・静電気のケアも聞いてみたい", need:{worry:["冬の乾燥・静電気"]}},
+    J("no","気にならない","","いいね。","")]},
+  {id:"j10", g:"daily", pri:5, q:"髪を乾かすのは、どんな感じ？", opts:[
+    J("full","毎回しっかりドライヤー","","えらい。それだけで髪は変わるよ。",""),
+    J("half","半乾きや自然乾燥が多い","自然乾燥が多いお客さん","正直に教えてくれてありがとう。乾かし方のコツも聞けるといいね。","自然乾燥が多いので、乾かすだけでまとまるとうれしい"),
+    J("long","時間がかかって大変","乾かすのに時間がかかる髪のお客さん","毎日のことだから、少しでも楽になるといいね。","乾かす時間を短くしたい",{worry:["多い髪・広がり"]})]},
+  {id:"j11", g:"taste", pri:8, q:"なりたい雰囲気に、いちばん近いのは？", opts:[
+    J("cute","かわいい","かわいい雰囲気にしたいお客さん","かわいい、いいね。","なりたい雰囲気：かわいい"),
+    J("cool","かっこいい・クール","かっこいい雰囲気にしたいお客さん","かっこいい、いいね。","なりたい雰囲気：かっこいい・クール"),
+    J("elegant","大人っぽい・上品","大人っぽく上品にしたいお客さん","大人っぽさ、似合いそう。","なりたい雰囲気：大人っぽい・上品"),
+    J("natural","ナチュラル","ナチュラルにしたいお客さん","自然体がいちばん、だね。","なりたい雰囲気：ナチュラル"),
+    J("unique","個性的","個性的にしたいお客さん","人と同じじゃつまらない、ってことだね。","なりたい雰囲気：個性的")]},
+  {id:"j12", g:"taste", pri:6, q:"前髪は、どうしたい？", opts:[
+    J("make","作りたい・こだわりたい","前髪にこだわりたいお客さん","前髪で印象は大きく変わるからね。","前髪を作りたい・こだわりたい"),
+    J("grow","なしにしたい・伸ばしたい","前髪を伸ばしたい・なくしたいお客さん","伸ばしかけの時期も、きれいに見せたいね。","前髪は伸ばしたい・なしにしたい"),
+    J("ask","似合う方を相談したい","前髪をどうするか迷っているお客さん","一緒に決めてくれる人がいいね。","前髪は似合う方を相談したい",{please:["似合わせの提案"]}),
+    J("keep","今のままでいい","","了解。","")]},
+  {id:"j13", g:"taste", pri:8, q:"仕上がりの質感は、どれが好き？", opts:[
+    J("airy","ふんわり軽め","ふんわり軽めの質感が好きなお客さん","軽やかなの、いいね。","質感はふんわり軽めが好き"),
+    J("calm","しっとりまとまる","しっとりまとまる質感が好きなお客さん","落ち着いたまとまり、いいね。","質感はしっとりまとまるのが好き"),
+    J("shine","ツヤ重視","ツヤを大事にしたいお客さん","ツヤは、髪のいちばんのおしゃれだよね。","ツヤのある仕上がりが好き"),
+    J("move","動き・束感がほしい","動きや束感を出したいお客さん","動きがあると、ぐっとあか抜けるよね。","動き・束感のある仕上がりが好き")]},
+  {id:"j14", g:"taste", pri:6, boost:m=>m.includes("color")?3:0, q:"髪の色は、どう決めたい？", opts:[
+    J("suggest","肌や雰囲気に合う色を提案してほしい","似合う色を提案してほしいお客さん","似合う色、一緒に見つけてくれる人がいいね。","似合う色を提案してほしい",{please:["似合わせの提案"]}),
+    J("fav","好きな色を優先したい","好きな色がはっきりしているお客さん","好きな色を、ちゃんと形にしてくれる人がいいね。","好きな色を優先したい",{value:["写真でイメージを共有する"]}),
+    J("dark","暗めで落ち着いた色","暗めで落ち着いた色が好きなお客さん","落ち着いた色、品があっていいね。","暗めで落ち着いた色が好き"),
+    J("bright","明るめ・透け感のある色","明るい色や透け感が好きなお客さん","明るい色、楽しいよね。","明るめ・透け感のある色が好き")]},
+  {id:"j15", g:"visit", pri:6, q:"次の美容室までの間隔は、どのくらいがいい？", opts:[
+    J("m1","1か月くらい","1か月ごとに整えたいお客さん","こまめに整えたいんだね。","1か月くらいで通いたい"),
+    J("m2","2か月くらい","2か月くらいで通うお客さん","ちょうどいいペースだね。","2か月くらいで通いたい"),
+    J("m3","3か月以上あけたい","3か月以上もつ髪型にしたいお客さん","長くもつ髪型にしてくれる人を選ぶね。","3か月以上もつ髪型が希望",{please:["扱いやすさ"]}),
+    J("free","決めていない","","了解。","")]},
+  {id:"j16", g:"visit", pri:5, q:"1回の施術時間、どのくらいまでなら大丈夫？", opts:[
+    J("h1","1時間くらいまで","1時間くらいで終えたいお客さん","忙しいんだね。手際のいい人を選ぶ。","施術は1時間くらいまでだとうれしい",{please:["時短"]}),
+    J("h2","2時間くらいまで","2時間くらいまでで終えたいお客さん","了解。","施術は2時間くらいまでだとうれしい"),
+    J("h3","3時間以上でもOK","","時間に余裕があるのは、大きいね。","時間がかかっても大丈夫")]},
+  {id:"j17", g:"visit", pri:6, q:"次の予約や、次回のおすすめはどうしてほしい？", opts:[
+    J("plan","次はいつ・何をするか提案してほしい","次回の時期やメニューを提案してほしいお客さん","先まで考えてくれる人、心強いよね。","次回の時期・メニューの提案があるとうれしい"),
+    J("self","自分のペースで決めたい","自分のペースで通いたいお客さん","自分のペース、大事にしよう。","次回は自分のペースで決めたい",{value:["無理なすすめはしない"]})]},
+  {id:"j18", g:"visit", pri:4, q:"来店のあと、髪のことで気になったら？", opts:[
+    J("line","LINEなどで気軽に聞けるとうれしい","来店後もLINEなどで気軽に相談したいお客さん","あとから聞ける安心感、いいよね。","来店後も気軽に相談できるとうれしい"),
+    J("next","次に行ったときに聞けば十分","","了解。","")]}
+];
+/* スタッフ側の選択肢の番号（sk）。同じ sk の選択肢は、スタッフ側では1つにまとめる */
+const jkKey = o => o.sk || o.k;
+/* 今回聞くじっくり質問（候補から、メニューに合わせて点数の高い順に選び、グループの順に並べる） */
+function jkQueue(){
+  const n = C().jk; if (!n) return [];
+  const m = (S.cond && S.cond.menus) || [];
+  return JK.map((q,i)=>({q, i, p: q.pri + (q.boost ? q.boost(m) : 0)})).sort((a,b)=>b.p-a.p || a.i-b.i).slice(0, n)
+    .sort((a,b)=>a.i-b.i).map(x=>x.q).filter(q => !(q.id in S.jk));
+}
+/* お店に届ける要点：答えの「カテゴリ」と、前向きな言い方 */
+const ASK_CAT = {"ダメージの原因":"hair","くせ":"hair","イメチェンのきっかけ":"hair","白髪":"hair","ボリューム":"hair","広がり":"hair","ショート":"hair","提案":"hair",
+  "長く通うなら":"visit","気軽に行くなら":"visit","いつもの店に足りないもの":"visit","モデル":"visit","ホームケア":"home","ケア用品":"home","会話":"talk","前回の失敗":"fail","料金":"flow","担当":"flow","体":"body"};
+const ASK_TELL = {
+  "ダメージの原因：カラー・ブリーチの繰り返し":"好きな色を続けながら、髪をいたわりたい", "ダメージの原因：毎日のアイロン・コテ":"毎日のスタイリングを続けながら、髪を守りたい",
+  "ダメージの原因：縮毛矯正・パーマ":"前の施術のダメージから、髪を整えていきたい", "ダメージの原因：本人も分からない（髪の状態を診てほしい）":"髪の状態を一緒に確認してほしい",
+  "くせ：湿気で広がるのがつらい":"湿気の日も扱いやすい髪にしたい", "くせ：毎朝のアイロンが大変":"毎朝のアイロンの時間を減らしたい", "くせ：前髪・顔まわりが気になる":"前髪・顔まわりのくせを整えたい", "くせ：自然な仕上がりを希望":"くせは自然な仕上がりで伸ばしたい",
+  "イメチェンのきっかけ：新しい環境":"新しい環境に合わせて、イメージを変えたい", "イメチェンのきっかけ：今の髪型に飽きた":"今の髪型から変化をつけたい", "イメチェンのきっかけ：気分を変えたい":"髪と一緒に気分も変えたい", "イメチェンのきっかけ：ずっと変えたかった":"ずっと変えたかった髪型に挑戦したい",
+  "白髪：しっかり染めたい":"白髪はしっかり染めたい", "白髪：ぼかし・なじませたい":"白髪を自然になじませたい", "白髪：いずれ活かしたい":"白髪とも上手につきあっていきたい",
+  "ボリューム：トップがぺたんとする":"トップにふんわり感がほしい", "ボリューム：髪が細くなってきた":"髪と頭皮の両方から、ボリュームを出したい",
+  "広がり：乾かすだけでまとまってほしい":"乾かすだけでまとまる髪にしたい", "広がり：すきすぎは避けたい":"軽くしたいが、すきすぎない仕上がりが希望",
+  "ショート：短くなりすぎが不安":"切る前に長さを一緒に確認できると安心", "ショート：似合うか不安":"似合うショートを一緒に考えてほしい", "ショート：家でまとまるか不安":"家でもまとまるショートにしたい",
+  "提案：写真を見ながら決めたい":"写真を見ながら一緒に決めたい", "提案：似合う理由も聞きたい":"似合う理由も聞けるとうれしい", "提案：お任せしたい":"似合うスタイルをお任せしたい",
+  "長く通うなら：技術の確かさ":"長く任せられる技術を大事にしたい", "長く通うなら：話しやすさ・相性":"話しやすさ・相性を大事にしたい", "長く通うなら：悩みが変わっても相談できること":"髪の悩みが変わっても相談し続けたい", "長く通うなら：毎回の新しい提案":"通うたびに新しい提案がほしい",
+  "気軽に行くなら：さっと終わる":"手早く仕上がるとうれしい", "気軽に行くなら：気をつかわずに過ごしたい":"リラックスして過ごしたい", "気軽に行くなら：毎回同じ仕上がり":"毎回安定した仕上がりがうれしい", "気軽に行くなら：料金が分かりやすい":"料金が分かりやすいと安心",
+  "いつもの店に足りないもの：新しい提案":"新しいスタイルの提案に期待", "いつもの店に足りないもの：仕上がりの満足感":"仕上がりの満足感を大事にしたい", "いつもの店に足りないもの：話しやすさ":"話しやすい雰囲気を大事にしたい", "いつもの店に足りないもの：特になし（気分転換）":"気分転換に新しいお店を試したい",
+  "モデル：デザインはお任せでOK":"モデル希望：デザインはお任せOK", "モデル：写真撮影・SNS掲載OK":"モデル希望：撮影・SNS掲載もOK", "モデル：時間がかかってもOK":"モデル希望：時間がかかってもOK", "モデル：希望の長さ・色は守りたい":"モデル希望：長さ・色の希望を大事にしたい",
+  "ホームケア：今のケアに自信あり":"今のホームケアを活かしたい", "ホームケア：合っているか自信がない":"自分に合うホームケアを知りたい", "ホームケア：何を使えばいいか分からない":"髪に合うケア用品を教えてもらえるとうれしい",
+  "ケア用品：理由が分かれば試したい":"必要な理由が分かれば、サロンのケア用品も試したい", "ケア用品：まずは話だけ聞きたい":"ケア用品は、まず話を聞いてみたい", "ケア用品：すすめられたくない":"ケア用品のご案内は控えめが希望",
+  "会話：たくさん話したい":"会話を楽しみたい", "会話：その日の気分に合わせたい":"会話はその日の雰囲気に合わせてほしい", "会話：静かに過ごしたい":"施術中はゆっくり静かに過ごしたい",
+  "前回の失敗：思ったより短く切られた":"切る前に長さを一緒に確認できると安心", "前回の失敗：色がイメージと違った":"色は写真などで確認しながら決めたい", "前回の失敗：希望が伝わらなかった":"イメージをじっくりすり合わせたい",
+  "料金：追加があれば施術前に説明してほしい":"追加料金があれば、施術前に教えてもらえると安心", "担当：できれば最後まで同じ人に見てほしい":"できれば最初から最後まで同じ方にお願いしたい"
+};
+function pointOf(ask){
+  const pre = String(ask).split("：")[0], c = ASK_CAT[pre] || "hair";
+  if (c === "body") return {c, t:"シャンプー台などで配慮希望"};    /* 体のことは、理由を書かずに「配慮希望」だけ */
+  return {c, t: ASK_TELL[ask] || String(ask).replace(/^[^：]+：/, "")};
+}
+/* お店に伝えるかどうかを、お客様が項目ごとに選ぶ（GASの SHARE_ITEMS と同じ並び・同じキー） */
+const SHARE_ITEMS = [["tension","探し方（どんな気持ちで探しているか）"],["wants","今回の希望（メニュー・髪の悩み）"],["hair","髪の悩みのくわしいこと"],["jikkuri","髪の履歴・毎日のこと・好み"],
+  ["visit","通い方の希望"],["home","家でのケア・ケア用品のこと"],["talk","施術中の会話の希望"],["fail","前にうまくいかなかったこと"],["flow","料金の説明・担当の希望"],
+  ["body","体への配慮（理由は伝えません）"],["common","担当との共通点"],["reasons","AISIが選んだ理由"]];
 const TALK_LEAD_ID = "t_talk";
 function talkQueue(){
-  const ten = S.cond && S.cond.tension;
-  return TALK.filter(t => (!t.tension || t.tension === ten) && !(t.skip && t.skip()));
+  const ten = S.cond && S.cond.tension, allow = C().talk;
+  const inCourse = t => allow === "all" || (t.tension ? allow.includes("tension") : allow.includes(t.id));
+  return TALK.filter(t => (!t.tension || t.tension === ten) && inCourse(t) && !(t.id in S.talk) && !(t.skip && t.skip()));
 }
 /* 答えから「お客様が求めていること」を組み立てる */
 function buildNeed(){
   if (!S) return null;
-  const N = {please:{}, value:{}, worry:{}, items:[], asked:[], homecare:"", talk:null, affBoost:0};
+  const N = {please:{}, value:{}, worry:{}, items:[], asked:[], points:[], jk:{}, homecare:"", talk:null, affBoost:0};
   const add = (n, src) => {
     if (!n) return;
     ["please","value","worry"].forEach(k => (n[k]||[]).forEach(t => N[k][t] = (N[k][t]||0) + 1));
     if (n.homecare) N.homecare = n.homecare;
     if (n.talk != null) N.talk = n.talk;
     if (n.affBoost) N.affBoost = 1;
-    if (n.ask) N.asked.push(n.ask);
+    if (n.ask){ N.asked.push(n.ask); N.points.push(pointOf(n.ask)); }
     if (n.you) N.items.push({you:n.you, please:n.please||[], value:n.value||[], worry:n.worry||[], src});
   };
   Object.entries(S.fol||{}).forEach(([k,i]) => { const f = FOLLOW[k]; if (f && f.opts[i]) add(f.opts[i].need, "fol"); });
   Object.entries(S.talk||{}).forEach(([k,i]) => { const t = TALK.find(x=>x.id===k); if (t && t.opts[i]) add(t.opts[i].need, "talk"); });
-  return (N.items.length || N.asked.length || N.homecare || N.talk!=null) ? N : null;
+  /* じっくり質問：お店への要点（jikkuri）と、スタッフの「得意なお客さん」とのつながり */
+  JK.forEach(q => { const i = (S.jk||{})[q.id]; const o = i!=null && q.opts[i]; if (!o) return;
+    if (o.s) N.jk[q.id] = {k: jkKey(o), s: o.s, label: o.label};
+    if (o.tell){ N.asked.push(JK_GROUPS[q.g][0] + "：" + o.label); N.points.push({c:"jikkuri", t:o.tell}); }
+    ["please","value","worry"].forEach(k => (o.need[k]||[]).forEach(t => N[k][t] = (N[k][t]||0) + 1)); });
+  return (N.items.length || N.asked.length || N.homecare || N.talk!=null || Object.keys(N.jk).length) ? N : null;
 }
 /* スタッフの「価値」とお客様の求めていることの重なり */
 function valueFit(st, N){
@@ -1608,7 +1777,11 @@ function valueFit(st, N){
     else if (N.homecare==="no"){ got -= .3; }
   }
   if (N.talk != null && st.talk != null){ want += .5; got += .5 * (1 - Math.abs(N.talk - st.talk)); }
-  return {score: want ? Math.max(0, Math.min(1, got / want)) : 0, hits, home};
+  /* じっくり質問：スタッフが「このお客さん、得意」と選んでいれば上がる（スタッフがその質問に答えているときだけ数える） */
+  const jkHits = [];
+  Object.entries(N.jk || {}).forEach(([id, a]) => { const mine = (p.jk || {})[id]; if (!Array.isArray(mine)) return;
+    want += .4; if (mine.includes(a.k)){ got += .4; jkHits.push(a); } });
+  return {score: want ? Math.max(0, Math.min(1, got / want)) : 0, hits, home, jkHits};
 }
 const tagText = ([k,t]) => (VAL_TXT[k] && VAL_TXT[k][t]) || t;
 /* マッチの中身（◎○△）。測っていないものは出さない */
@@ -1636,6 +1809,7 @@ function storyFor(x){
     else out.push(`それから、「${wish(h.you)}」って話も覚えてるよ。${nm}は、${t[0]}。`);
   });
   if (vf.home && !used.has(VAL_TXT.value["家でのケア方法を教える"])) out.push(`それに、${vf.home}。`);
+  if ((vf.jkHits||[]).length) out.push(`「${vf.jkHits[0].label}」って答えてくれたよね。${nm}は、そういうお客さんが得意なんだ。`);
   if ((x.common||[]).length) out.push(`${x.common[0]}だから、話も弾むと思う。`);
   return out.join("");
 }
@@ -1711,6 +1885,52 @@ function renderTalk(){
   document.getElementById("backBtn").onclick = () => { if (!talkIdx) return; talkIdx--; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); renderTalk(); };
 }
 
+/* じっくり質問（本気で探すコース） */
+let jkQ = [], jkIdx = 0;
+function startJikkuri(){
+  S.jkDone = true;
+  jkQ = jkQueue(); jkIdx = 0;
+  if (!jkQ.length) return startPersonal();
+  renderJikkuri();
+}
+function renderJikkuri(){
+  view = "jk";
+  const q = jkQ[jkIdx], prev = jkQ[jkIdx-1];
+  const lead = !prev || prev.g !== q.g ? JK_GROUPS[q.g][1] : "";
+  const say = S.say; S.say = "";
+  $app.innerHTML = `
+  <section class="stage">
+    <div class="aisi">${aisiImg(jkIdx%2 ? "think" : "pocket")}</div>
+    <div class="panel">
+      ${meterHTML(S.meter)}
+      <div class="bubble">
+        <p class="qno">じっくり質問 ${jkIdx+1} / ${jkQ.length}<span style="opacity:.6"> ・ ${esc(JK_GROUPS[q.g][0])}</span></p>
+        ${say?`<p class="aside">${esc(say)}</p>`:""}
+        ${lead?`<p class="aside">${esc(lead)}</p>`:""}
+        <p class="voice">${esc(q.q)}</p>
+      </div>
+      <div class="choices">${q.opts.map((o,i)=>`<button class="choice" type="button" data-j="${i}">${esc(o.label)}</button>`).join("")}</div>
+      <button class="choice" type="button" id="jkSkip" style="opacity:.8">答えずに次へ</button>
+      <button class="back" type="button" id="backBtn" ${jkIdx?"":"disabled"}>← 前の質問に戻る</button>
+      ${jkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います（お店に伝えるかどうかは、予約のときに選べます）。</p>`:""}
+    </div>
+  </section>`;
+  typeVoice($app.querySelector(".bubble .voice"));
+  const go = (kind, after) => { aisiReact(kind); setTimeout(() => { jkIdx++; jkIdx < jkQ.length ? renderJikkuri() : startPersonal(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650); };
+  $app.querySelectorAll("[data-j]").forEach(b => b.onclick = () => {
+    if ($app.querySelector(".choices.locked")) return;
+    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+    document.getElementById("backBtn").disabled = true; document.getElementById("jkSkip").disabled = true;
+    const o = q.opts[+b.dataset.j];
+    S.jk[q.id] = +b.dataset.j; S.say = o.say; S.need = buildNeed();
+    const top = scoreAll(S.answers, S.theme)[0].score;
+    S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL + 8, S.meter + (Math.min(99.9, top) - S.meter) / (jkQ.length - jkIdx + 2)));
+    go(o.s ? "yes" : "maybeNo");
+  });
+  document.getElementById("jkSkip").onclick = () => { if ($app.querySelector(".choices.locked")) return; $app.querySelector(".choices").classList.add("locked"); go("idk"); };
+  document.getElementById("backBtn").onclick = () => { if (!jkIdx) return; jkIdx--; delete S.jk[jkQ[jkIdx].id]; S.say = ""; S.need = buildNeed(); renderJikkuri(); };
+}
+
 /* ============ 結果 ============ */
 function wantsOf(ans){ return QUESTIONS.filter(q=>ans[q.id]!=null && ans[q.id]>=.75).map(q=>q.label); }
 function finish(){
@@ -1719,7 +1939,7 @@ function finish(){
   S.results = ranked.slice(0,3);
   S.code = S.code || newCode();
   const top = S.results[0].score;
-  send("finish", {qCount:S.n, code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
+  send("finish", {qCount:S.n + Object.keys(S.fol).length + Object.keys(S.talk).length + Object.keys(S.jk).length + (S.affAsked||[]).length, course:courseLabel(S.course), code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
     answers:S.answers, results:S.results.map(r=>({id:r.salon.id, name:r.salon.name, score:r.score}))});
   view="result"; renderResult();
 }
@@ -1732,7 +1952,7 @@ function renderResult(){
       <div class="aisi">${aisiImg("point")}</div>
       <div class="panel">
         <div class="bubble">
-          <p class="qno">${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
+          <p class="qno">${esc(COURSES[S.course].label)} ・ ${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
           <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。ほかの2軒も、近いところを選んだ。" : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、この3軒が一番近い。"}</p>
         </div>
         ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。</p>` : ""}
@@ -1743,6 +1963,9 @@ function renderResult(){
     </div>
     <div class="cards">${r.map((x,i)=>cardHTML(x,i)).join("")}</div>
     <div class="after">
+      ${(()=>{ const nx = COURSE_ORDER[COURSE_ORDER.indexOf(S.course)+1]; if (!nx) return "";
+        const left = COURSES[nx].n.replace(/[^0-9]/g,"") - COURSES[S.course].n.replace(/[^0-9]/g,"");
+        return `<button class="choice primary" type="button" id="upCourse" data-c="${nx}">「${esc(COURSES[nx].label)}」で続きを答える<small style="display:block;font-size:.78rem;opacity:.8">あと約${left}問・ここまでの答えはそのまま</small></button>`; })()}
       ${S.n < MAX_Q ? `<button class="choice" type="button" id="moreQ">ピンとこない。もう少し聞いて</button>`:""}
       <button class="choice primary" type="button" id="again">もう一度診断する</button>
     </div>
@@ -1750,10 +1973,23 @@ function renderResult(){
   aisiReact("result");
   $app.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>toggleMore(b));
   $app.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>book(b.dataset.book));
+  const uc = document.getElementById("upCourse");
+  if (uc) uc.onclick = () => upgradeCourse(uc.dataset.c);
   const mq = document.getElementById("moreQ");
   if (mq) mq.onclick=()=>{ S.extra += 3; const nq = nextQuestion(S.answers,S.theme,S.n); if(!nq) return; S.current=nq; renderQ(); };
   document.getElementById("again").onclick=renderTheme;
   window.scrollTo(0,0);
+}
+/* 結果を見たあと、上のコースへ続きを答える（ここまでの答えは残したまま、増えた分だけ聞く） */
+function upgradeCourse(k){
+  if (!COURSES[k]) return;
+  S.course = k; S.talkDone = false; S.jkDone = false; S.affDone = false;
+  S.say = COURSES[k].say;
+  send("course", {course:courseLabel(k)});
+  if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
+  const nq = nextQuestion(S.answers, S.theme, S.n);
+  if (!nq) return startPersonal();
+  S.current = nq; renderQ();
 }
 /* お店の写真（1枚目＝外観）。サンプルのお店で写真がないときは、イメージ画像を出す */
 function hashOf(t){ let h=0; for (const c of String(t)) h=(h*31+c.charCodeAt(0))>>>0; return h; }
@@ -1846,7 +2082,7 @@ function showView(id){ ["vCode","vForm","vDone"].forEach(v=>document.getElementB
 function book(salonId){
   const r = S.results.find(x=>x.salon.id===salonId);
   bookTarget = r;
-  send("book", {salon:r.salon.name, staff:r.staff.name, common:(r.common||[]).slice(0,8), asked:(S.need?S.need.asked:[]).slice(0,12), reasons:[...new Set(staffReasons(r.staff, S.answers).concat(reasonsFor(r, S.answers)))].slice(0,8)});
+  send("book", {salon:r.salon.name, staff:r.staff.name, common:(r.common||[]).slice(0,8), asked:(S.need?S.need.asked:[]).slice(0,30), points:(S.need?S.need.points:[]).slice(0,30), course:courseLabel(S.course), reasons:[...new Set(staffReasons(r.staff, S.answers).concat(reasonsFor(r, S.answers)))].slice(0,8)});
   document.getElementById("mCode").textContent = S.code;
   const pk = document.getElementById("mPerk");
   if (r.salon.perk){ pk.innerHTML = `LINEで予約すると<br><b>${esc(r.salon.perk)}</b><br><small>※メールやホットペッパーからの予約は対象外です</small>`; pk.hidden=false; } else pk.hidden=true;
@@ -1890,8 +2126,27 @@ document.getElementById("mReq").onclick=()=>{
   ["fD1","fD2","fD3"].forEach(id=>{ const el=document.getElementById(id); el.min=ymd(today); el.max=ymd(max); });
   if (S.cond && S.cond.date) document.getElementById("fD1").value = S.cond.date;
   document.getElementById("fErr").hidden = true;
+  drawShare();
   showView("vForm");
 };
+/* お店に伝える内容：この予約で中身がある項目だけを出して、項目ごとに「伝える／伝えない」を選ぶ（はじめは全部「伝える」） */
+let HIDE = [];
+function shareHas(){
+  const r = bookTarget, cats = new Set(((S.need && S.need.points) || []).map(p=>p.c));
+  return SHARE_ITEMS.filter(([k]) => k==="tension" ? !!(S.cond && S.cond.tension) : k==="wants" ? wantsOf(S.answers).length>0
+    : k==="common" ? (r.common||[]).length>0 : k==="reasons" ? true : cats.has(k));
+}
+function drawShare(){
+  HIDE = [];
+  const box = document.getElementById("fShareList"), items = shareHas();
+  document.getElementById("fShare").hidden = !items.length;
+  box.innerHTML = items.map(([k,l])=>`<div class="shr"><span>${esc(l)}</span><div class="sw" data-k="${k}"><button type="button" class="on" data-v="1" aria-pressed="true">伝える</button><button type="button" data-v="0" aria-pressed="false">伝えない</button></div></div>`).join("");
+  box.querySelectorAll(".sw button").forEach(b=>b.onclick=()=>{
+    const k = b.parentNode.dataset.k, on = b.dataset.v==="1";
+    b.parentNode.querySelectorAll("button").forEach(x=>{ const t = x===b; x.classList.toggle("on", t); x.setAttribute("aria-pressed", t); });
+    HIDE = HIDE.filter(x=>x!==k); if (!on) HIDE.push(k);
+  });
+}
 document.getElementById("fBack").onclick=()=>showView("vCode");
 document.getElementById("vForm").onsubmit=async(e)=>{
   e.preventDefault();
@@ -1912,7 +2167,7 @@ document.getElementById("vForm").onsubmit=async(e)=>{
   const body = JSON.stringify({type:"request", sid:S.sid, salonId:s.id, staff:bookTarget.staff.name, code:S.code,
     name:v("fName"), tel:v("fTel"), email:v("fMail"), wish1:{date:v("fD1"), time:v("fT1")},
     wish2: v("fD2") ? {date:v("fD2"), time:v("fT2")} : null, wish3: v("fD3") ? {date:v("fD3"), time:v("fT3")} : null,
-    omakase: document.getElementById("fOmk").checked, menu: document.getElementById("fMenu").value, note:v("fNote"), agree:true, images: FIMG.map(d=>({data:d}))});
+    omakase: document.getElementById("fOmk").checked, menu: document.getElementById("fMenu").value, note:v("fNote"), agree:true, hide:HIDE.slice(), course:courseLabel(S.course), images: FIMG.map(d=>({data:d}))});
   let ok = false, rid = "";
   try{
     const res = await fetch(CONFIG.GAS_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
