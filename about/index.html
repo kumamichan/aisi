@@ -213,6 +213,14 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
 .camp .fine{margin:10px 0 0;font-size:.78rem;color:#5a6274;line-height:1.7}
 </style>
 <script src="../js/bx.js"></script>
+<style>
+/* 相談から掲載までの流れ（相談→プラン決定→申し込み確定→登録→掲載開始） */
+.ptflow{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;counter-reset:pf}
+.ptflow li{counter-increment:pf;flex:1 1 110px;min-width:96px;border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:8px 10px;font-size:.8rem;line-height:1.5;position:relative;background:rgba(255,255,255,.06)}
+.ptflow li::before{content:counter(pf);display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--gold, #d8b26a);color:#1b1d24;font-weight:700;font-size:.72rem;margin-right:6px}
+.ptflow li b{font-size:.88rem}
+.ptflow li small{display:block;opacity:.8;margin-top:2px}
+</style>
 </head>
 <body>
 
@@ -441,13 +449,21 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
         <div><span class="k">STEP2</span><p style="margin:0"><b>代理店さまと各都道府県へ展開</b>　地域ごとの窓口を開設</p></div>
         <div><span class="k">STEP3</span><p style="margin:0"><b>データで集客を改善</b>　マッチング精度の向上、地区・メニュー別のお知らせ配信</p></div>
       </div>
-      <div class="contact">
-        <p><b>お問い合わせ</b><br>株式会社Indepe 公式LINE</p>
-        <a class="btn line" href="https://lin.ee/7pI6PGW" target="_blank" rel="noopener">LINEで相談する</a>
+      <div class="contact" style="display:block">
+        <div style="display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <p><b>お問い合わせ</b><br>ぴたリスト サロンさま窓口（LINE）<br><small data-lineid style="opacity:.8">LINE ID：@559dflyq</small></p>
+          <a class="btn line" data-consult href="#">まずは気軽に相談する（無料）</a>
+        </div>
+        <ol class="ptflow" aria-label="相談から掲載までの流れ">
+          <li><b>相談</b><small>LINEで気軽に。よくある質問はAISIがすぐ回答</small></li>
+          <li><b>プラン決定</b><small>担当者がLINEかオンラインでご案内</small></li>
+          <li><b>申し込み確定</b><small>LINEに登録コードが届きます</small></li>
+          <li><b>登録</b><small>お店情報とスタッフをスマホで入力</small></li>
+          <li><b>掲載開始</b><small>運営が確認して、診断結果に表示</small></li>
+        </ol>
       </div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">
         <a class="btn gold" href="../salon/">美容室の方：掲載のご案内</a>
-        <a class="btn gold" href="../signup/">サロン情報を入力する</a>
       </div>
     </div>
     <div style="justify-self:center"><img src="../img/aisi_peace.webp" alt="ピースサインをするAISI" style="height:clamp(320px,44vw,520px);width:auto"></div>
@@ -455,6 +471,17 @@ footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
 </section>
 
 <footer><div class="wrap"><span>ぴたリスト ｜ 株式会社Indepe</span><span><a href="../privacy/">プライバシーポリシー</a>　<a href="../terms/">お店向け利用規約</a></span></div></footer>
+<script>
+/* 相談ボタン（data-consult）：お店用LINE「ぴたリスト サロンさま窓口」を「掲載の相談」が入った状態で開く。?d=会社名 なら「（紹介：会社名）」を付ける */
+(function(){
+  const SALON_LINE_ID = "@559dflyq";
+  let msg = "掲載の相談";
+  try { const d = new URLSearchParams(location.search).get("d"); if (d) msg += "（紹介：" + d.slice(0, 30) + "）"; } catch (e) {}
+  const url = "https://line.me/R/oaMessage/" + SALON_LINE_ID + "/?" + encodeURIComponent(msg);
+  document.querySelectorAll("[data-consult]").forEach(a => { a.href = url; a.target = "_blank"; a.rel = "noopener"; });
+  document.querySelectorAll("[data-lineid]").forEach(e => { e.textContent = "LINE ID：" + SALON_LINE_ID; });
+})();
+</script>
 
 <script>
 /* スクロールで各章をふわっと表示 */

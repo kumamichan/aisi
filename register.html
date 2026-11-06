@@ -213,6 +213,9 @@ function renderSalon(){
       <label class="f">エリアの表示<small>例：大通、円山</small><input type="text" id="area" value="${esc(D["エリア表示"])}"></label>
       <label class="f">エリア区分<select id="zone">${opts(OPT.zone, D["エリア区分"], "選ぶ")}</select></label>
     </div>
+    <label class="f">お店の住所<small>番地・建物名まで。地図で場所を確かめるために使います（お客さまには公開しません）。${D.pre?"2027年2月15日までは、札幌市中央区のお店だけを掲載しています。":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
+    <div class="f"><b style="font-size:.86rem">スタッフの人数</b>
+      <div class="row2">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","レセプション"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>
     <label class="f">価格の目安<small>例：カット¥5,500〜</small><input type="text" id="price" value="${esc(D["価格表示"])}"></label>
     <div class="row2">
       <label class="f">受付開始<select id="open">${opts([...Array(14)].map((_,i)=>[i+7,(i+7)+":00"]), D["受付開始（時）"])}</select></label>
@@ -272,7 +275,8 @@ function renderSalon(){
 function collectSalon(){
   const f={}; FEATS.forEach(([,items])=>items.forEach(([k])=>{ const v=segVal("f_"+k); if(v!=="") f[k]=Number(v); }));
   return {
-    "エリア表示":$("area").value, "エリア区分":$("zone").value, "価格表示":$("price").value,
+    "エリア表示":$("area").value, "エリア区分":$("zone").value, "価格表示":$("price").value, "住所":$("addr").value.trim(),
+    "スタイリスト数":$("sc0").value, "アシスタント数":$("sc1").value, "スパニスト数":$("sc2").value, "レセプション数":$("sc3").value,
     "受付開始（時）":$("open").value, "受付終了（時）":$("close").value, "定休曜日（例：火、水）":chipVal("closed"),
     "予約ページURL":$("book").value, "特典（AISIコードで予約したとき）":$("perk").value, "お店の通知メール":$("mail").value, "タグ（、区切り）":$("tags").value,
     "コンセプト":$("concept").value, "メインターゲット":chipVal("target"), "お店の雰囲気":chipVal("mood"),
@@ -714,7 +718,9 @@ $("save").onclick=async()=>{
   b.disabled=true; b.textContent="保存中…";
   const r = await api({type: MODE==="salon"?"save_salon":"save_staff", key:KEY, data: MODE==="salon"?collectSalon():collectStaff()});
   b.disabled=false; b.textContent="保存する";
-  if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。"; if (r.done!=null){ $("pct").textContent=r.done+"%"; $("bar").style.width=r.done+"%"; } }
+  if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。"; if (r.done!=null){ $("pct").textContent=r.done+"%"; $("bar").style.width=r.done+"%"; }
+    if (r.near) m.textContent = "保存しました。住所の近くに、先に登録しているサロンがあるため、掲載の前に運営から確認のご連絡をします。";
+    else if (r.outside) m.textContent = "保存しました。2027年2月15日までは札幌市中央区のお店だけを掲載しています。運営から確認のご連絡をします。"; }
   else { m.className="msg err"; m.textContent="保存できませんでした。電波の良いところで、もう一度お試しください。"; }
 };
 window.addEventListener("beforeunload", e=>{ if ($("msg").textContent.startsWith("変更があります")){ e.preventDefault(); e.returnValue=""; } });

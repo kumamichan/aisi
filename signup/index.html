@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>ぴたリスト お店の情報入力</title>
-<meta name="description" content="ぴたリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
-<meta property="og:title" content="ぴたリスト 美容室コネクトサービス｜サロン情報の入力">
-<meta property="og:description" content="ぴたリストに掲載するサロンの情報を入力すると、登録コードがメールで届きます。">
+<title>ぴたリスト 掲載のご相談</title>
+<meta name="description" content="ぴたリストへの掲載は、お店専用LINE「ぴたリスト サロンさま窓口」でのご相談から。プランが決まったら、登録コードをLINEでお送りします。">
+<meta property="og:title" content="ぴたリスト 美容室コネクトサービス｜掲載のご相談">
+<meta property="og:description" content="ぴたリストへの掲載は、お店専用LINEでのご相談から。プランが決まったら、登録コードをLINEでお送りします。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://kumamichan.github.io/aisi/signup/">
 <meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
@@ -17,256 +17,58 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
 <style>
-/* Layout: 登録ページと同じ1カラム。情報入力 → 完了画面で登録コードを大きく見せる */
+/* 11/6〜：お店の申し込みは、サロンさま窓口LINEでの相談から（このページは、前の「情報入力」のURLから来た人への案内） */
 :root{
-  --night:#141a26; --night-2:#1e2738; --paper:#f3f1ec; --card:#fbfaf7; --ink:#1b2130; --ink-soft:#5a6274;
-  --line:#ddd8cd; --accent:#d9b77a; --accent-ink:#2a2112; --ok:#2e8b57; --warn:#b23b2a; --line-green:#06c755;
+  --night:#141a26; --paper:#f3f1ec; --card:#fbfaf7; --ink:#1b2130; --ink-soft:#5a6274; --line:#ddd8cd; --accent:#d9b77a; --line-green:#06c755;
   --font-voice:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
   --font-ui:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
 }
 *{box-sizing:border-box}
-[hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);line-height:1.75;font-size:15px}
-header{background:var(--night);color:var(--paper);padding:22px max(16px,env(safe-area-inset-left,0px)) 24px}
+header{background:var(--night);color:var(--paper);padding:22px 16px 24px}
 .hin{max-width:640px;margin:0 auto;display:grid;gap:8px}
 .logo{font-family:var(--font-voice);letter-spacing:.1em;font-size:1.3rem}
 .logo small{font-family:var(--font-ui);letter-spacing:.1em;font-size:.72rem;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 6px;margin-left:8px;vertical-align:3px}
 h1{margin:0;font-family:var(--font-voice);font-size:1.45rem;line-height:1.5}
 .sub{margin:0;color:#c9ced8;font-size:.88rem}
-main{max-width:640px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left,0px)) 60px;display:grid;gap:16px}
-section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;min-width:0}
-section h2{margin:0;font-size:1.02rem}
-.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:.78rem;color:var(--ink-soft);text-align:center}
-.steps div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 6px;display:grid;gap:2px}
-.steps b{font-family:var(--font-voice);font-size:1.15rem;color:var(--accent-ink)}
-.steps .now{border-color:var(--accent);background:#fbf4e6}
-label.f{display:grid;gap:4px;font-size:.88rem;font-weight:500}
-label.f small{font-weight:400;color:var(--ink-soft);font-size:.76rem}
-.req{color:var(--warn);font-size:.72rem;margin-left:6px;font-weight:700}
-input[type=text],input[type=email],input[type=tel],input[type=number],select{font:inherit;font-size:16px;width:100%;border:1px solid #cfc9bd;border-radius:6px;padding:10px 12px;background:#fff;color:var(--ink)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.slot{margin:0;border-radius:10px;padding:10px 12px;font-size:.88rem;font-weight:700;background:#efe9dc;color:#5a4318}
-.slot.few,.slot.last{background:#fbeee4;color:#8a3a16}
-.slot.full{background:#f3e3e0;color:#9a2a1c}
-.slot small{display:block;font-weight:400;color:#5a6274;margin-top:2px}
-.row4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.row4 label.f{font-size:.8rem}
-div.f{display:grid;gap:6px;font-size:.88rem;font-weight:500}
-.plans{display:grid;gap:8px}
-.plan{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;border:1px solid #cfc9bd;border-radius:8px;padding:10px 12px;background:#fff;cursor:pointer}
-.plan:has(input:checked){border-color:var(--accent);background:#fbf4e6}
-.plan b{display:block;font-size:.9rem}
-.campbox{display:grid;gap:4px;border:2px solid var(--accent);background:#fbf4e6;border-radius:10px;padding:12px 14px;margin-bottom:10px}
-.campbox b{font-size:.95rem}
-.campbox b span{margin-left:8px;font-size:.8rem;color:#9a5a24}
-.campbox span{font-size:.82rem;line-height:1.7}
-.plan span{font-size:.78rem;color:var(--ink-soft)}
-.agree{display:flex;gap:8px;align-items:flex-start;font-size:.86rem}
-.agree input{margin-top:5px}
-.agree a{color:#3d6fb6}
-.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.btn{font:inherit;border-radius:999px;border:0;background:var(--night-2);color:#fff;padding:14px 20px;font-weight:700;font-size:1rem;cursor:pointer;width:100%;text-align:center;text-decoration:none;display:block}
-.btn:disabled{opacity:.5;cursor:default}
-.btn.line{background:var(--line-green)}
-.btn.sub{background:#fff;color:var(--ink);border:1px solid #cfc9bd;font-weight:500}
-.msg{font-size:.86rem;color:var(--warn);margin:0}
-.fine{font-size:.76rem;color:var(--ink-soft);margin:0}
-:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-/* 完了画面 */
-.done{text-align:center;justify-items:center}
-.code{font-family:var(--font-voice);font-weight:800;font-size:3rem;letter-spacing:.12em;color:var(--accent-ink);background:linear-gradient(160deg,#f1dcb0,var(--accent));border-radius:14px;padding:6px 26px;line-height:1.3}
-.copy{font:inherit;font-size:.8rem;border:1px solid #cfc9bd;background:#fff;border-radius:999px;padding:4px 14px;cursor:pointer}
-.howto{display:grid;gap:10px;text-align:left;width:100%}
-.howto div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start}
-.howto i{font-style:normal;font-family:var(--font-voice);font-weight:700;color:var(--accent-ink);background:#f1e4c8;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:.9rem}
-.send{font-family:monospace;background:#eef0f3;border-radius:4px;padding:1px 6px;font-weight:700}
-@media (max-width:420px){.row2{grid-template-columns:1fr}.row4{grid-template-columns:1fr 1fr}.code{font-size:2.4rem}}
+main{max-width:640px;margin:0 auto;padding:18px 16px 60px;display:grid;gap:16px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px}
+h2{margin:0;font-size:1.02rem}
+ol.flow{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:f}
+ol.flow li{counter-increment:f;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+ol.flow li::before{content:counter(f);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#2a2112;font-weight:700}
+ol.flow b{display:block}
+ol.flow small{color:var(--ink-soft)}
+.btn{display:block;text-align:center;text-decoration:none;font:inherit;font-weight:700;border-radius:999px;padding:14px 18px;background:var(--line-green);color:#fff}
+.btn.sub{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500}
+.fine{margin:0;font-size:.8rem;color:var(--ink-soft)}
 </style>
-<script src="../js/bx.js"></script>
 </head>
 <body>
 <header><div class="hin">
-  <div class="logo">ぴたリスト<small>お店の情報入力</small></div>
-  <h1 id="title">お店の情報入力</h1>
-  <p class="sub" id="sub">入力は1分ほど。送信すると、その場で「登録コード」が表示されます。</p>
+  <div class="logo">ぴたリスト<small>掲載のご相談</small></div>
+  <h1>掲載のお申し込みは、<br>LINEでのご相談からになりました</h1>
+  <p class="sub">お店専用LINE「ぴたリスト サロンさま窓口」で、気軽にご相談ください。登録コードは、プランが決まってからLINEでお送りします。</p>
 </div></header>
-
 <main>
-  <!-- 情報入力フォーム -->
-  <form id="form" novalidate>
-    <section>
-      <div class="steps" aria-label="登録の流れ">
-        <div class="now"><b>1</b>情報入力</div>
-        <div><b>2</b>LINEでコードを送る</div>
-        <div><b>3</b>お店情報を入力</div>
-      </div>
-    </section>
-    <section style="margin-top:16px">
-      <h2>お店のこと</h2>
-      <label class="f" for="name"><span>店名<span class="req">必須</span></span><input type="text" id="name" maxlength="40" autocomplete="organization" placeholder="例：Lumo 大通店"></label>
-      <div class="row2">
-        <label class="f" for="area">エリア<small>例：大通、円山</small><input type="text" id="area" maxlength="30"></label>
-        <label class="f" for="zone"><span>エリア区分<span class="req">必須</span></span>
-          <select id="zone"><option value="">選んでください</option><option value="center">大通・すすきの</option><option value="station">札幌駅周辺</option><option value="west">円山・西区・琴似</option><option value="south">豊平・平岸・南区</option><option value="east">白石・厚別・新札幌</option><option value="north">北区・東区</option></select></label>
-      </div>
-      <p class="slot" id="slot" hidden></p>
-      <label class="f" for="address"><span>お店の住所<span class="req">必須</span></span><small>番地・建物名まで入れてください。地図で場所を確認するために使います（公開はされません）。<b id="chuoNote">2027年2月15日までは、札幌市中央区のお店だけ受け付けています（「中央区」から入れてください）。</b></small><input type="text" id="address" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F"></label>
-      <div class="f"><span>スタッフの人数</span>
-        <div class="row4">
-          <label class="f" for="sStylist">スタイリスト<input type="number" id="sStylist" min="0" max="99" inputmode="numeric" placeholder="0"></label>
-          <label class="f" for="sAssist">アシスタント<input type="number" id="sAssist" min="0" max="99" inputmode="numeric" placeholder="0"></label>
-          <label class="f" for="sSpa">スパニスト<input type="number" id="sSpa" min="0" max="99" inputmode="numeric" placeholder="0"></label>
-          <label class="f" for="sRecep">レセプション<input type="number" id="sRecep" min="0" max="99" inputmode="numeric" placeholder="0"></label>
-        </div></div>
-    </section>
-    <section style="margin-top:16px">
-      <h2>管理者</h2>
-      <label class="f" for="owner"><span>お名前<span class="req">必須</span></span><input type="text" id="owner" maxlength="30" autocomplete="name"></label>
-      <label class="f" for="mail"><span>メールアドレス<span class="req">必須</span></span><small>登録コードと、予約の連絡（LINEを使わないとき）が届きます</small><input type="email" id="mail" maxlength="100" autocomplete="email" inputmode="email"></label>
-      <label class="f" for="tel">電話番号<input type="tel" id="tel" maxlength="20" autocomplete="tel" inputmode="tel"></label>
-    </section>
-    <section style="margin-top:16px">
-      <h2>プラン</h2>
-      <div class="campbox" id="campBox"><b>初回キャンペーン｜札幌市中央区・先着50店<span id="campLeft"></span></b>
-        <span>掲載を始めた月から6か月間、掲載料0円。LINEに登録するスタッフ1人あたり月300円と、ぴたリストからの予約でご来店があった分だけ1件300円（キャンセルは0円）。7か月目からは、下で選んだプランになります（成果報酬はなし）。続けるかどうかは、その時点で決められます。</span></div>
-      <p class="fine" id="planLead" style="margin:0 0 6px">7か月目からのプランを選んでください。</p>
-      <div class="plans" role="radiogroup" aria-label="希望のプラン">
-        <label class="plan" id="plan3000"><input type="radio" name="plan" value="オープニングキャンペーン（月3,000円）"><div><b>オープニングキャンペーン 月3,000円</b><span>分析レポートプランと同じ内容を、期間限定の価格で</span></div></label>
-        <label class="plan"><input type="radio" name="plan" value="分析レポートプラン（月5,000円）" checked><div><b>分析レポートプラン 月5,000円</b><span>掲載＋月1回の分析レポートと改善の提案</span></div></label>
-        <label class="plan"><input type="radio" name="plan" value="掲載プラン（月6,000円）"><div><b>掲載プラン 月6,000円</b><span>お店とスタッフの情報を掲載</span></div></label>
-      </div>
-      <p class="fine">どのプランも、LINEに登録するスタッフ1人につき月300円が加わります。金額は税抜です。</p>
-      <label class="f" for="dealer">紹介してくれた代理店（任意）<small>代理店の紹介で入力する場合は、会社名と担当者名を入れてください</small><input type="text" id="dealer" maxlength="60"></label>
-    </section>
-    <section style="margin-top:16px">
-      <label class="agree" for="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">お店向け利用規約</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意し、入力した内容をぴたリストの運営が確認すること、登録コードを入力したメールアドレスに送ることに同意します。</span></label>
-      <div class="hp" aria-hidden="true"><label for="hp">この欄は空のままにしてください</label><input type="text" id="hp" tabindex="-1" autocomplete="off"></div>
-      <p class="msg" id="err" hidden></p>
-      <button class="btn" type="submit" id="go" disabled>入力して、登録コードを受け取る</button>
-      <p class="fine" id="goHint">上の「同意します」にチェックを入れると、押せるようになります。</p>
-      <p class="fine">この入力だけでは料金はかかりません。お店情報の入力が終わり、運営が確認してから掲載がはじまります。</p>
-    </section>
-  </form>
-
-  <!-- 完了画面 -->
-  <section class="done" id="done" hidden>
-    <div class="steps" aria-label="登録の流れ" style="width:100%">
-      <div><b>1</b>情報入力 完了</div>
-      <div class="now"><b>2</b>LINEでコードを送る</div>
-      <div><b>3</b>お店情報を入力</div>
-    </div>
-    <p style="margin:6px 0 0">あなたのお店の登録コード</p>
-    <div class="code" id="code">S0000</div>
-    <button class="copy" type="button" id="copy">コードをコピー</button>
-    <p class="fine" id="mailed">同じ内容を、入力したメールアドレスにもお送りしました。</p>
-    <div class="howto">
-      <div><i>1</i><span>下のボタンから、お店用LINE「ぴたリスト サロンさま窓口」を友だち追加</span></div>
-      <div><i>2</i><span>トークで <span class="send" id="send">登録 S0000</span> と送る</span></div>
-      <div><i>3</i><span>出てきたボタンから「管理者」を押す</span></div>
-      <div><i>4</i><span>届いたリンクを開いて、お店の写真・コンセプト・一押しメニュー・スタッフを入力して保存</span></div>
-      <div><i>5</i><span>スタッフの皆さんにも1と2をお願いします。管理者のLINEに届く「承認する」を押すと、スタッフにもプロフィールのリンクが届きます</span></div>
-    </div>
-    <a class="btn line" id="lineBtn" href="#" target="_blank" rel="noopener">LINEで友だち追加する</a>
-    <a class="btn sub" href="../salon-register-guide.html" target="_blank" rel="noopener">入力の流れを画面で見る</a>
-    <p class="fine">登録コードは、お店の方以外には教えないでください。</p>
+  <section>
+    <h2>相談から掲載までの流れ</h2>
+    <ol class="flow">
+      <li><span><b>相談</b><small>よくある質問には、AISIがすぐお答えします</small></span></li>
+      <li><span><b>プラン決定</b><small>担当者が、LINEかオンラインでご案内します</small></span></li>
+      <li><span><b>申し込み確定</b><small>LINEに登録コードと「登録をはじめる」ボタンが届きます</small></span></li>
+      <li><span><b>登録</b><small>住所・スタッフの人数・写真・コンセプト・一押しメニュー・スタッフを、スマホで入力</small></span></li>
+      <li><span><b>掲載開始</b><small>運営が確認して、お客さまの診断結果に表示されます</small></span></li>
+    </ol>
+    <a class="btn" id="consult" href="https://line.me/R/oaMessage/@559dflyq/?%E6%8E%B2%E8%BC%89%E3%81%AE%E7%9B%B8%E8%AB%87" target="_blank" rel="noopener">まずは気軽に相談する（無料）</a>
+    <p class="fine">ボタンでLINEが開かないときは、LINEで「@559dflyq」を検索して友だち追加し、「掲載の相談」と送ってください。</p>
+    <a class="btn sub" href="../salon/">美容室向けのご案内を見る</a>
   </section>
 </main>
-
+<script src="../js/bx.js"></script>
 <script>
-/* GASのウェブアプリのURL（register.html と同じもの） */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec";
-/* お店用LINEのID（GASから返ってこないときに使う予備） */
-const SALON_LINE_ID = "@559dflyq";
-
-const $ = id => document.getElementById(id);
-/* 代理店が ?d=会社名 付きのリンクを配れば、紹介代理店の欄に最初から入る */
-try { const q = new URLSearchParams(location.search); if (q.get("d")) $("dealer").value = q.get("d").slice(0, 60); } catch (e) {}
-
-const ERR = {
-  required: "店名・エリア区分・お店の住所・管理者のお名前・メールアドレスを入れてください。",
-  mail: "メールアドレスの形が正しくないようです。",
-  tel: "電話番号は市外局番から入れてください。",
-  agree: "同意のチェックを入れてください。",
-  area_pre: "2027年2月15日までは、札幌市中央区のお店だけ受け付けています。住所は「札幌市中央区」から入れてください。中央区以外のお店は、2月15日からお申し込みいただけます。",
-  busy: "ただいまアクセスが混み合っています。時間をおいてもう一度お試しください。",
-  net: "送信できませんでした。通信状態を確認して、もう一度お試しください。"
-};
-function showErr(k){ const e=$("err"); e.textContent = ERR[k] || ERR.net; e.hidden = false; }
-
-/* 同意にチェックを入れるまで、送信ボタンは押せない */
-function syncGo(){ const on = $("agree").checked; $("go").disabled = !on; $("goHint").hidden = on; }
-$("agree").addEventListener("change", syncGo);
-syncGo();
-
-$("form").addEventListener("submit", async ev => {
-  ev.preventDefault();
-  $("err").hidden = true;
-  const d = {
-    type: "signup", name: $("name").value.trim(), area: $("area").value.trim(), zone: $("zone").value, address: $("address").value.trim(),
-    staff: {stylist:+$("sStylist").value||0, assistant:+$("sAssist").value||0, spa:+$("sSpa").value||0, reception:+$("sRecep").value||0}, owner: $("owner").value.trim(), mail: $("mail").value.trim(), tel: $("tel").value.trim(),
-    plan: (document.querySelector("input[name=plan]:checked") || {}).value || "", dealer: $("dealer").value.trim(),
-    agree: $("agree").checked, hp: $("hp").value
-  };
-  if (!d.name || !d.zone || !d.address || !d.owner || !d.mail) return showErr("required");
-  if (PRE && !/中央区/.test(d.address)) return showErr("area_pre");
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.mail)) return showErr("mail");
-  if (!d.agree) return showErr("agree");
-  if (!GAS_URL) return showErr("net");
-  const b = $("go"); b.disabled = true; b.textContent = "送信中…";
-  try {
-    const r = await (await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(d) })).json();
-    if (!r.ok) { showErr(r.error); b.textContent = goLabel(); syncGo(); return; }
-    showDone(r);
-  } catch (e) { showErr("net"); b.textContent = goLabel(); syncGo(); }
-});
-
-function showDone(r){
-  $("form").hidden = true; $("done").hidden = false;
-  $("title").textContent = r.again ? "すでにご入力いただいています" : "ご入力ありがとうございます";
-  $("sub").textContent = r.again ? "同じ店名・メールアドレスで入力済みだったので、そのときの登録コードをお知らせします。" : "このあと、LINEで登録コードを送ると、お店情報の入力ページが届きます。";
-  if (!r.again && r.hold) $("sub").textContent = "近くに先に登録しているサロンがあるため、掲載の前に運営からご連絡いたします。お店の情報の入力は、先に進めていただいて大丈夫です。";
-  if (!r.again && r.wait) $("sub").textContent = "選ばれたエリアは掲載枠が満枠のため、キャンセル待ちでお受けしました。枠が空き次第、運営からご連絡いたします。登録コードで、お店の情報の入力は先に進められます。";
-  if (!r.again && r.camp) $("sub").textContent += "（初回キャンペーン：中央区・先着50店の対象です。掲載を始めた月から6か月間、掲載料は0円です）";
-  $("code").textContent = r.code; $("send").textContent = "登録 " + r.code;
-  $("lineBtn").href = r.line || ("https://line.me/R/ti/p/" + SALON_LINE_ID);
-  window.scrollTo(0, 0);
-}
-/* 初回キャンペーン：本番スタート（2/15）までは中央区だけ。先着50店が埋まったら、ふつうのプランの選び方に戻す */
-let PRE = Date.now() < new Date("2027-02-15T00:00:00+09:00").getTime(), CAMP_OPEN = PRE;
-function showCamp(left){
-  $("campBox").hidden = !CAMP_OPEN; $("plan3000").hidden = CAMP_OPEN; $("chuoNote").hidden = !PRE;
-  $("planLead").textContent = CAMP_OPEN ? "7か月目からのプランを選んでください。" : "希望のプランを選んでください。";
-  if (!CAMP_OPEN) document.querySelector('#plan3000 input').checked = true;
-  if (CAMP_OPEN && document.querySelector('#plan3000 input').checked) document.querySelector('input[value="分析レポートプラン（月5,000円）"]').checked = true;
-  $("campLeft").textContent = CAMP_OPEN && left != null ? "（残り" + left + "店）" : "";
-}
-showCamp();
-/* エリア区分ごとの掲載枠（残り21軒以上「掲載受付中」／20〜6軒「残りわずか」／5軒以下「あと◯軒」／満枠「キャンセル待ち」） */
-let SLOTS = {};
-function goLabel(){ const z = SLOTS[$("zone").value]; return z && z.state === "full" ? "キャンセル待ちで申し込む" : "入力して、登録コードを受け取る"; }
-function showSlot(){
-  const z = SLOTS[$("zone").value], el = $("slot");
-  if (!z) { el.hidden = true; $("go").textContent = goLabel(); return; }
-  el.hidden = false; el.className = "slot " + z.state;
-  el.innerHTML = z.name + "の掲載枠：" + z.text + (z.state === "full" ? "<small>いまは満枠です。キャンセル待ちで申し込むと、枠が空き次第ご連絡します。</small>" : z.state === "open" ? "" : "<small>エリアごとに掲載できる店舗数に上限があります。</small>");
-  $("go").textContent = goLabel();
-}
-(async () => {
-  if (!GAS_URL) return;
-  try {
-    const r = await (await fetch(GAS_URL + "?action=slots")).json();
-    if (!r.ok) return;
-    if (r.camp){ PRE = !!r.pre; CAMP_OPEN = !!r.camp.open; showCamp(r.camp.left); }
-    r.zones.forEach(z => { SLOTS[z.zone] = z; const o = document.querySelector('#zone option[value="' + z.zone + '"]'); if (o && z.state !== "open") o.textContent = z.name + "（" + z.text.replace(/（.*）/, "") + "）"; });
-    showSlot();
-  } catch (e) {}
-})();
-$("zone").addEventListener("change", showSlot);
-$("copy").addEventListener("click", async () => {
-  const t = $("code").textContent;
-  try { await navigator.clipboard.writeText(t); $("copy").textContent = "コピーしました"; }
-  catch (e) { const s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents($("code")); s.removeAllRanges(); s.addRange(rg); }
-});
+/* 代理店のURL（?d=会社名）から来たときは、相談の文に紹介元を添える */
+try { const d = new URLSearchParams(location.search).get("d"); if (d) document.getElementById("consult").href = "https://line.me/R/oaMessage/@559dflyq/?" + encodeURIComponent("掲載の相談（紹介：" + d.slice(0, 30) + "）"); } catch (e) {}
 </script>
 </body>
 </html>
