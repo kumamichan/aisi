@@ -215,7 +215,7 @@ function renderSalon(){
     </div>
     <label class="f">お店の住所<small>番地・建物名まで。地図で場所を確かめるために使います（お客さまには公開しません）。${D.pre?"2027年2月15日までは、札幌市中央区のお店だけを掲載しています。":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
     <div class="f"><b style="font-size:.86rem">スタッフの人数</b>
-      <div class="row2">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","レセプション"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","レセプション"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>
     <label class="f">価格の目安<small>例：カット¥5,500〜</small><input type="text" id="price" value="${esc(D["価格表示"])}"></label>
     <div class="row2">
       <label class="f">受付開始<select id="open">${opts([...Array(14)].map((_,i)=>[i+7,(i+7)+":00"]), D["受付開始（時）"])}</select></label>
