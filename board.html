@@ -108,6 +108,7 @@ async function load(){
   if (!KEY) { $("main").innerHTML = `<div class="center">リンクが正しくありません。「ぴたリスト サロンさま窓口」の「予約の一覧」→「予約ボードを開く」から開いてください。</div>`; $("title").textContent = "予約ボード"; return; }
   try {
     const r = await (await fetch(`${GAS_URL}?action=board&k=${encodeURIComponent(KEY)}`)).json();
+    if (!r.ok && r.error === "stopped") { $("main").innerHTML = `<div class="center">このお店の予約ボードは、いま使えません（${r.state === "解約" ? "ぴたリストの掲載は終了しています" : "ぴたリストの掲載を、いったん止めています"}）。<br>くわしくは運営からのご連絡をご確認ください。再開すると、同じリンクでまた開けます。</div>`; $("title").textContent = "予約ボード"; return; }
     if (!r.ok) { $("main").innerHTML = `<div class="center">このリンクは使えなくなっています。運営に新しいリンクをもらってください。</div>`; $("title").textContent = "予約ボード"; return; }
     D = r; $("title").textContent = r.salon;
     $("upd").textContent = "更新 " + new Date().toLocaleTimeString("ja-JP", {hour:"2-digit", minute:"2-digit"});
