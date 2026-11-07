@@ -254,6 +254,7 @@ function renderSalon(){
 
   <section><h2>スタッフ</h2>
     <p class="lead">スタッフのプロフィール（出身・推し・部活など）は、本人がそれぞれのリンクから入力します。リンクをコピーして本人に送ってください。「ぴたリスト サロン窓口」に登録したスタッフには、自動でリンクが届きます。</p>
+    <p class="lead" style="margin-top:-4px"><b>スタッフが辞めたとき</b>は、「ぴたリスト サロンさま窓口」のトークで「スタッフの管理」と送り、その人の「外す」を押してください。予約が届かなくなり、スタッフ料金にも数えなくなります。ここで「診断に出す」を外すだけでは、LINEの登録は残ります。</p>
     <div class="staff">${D.staff.map((s,i)=>`<div class="st"><div><span class="nm">${esc(s.name)}</span><small>プロフィール充実度 ${s.done}%</small>
       <label class="pub"><input type="checkbox" data-on="${i}" ${s.on?"checked":""}> 診断に出す</label></div>
       <div class="acts"><button class="btn sub" type="button" data-copy="${esc(s.url)}">リンクをコピー</button></div></div>`).join("") || `<p class="lead">まだスタッフがいません。</p>`}</div>
