@@ -615,7 +615,7 @@ function condText(c){
 
 /* ============ 質問プール ============
  sf=店舗の特徴, tf=スタッフの特徴, inv=逆向き, w=重み, hard=外れると大きく減点, req=出す条件 */
-const QUESTIONS = [
+const HAIR_QUESTIONS = [
  {id:"q_car",t:"車で行けて、駐車場があるほうがいい？",sf:"parking",w:2.2,hard:1,label:"駐車場"},
  {id:"q_budget",t:"1回の予算は、1万円以内に抑えたい？",sf:"cheap",w:2.5,hard:1,label:"予算1万円以内"},
  {id:"q_color",t:"今回、カラーもしたい？",sf:"color",w:2,label:"カラー"},
@@ -672,8 +672,55 @@ const QUESTIONS = [
  {id:"d_spa_eye",cat:"spa",deep:1,t:"目や首・肩の疲れも、ほぐしてほしい？",kw:"眼精|目|首|肩|疲れ",w:1.8,label:"目・首肩の疲れケア"},
  {id:"d_spa_scalp",cat:"spa",deep:1,t:"頭皮の状態を、チェックしてもらいたい？",kw:"頭皮|診断|マイクロ|炭酸",sf:"care",w:1.6,label:"頭皮チェック"}
 ];
+
+/* ===== ヘッドスパのお店を探す（テーマ spashop）専用の質問 =====
+   kw＝お店の一押しメニュー・タグ・コンセプト・スタッフの得意から探す言葉。fn＝お店の情報から計算する（0〜1）
+   「いいえ」でも好みがはっきり分かれる質問（ウェット／ドライ、専門店／美容室の中）は sym:1 */
+const spaMenus = s => (s.menus||[]).filter(m => menuCats(m).includes("spa"));
+const spaText = s => [(s.menus||[]).map(m=>(m.name||"")+" "+(m.desc||"")).join(" "), (s.tags||[]).join(" "), s.concept||"", s.target||"", s.mood||"",
+  (s.appeal||[]).map(a=>a.text).join(" "), (s.staff||[]).map(st=>[st.spec].concat((st.p&&st.p.tech)||[]).join(" ")).join(" ")].join(" ");
+/* ヘッドスパができるお店／ヘッドスパだけのお店（専門店） */
+function isSpaShop(s){ return spaMenus(s).length > 0 || (s.tags||[]).some(t => /ヘッドスパ/.test(t)); }
+function spaOnly(s){ const ms = s.menus||[]; return ms.length ? ms.every(m => menuCats(m).includes("spa")) : (s.tags||[]).some(t => /ヘッドスパ専門|スパ専門/.test(t)); }
+function wetFit(s){ const t = spaText(s), w = /ウェット|炭酸|シャンプー|泡|クリームバス|お湯|オイル/.test(t), d = /ドライ/.test(t); return w && !d ? 1 : d && !w ? 0 : w && d ? .6 : .5; }
+function specialtyFit(s){ return spaOnly(s) ? 1 : 0; }
+function longFit(s){ const mins = spaMenus(s).map(m => m.min||0).filter(Boolean); if (!mins.length) return .5; const mx = Math.max(...mins); return mx >= 60 ? 1 : mx >= 45 ? .5 : .15; }
+function nightFit(s){ const c = Number(s.close)||19; return c >= 21 ? 1 : c >= 20 ? .7 : c >= 19 ? .35 : .1; }
+function budgetFit(s){ const ps = spaMenus(s).map(m => Number(String(m.price||"").replace(/[^0-9]/g,""))).filter(n => n >= 500); if (!ps.length) return (s.f && s.f.cheap != null) ? s.f.cheap : .5; const mn = Math.min(...ps); return mn <= 7000 ? 1 : mn <= 8500 ? .5 : .1; }
+const SPA_QUESTIONS = [
+ {id:"sp_relax", cat:"spa", wide:1, t:"いちばんの目的は、眠ってしまうくらい癒されること？", kw:"眠|癒|リラックス|ドライ|脳|ほぐ", sf:"quiet", w:1.8, label:"とことん癒される", need:"癒されたい"},
+ {id:"sp_sleep1", cat:"spa", wide:1, t:"夜、なかなか寝つけないことがある？", kw:"睡眠|眠|寝つき|入眠|自律神経|脳", w:2.2, label:"寝つきの悩みに向いている", need:"寝つきが悪い"},
+ {id:"sp_sleep2", cat:"spa", wide:1, t:"寝ても、疲れが取れていない気がする？", kw:"睡眠|眠|疲れ|回復|脳疲労|自律神経", w:2.2, label:"眠っても取れない疲れのケア", need:"寝ても疲れが取れない"},
+ {id:"sp_sleep3", cat:"spa", wide:1, t:"夜中や朝早くに、目が覚めてしまうことがある？", kw:"睡眠|眠|自律神経|深い眠り", w:1.8, label:"眠りの質のケア", need:"途中で目が覚める"},
+ {id:"sp_tired", cat:"spa", wide:1, t:"この頃、疲れが抜けにくい・頭が重いと感じる？", kw:"疲れ|頭が重|脳疲労|リフレッシュ|脳|ストレス", w:2, label:"疲れ・頭の重さをほぐす", need:"疲れが抜けない"},
+ {id:"sp_eye", cat:"spa", wide:1, t:"目の疲れや、スマホ・パソコンの疲れが気になる？", kw:"眼精|目の|スマホ|パソコン|デジタル", w:1.8, label:"目の疲れのケア", need:"目の疲れ"},
+ {id:"sp_neck", cat:"spa", wide:1, t:"首や肩のこりも、一緒にほぐしてほしい？", kw:"首|肩|デコルテ|こり", w:1.6, label:"首・肩までほぐせる", need:"首・肩のこり"},
+ {id:"sp_scalp", cat:"spa", wide:1, t:"頭皮のかゆみ・乾燥・べたつきが気になる？", kw:"頭皮|クレンジング|炭酸|毛穴|スカルプ", sf:"care", w:1.7, label:"頭皮のケア", need:"頭皮の悩み"},
+ {id:"sp_volume", cat:"spa", wide:1, t:"抜け毛や、髪のボリュームが気になる？", kw:"育毛|発毛|ボリューム|抜け毛|スカルプ", sf:"thin", w:1.6, label:"抜け毛・ボリュームのケア", need:"抜け毛・ボリューム"},
+ {id:"sp_shine", cat:"spa", wide:1, t:"髪のツヤやうるおいも、ほしい？", kw:"ツヤ|艶|トリートメント|髪質|うるおい", sf:"treat", w:1.3, label:"髪のツヤも出せる", need:"髪のツヤ"},
+ {id:"sp_diag", cat:"spa", wide:1, t:"頭皮の状態を、スコープなどで見てほしい？", kw:"診断|スコープ|マイクロ|チェック", w:1.4, label:"頭皮のチェックができる", need:"頭皮の状態"},
+ {id:"sp_wet", sym:1, t:"お湯をたっぷり使う、ウェットタイプのスパがいい？\n（「いいえ」なら、服のまま受けられるドライスパを探すよ）", fn:wetFit, w:1.6, label:"ウェットスパ"},
+ {id:"q_quiet", sym:1, t:"施術中は、話さずに静かに過ごしたい？", sf:"quiet", tf:"talk", tinv:1, w:1.6, label:"静かに過ごしたい"},
+ {id:"sp_private", sym:1, cat:"spa", wide:1, t:"個室や半個室で、人目を気にせず過ごしたい？", kw:"個室|半個室|完全予約|プライベート|マンツーマン|貸切", sf:"private", w:1.5, label:"個室・プライベート空間", need:"人目が気になる"},
+ {id:"sp_aroma", cat:"spa", wide:1, t:"アロマなど、香りを選べたらうれしい？", kw:"アロマ|香り", w:1.1, label:"香りを選べる", need:"香り"},
+ {id:"sp_long", t:"60分以上、ゆっくり時間をとりたい？", fn:longFit, w:1.3, label:"60分以上のコース"},
+ {id:"sp_night", t:"仕事帰りなど、夜に行きたい？", fn:nightFit, w:1.5, hard:1, label:"夜も行ける"},
+ {id:"sp_budget", t:"1回の予算は、7,000円以内にしたい？", fn:budgetFit, w:2.2, hard:1, label:"予算7,000円以内"},
+ {id:"sp_regular", cat:"spa", wide:1, t:"定期的に通いたい？（回数券など）", kw:"回数券|定期|サブスク|通い放題|会員|継続", w:1.2, label:"定期的に通いやすい", need:"定期的に通いたい"},
+ {id:"sp_first", cat:"spa", wide:1, t:"ヘッドスパは、初めて？", kw:"初めて|はじめて|初回|カウンセリング", w:1, label:"初めてでも安心", need:"初めてのヘッドスパ"},
+ {id:"sp_shop", sym:1, t:"ヘッドスパの専門店がいい？\n（「いいえ」なら、美容室の中にあるスパを探すよ）", fn:specialtyFit, w:1.6, label:"ヘッドスパ専門店"}
+];
+SPA_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
+let QUESTIONS = HAIR_QUESTIONS;
+/* 今のテーマで比べるお店：ヘッドスパのテーマはスパができるお店だけ。美容室のテーマでは、スパだけのお店は「ヘッドスパ」を選んだ人にだけ出す */
+function salonsFor(theme){
+  if (theme === "spashop") return SALONS.filter(isSpaShop);
+  const wantSpa = COND && (COND.menus||[]).includes("spa");
+  return SALONS.filter(s => wantSpa || !spaOnly(s));
+}
+const hasFeat = q => !!(q.sf || q.kw || q.fn);
 /* 深掘りの言葉を、正規表現にしておく */
-QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
+HAIR_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
 const DEEP_COVERS = { q_short:["d_cut_short"], q_gray:["d_col_gray"], q_design:["d_col_bright","d_col_inner"], q_fast:["d_cut_quick"],
   q_care:["d_spa_scalp"], q_thin:["d_perm_vol"], q_mens:["d_perm_mens"], q_easy:["d_perm_soft"], q_damage:["d_str_damage","d_tr_shine"] };
 /* 深掘りの質問は、メニュー1つにつき最大3問、全部で最大6問 */
@@ -689,23 +736,24 @@ function kwFit(s, q){
   let v = .15;
   if (menus.some(m => menuCats(m).includes(q.cat) && q.re.test(txt(m)))) v = 1;
   else if (menus.some(m => q.re.test(txt(m)))) v = .8;
-  else if (q.re.test([(s.tags||[]).join(" "), s.concept||"", (s.staff||[]).map(st => [st.spec].concat((st.p&&st.p.tech)||[]).join(" ")).join(" ")].join(" "))) v = .55;
+  else if (q.re.test(q.wide ? spaText(s) : [(s.tags||[]).join(" "), s.concept||"", (s.staff||[]).map(st => [st.spec].concat((st.p&&st.p.tech)||[]).join(" ")).join(" ")].join(" "))) v = .55;
   if (q.sf && s.f[q.sf] != null) v = Math.max(v, s.f[q.sf] * .9);
   return (c[q.id] = v);
 }
 /* 質問ごとの「お店の特徴の値」 */
-function featOf(s, q){ return q.kw ? kwFit(s, q) : s.f[q.sf]; }
+function featOf(s, q){ return q.fn ? q.fn(s) : q.kw ? kwFit(s, q) : s.f[q.sf]; }
 /* スタッフの得意技術に、深掘りの言葉があるか */
 function staffKw(st, q){ return q.re ? q.re.test([st.spec].concat((st.p&&st.p.tech)||[]).join(" ")) : false; }
 /* 髪についての質問（優先して聞く） */
 const HAIR_Q = ["q_color","q_design","q_gray","q_kusege","q_change","q_short","q_perm","q_damage","q_volume","q_thin","q_bangs","q_easy","q_long","q_gentle"];
 const ANSWERS = [["はい",1],["いいえ",0],["わからない",null],["たぶんそう",.75],["たぶん違う",.25]];
 /* テーマ選択に「準備中」として表示するもの（押せません） */
-const SOON = ["ネイルサロンを探す", "ヘッドスパサロンを探す"];
+const SOON = ["ネイルサロンを探す"];
 const THEMES = {
   salon:{label:"美容室を探す",boost:{}},
   staff:{label:"担当スタイリストを探す",boost:{staff:1.5}},
-  spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}}
+  spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}},
+  spashop:{label:"ヘッドスパのお店を探す",boost:{}}
 };
 const GOAL = 85;
 /* ===== 熱量で選ぶ質問コース =====
@@ -720,7 +768,10 @@ const COURSE_ORDER = ["light","normal","deep"];
 /* 探し方ごとの「おすすめ」コース */
 const COURSE_REC = {lifelong:"deep", casual:"light", explore:"normal", model:"light"};
 function courseLabel(k){ const c = COURSES[k]; return c ? `${c.label}（${c.n}）` : ""; }
-function C(){ return COURSES[(S && S.course) || "normal"]; }
+/* ヘッドスパのテーマ：髪の履歴などの質問（じっくり質問・髪の深掘り）は聞かず、会話・体のことだけ先に聞く */
+const SPA_TALK = { light:[], normal:["t_talk","t_body"], deep:["t_talk","t_price","t_body"] };
+function C(){ const k = (S && S.course) || "normal", c = COURSES[k];
+  return S && S.theme === "spashop" ? Object.assign({}, c, {jk:0, fol:0, talk:SPA_TALK[k] || []}) : c; }
 /* やりたいメニューで答えが分かった分だけ、最低質問数を減らす（最大3問） */
 function minQ(){ return Math.max(4, C().min - Math.min(3, ((S && S.preset) || []).length)); }
 const MAX_Q = 25;
@@ -751,7 +802,7 @@ function staffFit(st, answers, theme){
   let num=0, den=0;
   for (const q of QUESTIONS){
     /* 深掘りで「はい」と答えた技術を、得意技術に持っている担当者を上げる */
-    if (q.deep && answers[q.id] >= .75){ const w = q.w * .6; num += w * (staffKw(st, q) ? 1 : .45); den += w; continue; }
+    if ((q.deep || (q.wide && q.kw)) && answers[q.id] >= .75){ const w = q.w * .6; num += w * (staffKw(st, q) ? 1 : .45); den += w; continue; }
     if (!q.tf) continue;
     const a = answers[q.id]; if (a==null) continue;
     let v = q.tf==="young" ? ageNear(st) : st[q.tf]; if (q.tinv) v = 1 - v;
@@ -760,10 +811,10 @@ function staffFit(st, answers, theme){
   return den ? num/den : null;
 }
 function scoreAll(answers, theme){
-  return SALONS.map(s=>{
+  return salonsFor(theme).map(s=>{
     let num=0, den=0, penalty=1;
     for (const q of QUESTIONS){
-      if (!q.sf && !q.kw) continue;
+      if (!hasFeat(q)) continue;
       const a = answers[q.id]; if (a==null) continue;
       const v = featOf(s, q);
       let fit = 1-Math.pow(Math.abs(a-v), MATCH.CURVE), w = qWeight(q, theme);
@@ -822,7 +873,7 @@ function nextQuestion(answers, theme, n){
   for (const q of QUESTIONS){
     if (!eligible(q, answers)) continue;
     let vals;
-    if (q.sf || q.kw) vals = cands.map(r=>featOf(r.salon, q));
+    if (hasFeat(q)) vals = cands.map(r=>featOf(r.salon, q));
     else vals = cands.flatMap(r=>r.salon.staff.map(st=>q.tinv?1-st[q.tf]:st[q.tf]));
     const m = vals.reduce((a,b)=>a+b,0)/vals.length;
     const variance = vals.reduce((a,b)=>a+(b-m)**2,0)/vals.length;
@@ -871,7 +922,7 @@ function shouldFinish(answers, theme, n){
   if (n < minQ()) return false;
   /* マッチ率85%以上のお店が3軒そろったら結果へ */
   const r = scoreAll(answers, theme);
-  return r.length >= 3 && r[2].score >= GOAL;
+  return r.length && r[Math.min(3, r.length) - 1].score >= GOAL;
 }
 function confidence(answers, theme, n){
   if (!n) return 0;
@@ -882,7 +933,7 @@ function confidence(answers, theme, n){
 function reasonsFor(r, answers){
   const out=[];
   for (const q of QUESTIONS){
-    const a = answers[q.id]; if (a==null || (!q.sf && !q.kw)) continue;
+    const a = answers[q.id]; if (a==null || !hasFeat(q)) continue;
     const v = featOf(r.salon, q);
     if (a>=.75 && v>=.7) out.push({q, s:v*qWeight(q,"salon")*(q.deep?1.4:1)});
   }
@@ -893,7 +944,7 @@ function reasonsFor(r, answers){
 function bottleneck(r, answers){
   let worst=null, wv=1;
   for (const q of QUESTIONS){
-    const a = answers[q.id]; if (a==null || (!q.sf && !q.kw)) continue;
+    const a = answers[q.id]; if (a==null || !hasFeat(q)) continue;
     const fit = 1-Math.abs(a-featOf(r.salon, q));
     if (fit < wv){ wv=fit; worst=q; }
   }
@@ -1010,6 +1061,7 @@ function renderTheme(){
       <p class="note" style="font-size:.85rem;color:var(--paper)">次は、何を見つけようか。</p>
       <div class="choices">
         <button class="choice" type="button" data-theme="salon">${THEMES.salon.label}</button>
+        <button class="choice" type="button" data-theme="spashop">${THEMES.spashop.label}<small style="display:block;font-size:.72rem;opacity:.75;font-weight:400">眠り・疲れ・頭皮の悩みから探す</small></button>
         ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
       </div>
       <p class="note">性格診断や適性診断のように、質問に答えていくだけ。どのくらい答えるかは「ちょっと見る（約10問）」「ちゃんと探す（約25問）」「本気で探す（約50問）」から選べます。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
@@ -1028,7 +1080,12 @@ const TENSIONS = [
   ["explore","いつもの店はあるけど、たまには違うところも試したい"],
   ["model","モデル（カット・カラーなど）で、お得にそれなりのクオリティで"]
 ];
-function tensionLabel(k){ return (TENSIONS.find(x=>x[0]===k)||[,""])[1]; }
+const SPA_TENSIONS = [
+  ["lifelong","定期的に通える、行きつけのヘッドスパを見つけたい"],
+  ["casual","疲れたときに、気軽に行けるお店を探したい"],
+  ["explore","ヘッドスパを試してみたい・いつもと違うお店も見たい"]
+];
+function tensionLabel(k){ return ((introTheme === "spashop" ? SPA_TENSIONS : TENSIONS).find(x=>x[0]===k)||[,""])[1]; }
 let draft = {tension:"", course:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
 
 /* ============ はじめの質問（AISIとの会話で1問ずつ） ============ */
@@ -1049,10 +1106,19 @@ const INTRO = [
   { key:"age", kind:"one", pose:"thumb", q:"最後に、君の年代は？\n年の近い担当を探すときに使うよ。", opts:()=>AGES.map(a=>[a,a]), none:"答えない" }
 ];
 let introIdx = 0, introTheme = "salon";
-function renderCond(theme){ introTheme = theme; introIdx = 0; renderIntro(); }
+/* テーマごとの「はじめの質問」：ヘッドスパはメニューを聞かない（ヘッドスパに決まっているので） */
+function introList(){
+  if (introTheme !== "spashop") return INTRO;
+  return INTRO.filter(it => it.key !== "menus").map(it => it.key !== "tension" ? it : Object.assign({}, it, {
+    q:"最初に聞かせて。\n今回は、どんな気持ちでヘッドスパを探してる？", opts:()=>SPA_TENSIONS,
+    say:v=>({lifelong:"いいね。通うほど楽になる、相性のいいお店を選ぶよ。", casual:"了解。疲れたときに、すっと行けるお店にする。", explore:"いいね。初めてでも安心できるお店を選ぶよ。"})[v] || "" }));
+}
+function renderCond(theme){ introTheme = theme; introIdx = 0;
+  if (theme === "spashop" && !SALONS.some(isSpaShop)){ return dataReady.then(()=>{ if (!SALONS.some(isSpaShop)) { introTheme = "salon"; return renderTheme(); } renderIntro(); }); }
+  renderIntro(); }
 function renderIntro(prevSay){
   view="cond";
-  const it = INTRO[introIdx], d = draft;
+  const it = introList()[introIdx], d = draft;
   const val = k => it.key==="days" ? d.days.map(String) : it.key==="menus" ? d.menus : d[it.key];
   const isOn = v => it.kind==="many" ? (val()||[]).includes(v) : d[it.key]===v;
   const noneOn = it.key==="menus" ? d.menuFree : it.kind==="many" ? !(val()||[]).length && d["_none_"+it.key] : it.none && d[it.key]==="__none";
@@ -1061,7 +1127,7 @@ function renderIntro(prevSay){
     <div class="aisi">${aisiImg(it.pose)}</div>
     <div class="panel">
       <div class="bubble">
-        <p class="qno">はじめに ${introIdx+1}<span style="opacity:.6"> / ${INTRO.length}</span></p>
+        <p class="qno">はじめに ${introIdx+1}<span style="opacity:.6"> / ${introList().length}</span></p>
         ${prevSay?`<p class="aside">${esc(prevSay)}</p>`:""}
         <p class="voice">${esc(it.q).replace(/\n/g,"<br>")}</p>
         ${it.sub?`<p class="note" style="margin:6px 0 0;font-size:.8rem">${esc(it.sub)}</p>`:""}
@@ -1114,7 +1180,7 @@ function introGo(kind, say){
   $app.querySelectorAll("#introNext,#introBack").forEach(x=>x.disabled = true);
   aisiReact(kind);
   setTimeout(async () => {
-    if (introIdx < INTRO.length - 1){ introIdx++; return renderIntro(say); }
+    if (introIdx < introList().length - 1){ introIdx++; return renderIntro(say); }
     const d = draft;
     await dataReady;
     start(introTheme, {tension: d.tension && d.tension!=="__none" ? d.tension : "", course: COURSES[d.course] ? d.course : (COURSE_REC[d.tension] || "normal"), menus:MENU_CATS.map(c=>c[0]).filter(k=>d.menus.includes(k)), when:(d.when && d.when!=="__none") ? d.when : "week",
@@ -1123,6 +1189,8 @@ function introGo(kind, say){
 }
 
 function start(theme, cond){
+  if (theme === "spashop") cond.menus = ["spa"];
+  QUESTIONS = theme === "spashop" ? SPA_QUESTIONS : HAIR_QUESTIONS;
   COND = cond;
   S = {sid:newSid(), theme, cond, course:cond.course || "normal", answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, jk:{}, affAsked:[], say:"", need:null};
   let uid = ""; try { uid = localStorage.getItem("pt_uid") || ""; if (!uid){ uid = "u" + Math.random().toString(36).slice(2,12); localStorage.setItem("pt_uid", uid); } } catch (e) {}
@@ -1132,7 +1200,7 @@ function start(theme, cond){
     device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
     menu: cond.menus.length ? cond.menus.map(catLabel).join("、") : "まだ決めてない"});
   /* やりたいメニューで分かることは、質問しない */
-  if (cond.menus.length){
+  if (cond.menus.length && theme !== "spashop"){
     const M = k=>cond.menus.includes(k);
     S.answers.q_color = M("color") ? 1 : 0;
     if (M("perm")) S.answers.q_perm = 1;
@@ -1173,7 +1241,7 @@ function renderQ(){
       <div class="bubble">
         <p class="qno">質問 ${n+1}<span style="opacity:.6"> / 最大${C().max}</span></p>
         ${S.say?`<p class="aside">${esc(S.say)}</p>`:asideFor(n)?`<p class="aside">${asideFor(n)}</p>`:""}
-        <p class="voice">${esc(qText(q))}</p>
+        <p class="voice">${esc(qText(q)).replace(/\n/g,"<br>")}</p>
       </div>
       <div class="choices">
         ${ANSWERS.map(([l],i)=>`<button class="choice" type="button" data-i="${i}">${l}</button>`).join("")}
@@ -1210,7 +1278,7 @@ function answer(v){
 function next(){
   if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
   /* 切り札：9問を過ぎてもまだ絞れていなければ、1回だけ写真を見せてもらう */
-  if (CONFIG.PHOTO && !S.photoAsked && S.n >= 9 && S.n <= C().max-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
+  if (CONFIG.PHOTO && S.theme !== "spashop" && !S.photoAsked && S.n >= 9 && S.n <= C().max-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
     S.photoAsked = true; return renderPhoto();
   }
   const nq = nextQuestion(S.answers, S.theme, S.n);
@@ -1404,6 +1472,7 @@ function staffReasons(st, ans){
   if (S && S.need){ const vf = valueFit(st, S.need); [...new Set(vf.hits.flatMap(h => h.tags.map(tagText)))].slice(0,2).forEach(t => out.push(t)); if (vf.home) out.push(vf.home); }
   const text = [st.spec].concat((st.p&&st.p.tech)||[]).join(" ");
   QUESTIONS.filter(q => q.deep && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`${q.label}が得意`));
+  if (S && S.theme === "spashop") QUESTIONS.filter(q => q.wide && q.kw && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`「${q.need||q.label}」に合う施術が得意`));
   for (const [qid, words] of Object.entries(TECH_WORDS)){
     if (!(ans[qid]>=.75)) continue;
     const w = words.find(x=>text.includes(x)); if (w){ const q=QUESTIONS.find(z=>z.id===qid); out.push(`${q.label}が得意`+(q.label.includes(w)?"":`（${w}）`)); }
@@ -1987,7 +2056,7 @@ function renderResult(){
       <div class="panel">
         <div class="bubble">
           <p class="qno">${esc(COURSES[S.course].label)} ・ ${S.n}問で判定 ・ ${esc(condText(S.cond))}</p>
-          <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。ほかの2軒も、近いところを選んだ。" : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、この3軒が一番近い。"}</p>
+          <p class="voice">${all3 ? "……見えたよ。<br>マッチ率85%以上のお店が、3軒見つかった。" : reached ? "……見えたよ。<br>いちばん合うのはこのお店。" + (r.length>=3 ? "ほかの2軒も、近いところを選んだ。" : r.length===2 ? "もう1軒も、近いところを選んだ。" : "") : "完璧な一軒は、まだ札幌にないかもしれない。<br>でも、" + (r.length>=3 ? "この3軒" : r.length===2 ? "この2軒" : "このお店") + "が一番近い。"}</p>
         </div>
         ${S.cond.tension==="model" ? `<p class="note">モデル（カット・カラーなど）の募集があるかは、予約のときにお店が確かめてくれるよ。予約のリクエストに「モデル希望」と伝わるから、そのまま進めてね。</p>` : ""}
         ${(()=>{ const ms=(S.cond.menus||[]); if(!ms.length) return ""; const k=r.filter(x=>!menuMatch(x.salon,ms).missing.length).length;
@@ -2076,7 +2145,7 @@ function cardHTML(x,i){
     </div>
     <div class="card-b">
       <div class="staff">
-        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>担当：${esc(st.name)} さん</b><small>スタイリスト歴${st.years}年 ・ ${esc(st.spec)}</small></div></div>
+        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>担当：${esc(st.name)} さん</b><small>${spaOnly(s)?"経験":"スタイリスト歴"}${st.years}年 ・ ${esc(st.spec)}</small></div></div>
         ${rs.length?`<div class="why top3"><b>${esc(st.name)}さんをすすめる理由</b><ul>${rs.slice(0,3).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}
         ${style ? `<a class="stylelink" href="${esc(style)}" target="_blank" rel="noopener" data-style="${esc(s.id)}">${esc(st.name)}さんのスタイル写真を見る（ホットペッパー）</a>`
           : s.sample ? `<p class="fine stylenone">本番では、ここから${esc(st.name)}さんのスタイル写真（ホットペッパービューティー）を見られます。</p>` : ""}
