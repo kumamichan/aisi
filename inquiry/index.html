@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>詳しく聞きたい方へ｜ぴたリスト</title>
+<style>
+  :root{
+    --navy:#243257; --ink:#1F2A44; --pink:#D6456A; --pink-soft:#FDEFF2; --pink-mid:#FAD4DC; --muted:#6C7BA8; --line:#E3E7F2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#1F2A44; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--navy);color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;line-height:1.7;-webkit-text-size-adjust:100%}
+  .wrap{max-width:560px;margin:0 auto;padding:28px 16px 56px}
+  .brand{text-align:center;color:var(--pink-mid);font-weight:700;letter-spacing:.2em;font-size:15px}
+  h1{color:#fff;text-align:center;font-size:24px;line-height:1.5;margin:10px 0 6px}
+  h1 em{font-style:normal;color:var(--pink-mid)}
+  .lead{color:#dfe5f7;text-align:center;font-size:14px;margin:0 0 20px}
+  .card{background:#fff;border-radius:20px;padding:22px 18px 24px}
+  .field{margin-bottom:18px}
+  label.l,.l{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+  .req{display:inline-block;background:var(--pink);color:#fff;font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:1px}
+  .opt{display:inline-block;background:var(--line);color:var(--muted);font-size:11px;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:1px}
+  input[type=text],input[type=email],select,textarea{
+    width:100%;font-size:16px;padding:12px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font-family:inherit}
+  textarea{min-height:110px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pink)}
+  .choices{display:flex;flex-wrap:wrap;gap:8px}
+  .choices label{display:flex;align-items:center;gap:6px;padding:9px 12px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;background:#fff;cursor:pointer}
+  .choices input{accent-color:var(--pink)}
+  .agree{font-size:13px;color:#4a5578;display:flex;gap:8px;align-items:flex-start}
+  .agree input{margin-top:5px;accent-color:var(--pink)}
+  button{width:100%;border:0;border-radius:40px;background:var(--pink);color:#fff;font-size:18px;font-weight:700;padding:15px;cursor:pointer;font-family:inherit}
+  button[disabled]{opacity:.6}
+  .err{color:var(--pink);font-size:14px;font-weight:700;margin:10px 0 0;display:none}
+  .hp{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+  .thanks{display:none;text-align:center;padding:30px 8px}
+  .thanks h2{font-size:22px;margin:0 0 10px}
+  .thanks p{margin:0;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">ぴたリスト</div>
+  <h1>詳しく聞きたい方は、<br><em>こちらからご入力ください</em></h1>
+  <p class="lead">サロン様向けのご案内です。<br>内容を確認して、折り返しご連絡いたします。</p>
+
+  <div class="card">
+    <form id="f" novalidate>
+      <div class="field">
+        <label class="l" for="name">お名前<span class="req">必須</span></label>
+        <input type="text" id="name" name="name" autocomplete="name" placeholder="例）山田 花子">
+      </div>
+      <div class="field">
+        <label class="l" for="salon">サロン名<span class="req">必須</span></label>
+        <input type="text" id="salon" name="salon" autocomplete="organization" placeholder="例）〇〇ヘアサロン">
+      </div>
+      <div class="field">
+        <label class="l" for="role">ご立場<span class="opt">任意</span></label>
+        <select id="role" name="role">
+          <option value="">選択してください</option>
+          <option>オーナー・経営者</option>
+          <option>店長・マネージャー</option>
+          <option>スタイリスト・スタッフ</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="l">ご連絡方法<span class="req">必須</span></span>
+        <div class="choices">
+          <label><input type="radio" name="method" value="メール" checked>メール</label>
+          <label><input type="radio" name="method" value="LINE">LINE</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="l" for="contact" id="contactLabel">メールアドレス<span class="req">必須</span></label>
+        <input type="text" id="contact" name="contact" inputmode="email" autocomplete="email" placeholder="例）info@example.com">
+      </div>
+      <div class="field">
+        <span class="l">知りたいこと<span class="opt">複数選択OK</span></span>
+        <div class="choices">
+          <label><input type="checkbox" name="topics" value="掲載料金・キャンペーン">掲載料金・キャンペーン</label>
+          <label><input type="checkbox" name="topics" value="掲載までの流れ">掲載までの流れ</label>
+          <label><input type="checkbox" name="topics" value="診断の仕組み">診断の仕組み</label>
+          <label><input type="checkbox" name="topics" value="お客様の集まり方">お客様の集まり方</label>
+          <label><input type="checkbox" name="topics" value="その他">その他</label>
+        </div>
+      </div>
+      <div class="field">
+        <label class="l" for="message">ご質問など<span class="opt">任意</span></label>
+        <textarea id="message" name="message" placeholder="気になっていることがあれば、ご自由にご記入ください"></textarea>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label>ウェブサイト<input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <div class="field">
+        <label class="agree"><input type="checkbox" id="agree" name="agree"><span>お送りいただいた内容は、ご返信の目的のみに利用します。</span></label>
+      </div>
+      <button type="submit" id="submitBtn">送信する</button>
+      <p class="err" id="err"></p>
+    </form>
+
+    <div class="thanks" id="thanks">
+      <h2>送信ありがとうございました</h2>
+      <p>内容を確認して、折り返しご連絡いたします。<br>少々お待ちください。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ★ここを書き換えます：GASを「ウェブアプリ」として公開したときのURLを貼ってください
+var GAS_URL = 'ここにウェブアプリのURLを貼る';
+var PAGE_NAME = 'お問い合わせ';   // GAS側の FUNNELS のキーと同じにします
+
+(function () {
+  // ---------- 計測の部品 ----------
+  function rand() { return Math.random().toString(36).slice(2, 8); }
+  function getUid() {
+    try {
+      var u = localStorage.getItem('pt_uid');
+      if (!u) { u = 'u' + Date.now().toString(36) + rand(); localStorage.setItem('pt_uid', u); }
+      return u;
+    } catch (e) { return 'anon'; }
+  }
+  function getSid() {
+    try {
+      var s = sessionStorage.getItem('pt_sid');
+      if (!s) { s = 's' + Date.now().toString(36) + rand(); sessionStorage.setItem('pt_sid', s); }
+      return s;
+    } catch (e) { return 'sess-' + rand(); }
+  }
+  function getSrc() {
+    // 例）…/inquiry.html?from=story_salon のように、リンクの末尾に ?from=名前 を付けると流入元が分かります
+    try {
+      var p = new URLSearchParams(location.search);
+      var s = p.get('from') || p.get('utm_source') || '';
+      if (s) sessionStorage.setItem('pt_src', s);
+      return sessionStorage.getItem('pt_src') || (document.referrer ? new URL(document.referrer).hostname : '直接');
+    } catch (e) { return ''; }
+  }
+  var UID = getUid(), SID = getSid(), SRC = getSrc();
+  var DEVICE = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'スマホ' : 'PC';
+  var sent = {};
+  var lastStep = '';
+  var t0 = Date.now();
+  var ready = GAS_URL.indexOf('http') === 0;
+
+  function send(payload, keepalive) {
+    if (!ready) return;
+    try {
+      fetch(GAS_URL, { method: 'POST', mode: 'no-cors', keepalive: !!keepalive, body: JSON.stringify(payload) });
+    } catch (e) {}
+  }
+  // 同じステップは、1回のページ表示につき1回だけ送ります
+  function track(step, detail) {
+    if (sent[step]) return;
+    sent[step] = true;
+    if (step !== 'エラー') lastStep = step;
+    send({ type: 'event', uid: UID, sid: SID, page: PAGE_NAME, step: step, detail: detail || '', device: DEVICE, src: SRC, url: location.pathname }, true);
+  }
+
+  // ---------- ステップの記録 ----------
+  var f = document.getElementById('f');
+  var name = document.getElementById('name');
+  var salon = document.getElementById('salon');
+  var contact = document.getElementById('contact');
+  var agree = document.getElementById('agree');
+  var err = document.getElementById('err');
+  var btn = document.getElementById('submitBtn');
+
+  track('ページ表示');
+
+  f.addEventListener('focusin', function () { track('入力開始'); });
+  name.addEventListener('blur', function () { if (name.value.trim()) track('お名前入力'); });
+  salon.addEventListener('blur', function () { if (salon.value.trim()) track('サロン名入力'); });
+  contact.addEventListener('blur', function () { if (contact.value.trim()) track('連絡先入力'); });
+  agree.addEventListener('change', function () { if (agree.checked) track('同意チェック'); });
+
+  // 離れたときに、最後にいたステップと滞在秒数を記録します（集計には「ページ離脱」の行が使われます）
+  var left = false;
+  function onLeave() {
+    if (left) return; left = true;
+    if (sent['送信完了']) return;
+    send({ type: 'event', uid: UID, sid: SID, page: PAGE_NAME, step: 'ページ離脱', detail: '最後:' + (lastStep || 'なし') + ' / ' + Math.round((Date.now() - t0) / 1000) + '秒', device: DEVICE, src: SRC, url: location.pathname }, true);
+  }
+  window.addEventListener('pagehide', onLeave);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') onLeave(); });
+
+  // ---------- ご連絡方法の切り替え ----------
+  var methods = document.querySelectorAll('input[name=method]');
+  var label = document.getElementById('contactLabel');
+  function updateMethod() {
+    var m = f.querySelector('input[name=method]:checked').value;
+    label.innerHTML = (m === 'LINE' ? 'LINEの表示名' : 'メールアドレス') + '<span class="req">必須</span>';
+    contact.placeholder = m === 'LINE' ? '例）はなこ' : '例）info@example.com';
+    contact.inputMode = m === 'LINE' ? 'text' : 'email';
+  }
+  Array.prototype.forEach.call(methods, function (r) { r.addEventListener('change', updateMethod); });
+
+  // ---------- 送信 ----------
+  function showErr(msg, field) {
+    err.textContent = msg; err.style.display = 'block';
+    track('エラー', field || '');
+    sent['エラー'] = false; // エラーは何度でも記録
+  }
+
+  f.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    err.style.display = 'none';
+    track('送信クリック');
+
+    var m = f.querySelector('input[name=method]:checked').value;
+    if (!name.value.trim()) return showErr('お名前をご入力ください。', 'お名前');
+    if (!salon.value.trim()) return showErr('サロン名をご入力ください。', 'サロン名');
+    if (!contact.value.trim()) return showErr((m === 'LINE' ? 'LINEの表示名' : 'メールアドレス') + 'をご入力ください。', '連絡先');
+    if (m === 'メール' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.value.trim())) return showErr('メールアドレスの形式をご確認ください。', 'メール形式');
+    if (!agree.checked) return showErr('内容の取り扱いについて、チェックをお願いします。', '同意');
+
+    var topics = Array.prototype.map.call(f.querySelectorAll('input[name=topics]:checked'), function (c) { return c.value; });
+    var payload = {
+      type: 'inquiry', uid: UID, src: SRC,
+      name: name.value.trim(), salon: salon.value.trim(), role: document.getElementById('role').value,
+      method: m, contact: contact.value.trim(), topics: topics,
+      message: document.getElementById('message').value.trim(),
+      website: document.getElementById('website').value
+    };
+
+    if (!ready) { showErr('送信先がまだ設定されていません（GAS_URL を設定してください）。', '設定'); return; }
+
+    btn.disabled = true; btn.textContent = '送信中…';
+    fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.ok) {
+          track('送信完了');
+          f.style.display = 'none';
+          document.getElementById('thanks').style.display = 'block';
+          window.scrollTo(0, 0);
+        } else {
+          throw new Error((res && res.error) || 'error');
+        }
+      })
+      .catch(function () {
+        btn.disabled = false; btn.textContent = '送信する';
+        showErr('送信できませんでした。お手数ですが、公式LINEからご連絡ください。', '送信失敗');
+      });
+  });
+})();
+</script>
+</body>
+</html>
