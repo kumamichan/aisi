@@ -188,6 +188,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .perkbox{background:#2a2112;color:#f6e3bd;border-radius:6px;padding:10px 12px;font-size:.9rem;line-height:1.6}
 .perkbox b{color:var(--accent)}
 .linkbtn{text-align:center;text-decoration:none;display:block}
+.hpbbtn small{display:block;font-weight:400;font-size:.7rem;opacity:.75;margin-top:2px}
 .fine{font-size:.76rem;color:#5a6274;margin:0}
 .modal-c label{display:grid;gap:4px;font-size:.82rem;color:#3b4252}
 .modal-c input,.modal-c select,.modal-c textarea{font:inherit;font-size:1rem;border:1px solid #cfc9bd;border-radius:4px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
@@ -2063,7 +2064,7 @@ function cardHTML(x,i){
     </div>
     <div class="card-f">
       ${DEMO ? `<button class="btn book" type="button" disabled title="予約は掲載スタートから">予約は${BOOK_TEXT}から</button>` : `<button class="btn book" type="button" data-book="${esc(s.id)}">${esc(st.name)}さんで予約する</button>`}
-      ${(st.hpbUrl||s.bookUrl) ? `<a class="btn more linkbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(st.hpbUrl||s.bookUrl)}" target="_blank" rel="noopener">空き状況をホットペッパーで見る</a>`:""}
+      ${(st.hpbUrl||s.bookUrl) ? `<a class="btn more linkbtn hpbbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(st.hpbUrl||s.bookUrl)}" target="_blank" rel="noopener" data-hpb="${esc(s.id)}">${st.hpbUrl?esc(st.name)+"さんの空きをホットペッパーで見る":"お店の空きをホットペッパーで見る"}<small>ホットペッパービューティーが開きます</small></a>`:""}
       <button class="btn more" type="button" data-more="${esc(s.id)}">お店の詳細を見る</button>
     </div>
   </article>`;
