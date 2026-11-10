@@ -111,8 +111,8 @@
 </div>
 
 <script>
-// ★ここを書き換えます：GASを「ウェブアプリ」として公開したときのURLを貼ってください
-var GAS_URL = 'ここにウェブアプリのURLを貼る';
+// 送り先：ぴたリストのGAS（Code.gs）。お問い合わせは「お問い合わせ」シート、計測は「ページの記録」シートに入ります
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec';
 var PAGE_NAME = 'お問い合わせ';   // GAS側の FUNNELS のキーと同じにします
 
 (function () {
@@ -225,7 +225,8 @@ var PAGE_NAME = 'お問い合わせ';   // GAS側の FUNNELS のキーと同じ�
       name: name.value.trim(), salon: salon.value.trim(), role: document.getElementById('role').value,
       method: m, contact: contact.value.trim(), topics: topics,
       message: document.getElementById('message').value.trim(),
-      website: document.getElementById('website').value
+      website: document.getElementById('website').value,
+      dealer: (function(){ try { return (new URLSearchParams(location.search).get('d') || '').slice(0, 60); } catch (e) { return ''; } })()
     };
 
     if (!ready) { showErr('送信先がまだ設定されていません（GAS_URL を設定してください）。', '設定'); return; }

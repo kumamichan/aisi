@@ -431,5 +431,35 @@ footer a{color:#c9ced8;margin:0 8px}
   if (d) document.querySelectorAll(".js-form").forEach(a => a.href = "../../inquiry/?from=lp2&d=" + encodeURIComponent(d));
 })();
 </script>
+<script>
+/* どこまで読んだか・どのボタンを押したかを、ぴたリストのGAS（Code.gs）の「ページの記録」シートに送る
+   集計：スプレッドシートのメニュー「ぴたリスト」→「LP・フォームの離脱分析を作る」 */
+(function(){
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec", PAGE = "LP美容室";
+  function rand(){ return Math.random().toString(36).slice(2, 8); }
+  var uid = "anon", sid = "s" + Date.now().toString(36) + rand(), src = "";
+  try { uid = localStorage.getItem("pt_uid"); if (!uid){ uid = "u" + Date.now().toString(36) + rand(); localStorage.setItem("pt_uid", uid); } } catch (e) { uid = "anon"; }
+  try { sid = sessionStorage.getItem("pt_sid") || sid; sessionStorage.setItem("pt_sid", sid); } catch (e) {}
+  try { var p = new URLSearchParams(location.search); src = p.get("from") || p.get("utm_source") || (p.get("d") ? "紹介：" + p.get("d") : "") || (document.referrer ? new URL(document.referrer).hostname : "直接"); } catch (e) {}
+  var dev = /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "スマホ" : "PC", sent = {};
+  function track(step, detail){
+    if (sent[step]) return; sent[step] = 1;
+    var body = JSON.stringify({ type:"event", uid:uid, sid:sid, page:PAGE, step:step, detail:detail || "", device:dev, src:src.slice(0, 100), url:location.pathname });
+    try { fetch(GAS_URL, { method:"POST", mode:"no-cors", keepalive:true, headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:body }); } catch (e) {}
+  }
+  window.ptTrack = track;
+  track("ページ表示");
+  window.addEventListener("scroll", function(){
+    var h = document.documentElement, r = (h.scrollTop + innerHeight) / h.scrollHeight;
+    if (r >= .5) track("半分まで読んだ");
+    if (r >= .92) track("最後まで読んだ");
+  }, { passive:true });
+  var pr = document.getElementById("price");
+  if (pr && "IntersectionObserver" in window) new IntersectionObserver(function(es, o){ es.forEach(function(e){ if (e.isIntersecting){ track("料金を見た"); o.disconnect(); } }); }, { threshold:.3 }).observe(pr);
+  document.querySelectorAll(".js-line,.js-form,.b-go,.b-line,.b-form,.hd-cta").forEach(function(a){
+    a.addEventListener("click", function(){ track("ボタンを押した", a.textContent.replace(/\s+/g, " ").trim().slice(0, 40)); });
+  });
+})();
+</script>
 </body>
 </html>
