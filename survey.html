@@ -54,11 +54,12 @@ textarea{font:inherit;font-size:16px;width:100%;min-height:90px;border:1px solid
         <button type="button" data-v="1" aria-label="星1">★</button><button type="button" data-v="2" aria-label="星2">★</button><button type="button" data-v="3" aria-label="星3">★</button><button type="button" data-v="4" aria-label="星4">★</button><button type="button" data-v="5" aria-label="星5">★</button>
       </div><div class="slabel" id="slabel">★を押して選んでください</div></section>
     <section style="margin-top:14px"><h2 id="againQ">また行きたい？</h2><div class="opts" id="again"></div></section>
+    <section style="margin-top:14px"><h2 id="matchQ">担当の人は、合っていた？</h2><div class="opts" id="match"></div></section>
     <section style="margin-top:14px"><h2 id="didQ">予約したメニューの施術は受けられた？</h2><div class="opts" id="did"></div></section>
     <section style="margin-top:14px"><h2>ひとこと（任意）</h2><textarea id="comment" maxlength="300" placeholder="よかったところ、気になったところなど。お店に伝わります。"></textarea></section>
     <section style="margin-top:14px"><p class="msg" id="err" hidden></p><button class="btn" type="submit" id="go" disabled>送信する</button></section>
   </form>
-  <div class="center" id="done" hidden><b>ありがとうございました</b><p>いただいた声は、お店のサービスと、ぴたリストのおすすめに活かします。<br>また髪のことで迷ったら、いつでもAISIに聞いてください。</p></div>
+  <div class="center" id="done" hidden><b>ありがとうございました</b><p>いただいた声は、お店のサービスと、ぴたリストのおすすめに活かします。<br>また髪のことで迷ったら、いつでもAISIに聞いてください。</p><p id="rediag" hidden></p></div>
 </main>
 <script>
 /* GASのウェブアプリのURL（index.html と同じもの） */
@@ -66,7 +67,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYo
 const $ = id => document.getElementById(id);
 const q = new URLSearchParams(location.search), R = q.get("r") || "", T = q.get("t") || "";
 const LABEL = ["", "不満だった", "少し不満", "ふつう", "満足", "とても満足"];
-let star = 0, again = "", did = "";
+let star = 0, again = "", match = "", did = "", REDIAG = "";
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function opts(box, list, set){ $(box).innerHTML = list.map(v => `<button type="button" class="opt" data-v="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join("");
   $(box).querySelectorAll(".opt").forEach(b => b.onclick = () => { $(box).querySelectorAll(".opt").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); }); set(b.dataset.v); }); }
@@ -80,7 +81,9 @@ async function init(){
     $("sub").textContent = [r.when, r.staff ? "担当 " + r.staff + "さん" : "", "1分で終わります"].filter(Boolean).join(" ・ ");
     $("againQ").textContent = r.salon + " に、また行きたい？";
     if (r.menu) $("didQ").textContent = "予約したメニュー（" + r.menu + "）の施術は受けられた？";
-    opts("again", r.again, v => again = v); opts("did", r.did, v => did = v);
+    if (r.staffCall) $("matchQ").textContent = r.staffCall + "は、合っていた？";
+    REDIAG = /^https:\/\//.test(r.rediag || "") ? r.rediag : "";
+    opts("again", r.again, v => again = v); opts("match", r.match || ["合ってた", "ふつう", "合わなかった"], v => match = v); opts("did", r.did, v => did = v);
     $("form").hidden = false;
   } catch (e) { $("loading").textContent = "読み込めませんでした。通信を確認して、もう一度開いてください。"; }
 }
@@ -92,9 +95,11 @@ $("form").addEventListener("submit", async e => {
   e.preventDefault(); if (!star) return;
   const b = $("go"); b.disabled = true; b.textContent = "送信中…";
   try {
-    const r = await (await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "survey", r: R, t: T, star, again, did, comment: $("comment").value.trim() }) })).json();
+    const r = await (await fetch(GAS_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "survey", r: R, t: T, star, again, match, did, comment: $("comment").value.trim() }) })).json();
     if (!r.ok) throw 0;
     $("form").hidden = true; $("done").hidden = false; window.scrollTo(0, 0);
+    if (match === "合わなかった" && REDIAG) { const p = $("rediag"); p.hidden = false;
+      p.innerHTML = `正直に教えてくださって、ありがとうございます。合わなかったところもふまえて、もう一度探してみませんか？<br><a href="${esc(REDIAG)}">AISIともう一度探す</a>`; }
   } catch (er) { $("err").hidden = false; $("err").textContent = "送信できませんでした。もう一度お試しください。"; b.disabled = false; b.textContent = "送信する"; }
 });
 init();

@@ -150,7 +150,23 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .reveal{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,8fr);gap:20px;align-items:center}
 .reveal .aisi{height:min(46vh,420px)}
 .warnbox{background:rgba(227,161,87,.12);border:1px solid rgba(227,161,87,.4);color:#f2d3ac;border-radius:6px;padding:10px 14px;font-size:.85rem;max-width:560px}
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cards{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.card.sub .name{font-size:1.08rem}
+.card.sub .pct{font-size:1.5rem}
+.cards-note{color:var(--silver);text-align:center}
+.why.top3{background:#fbf7ee;border-left:3px solid var(--accent);border-radius:0 6px 6px 0}
+.why.top3 b{color:#8a6a2e}
+.why.top3 ul{font-size:.86rem}
+.stylelink{font-size:.8rem;color:#5a4a26;text-decoration:underline;text-underline-offset:3px;justify-self:start}
+.perkline{margin:-2px 0 2px;font-size:.76rem;color:#8a6a2e;text-align:center}
+.btn.hpbbtn{background:#fff;border:1.5px solid var(--ink);color:var(--ink)}
+.morebox{border-top:1px solid #e2ded5}
+.morebox summary{cursor:pointer;list-style:none;padding:12px 18px;font-size:.84rem;color:var(--ink-soft);display:block}
+.morebox summary::-webkit-details-marker{display:none}
+.morebox summary::before{content:"＋";font-weight:700;margin-right:6px}
+.morebox[open] summary::before{content:"−"}
+.morebox summary small{display:block;font-size:.7rem;opacity:.8;margin-left:1.4em}
+.prof b{width:100%;font-size:.74rem;letter-spacing:.06em;color:var(--ink-soft)}
 .card{background:var(--paper);color:var(--ink);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 .card.first{outline:2px solid var(--accent)}
 .card-h{padding:16px 18px 12px;display:grid;gap:4px;border-bottom:1px solid #e2ded5}
@@ -188,7 +204,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .perkbox{background:#2a2112;color:#f6e3bd;border-radius:6px;padding:10px 12px;font-size:.9rem;line-height:1.6}
 .perkbox b{color:var(--accent)}
 .linkbtn{text-align:center;text-decoration:none;display:block}
-.hpbbtn small{display:block;font-weight:400;font-size:.7rem;opacity:.75;margin-top:2px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:6px;counter-reset:st}
+.steps li{counter-increment:st;display:grid;grid-template-columns:26px 1fr;column-gap:8px;font-size:.84rem;line-height:1.5}
+.steps li::before{content:counter(st);grid-row:span 2;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#1b2130;font-weight:700;display:grid;place-items:center;font-size:.8rem}
+.steps li span{font-size:.74rem;color:#5a6274}
 .fine{font-size:.76rem;color:#5a6274;margin:0}
 .modal-c label{display:grid;gap:4px;font-size:.82rem;color:#3b4252}
 .modal-c input,.modal-c select,.modal-c textarea{font:inherit;font-size:1rem;border:1px solid #cfc9bd;border-radius:4px;padding:8px 10px;background:#fff;color:var(--ink);width:100%}
@@ -364,8 +383,13 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <div class="code" id="mCode">AISI-0000</div>
       <div class="perkbox" id="mPerk" hidden></div>
       <p id="mText"></p>
+      <ol class="steps" id="mSteps">
+        <li><b>LINEを開いて友だち追加</b><span>画面上の「追加」を押してから、そのまま送信</span></li>
+        <li><b>AISIが日時を聞いて、お店に確認</b><span>メニューと希望の日時を、ボタンで選ぶだけ</span></li>
+        <li><b>お店の返事で予約が確定</b><span>返事の目安は24時間以内（営業時間外は、次の営業時間）</span></li>
+      </ol>
       <a class="btn line linkbtn" id="mLine" href="#" target="_blank" rel="noopener">LINEで予約する（500円引き）</a>
-      <p class="fine" id="mLineNote">LINEが開いたら、画面上の「追加」で友だち追加してから送信してください。お店からの返事がLINEに届きます。</p>
+      <p class="fine" id="mLineNote">返事が遅いときは、AISIからほかの候補もご案内します。</p>
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
       <button class="btn more" id="mReq" type="button">メールで予約する</button>
       <a class="btn more linkbtn" id="mLink" href="#" target="_blank" rel="noopener">ホットペッパーで予約する（要望欄にコードを入力）</a>
@@ -1101,7 +1125,8 @@ function introGo(kind, say){
 function start(theme, cond){
   COND = cond;
   S = {sid:newSid(), theme, cond, course:cond.course || "normal", answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, jk:{}, affAsked:[], say:"", need:null};
-  send("start", {theme:THEMES[theme].label, tension:tensionLabel(cond.tension), course:courseLabel(S.course), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
+  let uid = ""; try { uid = localStorage.getItem("pt_uid") || ""; if (!uid){ uid = "u" + Math.random().toString(36).slice(2,12); localStorage.setItem("pt_uid", uid); } } catch (e) {}
+  send("start", {uid, theme:THEMES[theme].label, tension:tensionLabel(cond.tension), course:courseLabel(S.course), when:whenLabel(cond.when), zones:cond.zones.map(zoneLabel).join("、")||"こだわらない",
     days: cond.date ? cond.date.replace(/-/g,"/") : (cond.days.map(d=>DAYS[d]+"曜").join("、")||"こだわらない"),
     slots: cond.slots.map(k=>SLOTS.find(x=>x[0]===k)[1]).join("、")||"こだわらない",
     device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
@@ -1137,6 +1162,7 @@ function qText(q){
   return q.t;
 }
 function renderQ(){
+  prog();
   view="q";
   const n = S.n, q = S.current;
   $app.innerHTML = `
@@ -1168,6 +1194,9 @@ function renderQ(){
   document.getElementById("backBtn").onclick=back;
 }
 
+/* 途中までの記録：5問ごとに、何問まで答えたかを送る（どこで離脱したかを見るため） */
+function prog(){ if (!S) return; const t = S.n + Object.keys(S.fol||{}).length + Object.keys(S.talk||{}).length + Object.keys(S.jk||{}).length + (S.affAsked||[]).length;
+  if (t >= (S.lastProg||0) + 5){ S.lastProg = t - t%5; send("progress", {q:S.lastProg}); } }
 function answer(v){
   const q = S.current;
   S.history.push({q, answers:{...S.answers}, n:S.n, meter:S.meter});
@@ -1445,6 +1474,7 @@ function personalDone(){
   document.getElementById("pShow").onclick=finish;
 }
 function renderAff(){
+  prog();
   view="aff";
   const a = affQueue[affIdx];
   const opts = a.opts.concat([a.none]);
@@ -1816,6 +1846,7 @@ function storyFor(x){
 }
 /* 深掘りの画面（「はい」と答えた質問のあと） */
 function renderFollow(qid){
+  prog();
   view = "follow";
   const f = FOLLOW[qid];
   $app.innerHTML = `
@@ -1851,6 +1882,7 @@ function startTalk(){
   renderTalk();
 }
 function renderTalk(){
+  prog();
   view = "talk";
   const t = talkQ[talkIdx];
   const lead = t.lead && (!t.leadIf || t.leadIf()) ? t.lead : "";
@@ -1895,6 +1927,7 @@ function startJikkuri(){
   renderJikkuri();
 }
 function renderJikkuri(){
+  prog();
   view = "jk";
   const q = jkQ[jkIdx], prev = jkQ[jkIdx-1];
   const lead = !prev || prev.g !== q.g ? JK_GROUPS[q.g][1] : "";
@@ -1963,6 +1996,7 @@ function renderResult(){
       </div>
     </div>
     <div class="cards">${r.map((x,i)=>cardHTML(x,i)).join("")}</div>
+    <p class="fine cards-note">迷ったら、いちばんのおすすめから。2位・3位も、君の条件に近いお店だよ。</p>
     <div class="after">
       ${(()=>{ const nx = COURSE_ORDER[COURSE_ORDER.indexOf(S.course)+1]; if (!nx) return "";
         const left = COURSES[nx].n.replace(/[^0-9]/g,"") - COURSES[S.course].n.replace(/[^0-9]/g,"");
@@ -1972,7 +2006,7 @@ function renderResult(){
     </div>
   </section>`;
   aisiReact("result");
-  $app.querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>toggleMore(b));
+  $app.querySelectorAll("details[data-view]").forEach(d=>d.addEventListener("toggle",()=>onMore(d)));
   $app.querySelectorAll("[data-book]").forEach(b=>b.onclick=()=>book(b.dataset.book));
   const uc = document.getElementById("upCourse");
   if (uc) uc.onclick = () => upgradeCourse(uc.dataset.c);
@@ -2017,63 +2051,68 @@ function drawFimg(){ const box = document.getElementById("fImgList"); if (!box) 
 document.addEventListener("change", async e => { if (!e.target || e.target.id !== "fImg") return;
   for (const f of [...e.target.files].slice(0, 3 - FIMG.length)) { try { FIMG.push(await shrinkImage(f)); } catch (er) {} }
   e.target.value = ""; drawFimg(); });
+/* URLのチェック：ホットペッパーのページだけ（サロンボードは不可）／お店の予約ページは https だけ */
+function hpbOk(u){ u=String(u||"").trim(); return /^https:\/\/beauty\.hotpepper\.jp\/\S+$/.test(u) && !/salonboard/i.test(u) ? u : ""; }
+function httpsOk(u){ u=String(u||"").trim(); return /^https:\/\/[^\s"'<>]+$/.test(u) ? u : ""; }
 function cardHTML(x,i){
   const reasons = reasonsFor(x, S.answers);
   const s = x.salon, st = x.staff, other = s.staff.find(z=>z.id!==st.id);
   const say = i===0
     ? (reasons.length ? `「${reasons.join("」「")}」。君の条件に、いちばん素直に応えてくれる店。` : "君の条件に、いちばん素直に応えてくれる店。")
     : (reasons.length ? `「${reasons.join("」「")}」なら、ここも強い。` : "1位と迷うなら、ここ。");
+  const rs = [...new Set(staffReasons(st, S.answers).concat(x.common||[], reasons))];
+  const hpb = hpbOk(st.hpbUrl), book = hpb || hpbOk(s.bookUrl) || httpsOk(s.bookUrl), style = hpbOk(st.hpbStyle);
+  const ph = photosOf(s);
   return `
-  <article class="card ${i===0?"first":""}">
-    ${(()=>{ const ph = photosOf(s); if (!ph.length) return ""; return `<div class="shop-gal ${ph.length===1?"one":""}">${ph.slice(0,3).map((u,k)=>`<img src="${esc(u)}" alt="${esc(s.name)}の${k===0?"外観":"店内"}" loading="lazy">`).join("")}${s.sample&&!(s.photos||[]).length?`<span class="lb">写真はイメージです</span>`:""}</div>`; })()}
+  <article class="card ${i===0?"first":"sub"}">
+    ${ph.length ? `<div class="shop-gal ${ph.length===1||i>0?"one":""}">${(i===0?ph.slice(0,3):ph.slice(0,1)).map((u,k)=>`<img src="${esc(u)}" alt="${esc(s.name)}の${k===0?"外観":"店内"}" loading="lazy">`).join("")}${s.sample&&!(s.photos||[]).length?`<span class="lb">写真はイメージです</span>`:""}</div>` : ""}
     <div class="card-h">
-      <div class="rank"><span>${i===0?"第1位":i===1?"第2位":"第3位"}</span><span class="pct ${x.score<GOAL?"low":""}">${Math.round(x.score)}<small>%</small></span></div>
+      <div class="rank"><span>${i===0?"いちばんのおすすめ":i===1?"第2位":"第3位"}</span><span class="pct ${x.score<GOAL?"low":""}">${Math.round(x.score)}<small>%</small></span></div>
       <h3 class="name">${esc(s.name)}${s.sample?`<span class="sample">サンプル</span>`:""}</h3>
       <div class="area">${esc(s.area)} ・ ${esc(s.price)}</div>
-      <div class="area">受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</div>
       ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
       ${s.rating && s.rating.n >= 3 ? `<div class="rate">★${s.rating.avg.toFixed(1)}<small>（来店したお客さま ${s.rating.n}人${s.rating.again!=null?` ・ また行きたい ${s.rating.again}%`:""}）</small></div>`:""}
-      ${s.perk ? `<div class="perk">ぴたリストのLINEで予約すると：${esc(s.perk)}</div>`:""}
       ${x.issues && x.issues.length ? `<div class="offcond">選んだ条件と合わない点：${x.issues.join("・")}</div>`:""}
     </div>
     <div class="card-b">
-      ${s.concept?`<p class="concept">${esc(s.concept)}</p>`:""}
-      <div class="tags">${s.tags.map(t=>`<span>#${esc(t)}</span>`).join("")}${(s.mood?String(s.mood).split("、"):[]).map(t=>`<span>${esc(t)}</span>`).join("")}</div>
-      ${(s.menus||[]).length ? `<div class="menus"><b>一押しメニュー</b>${s.menus.map((m,mi)=>`<div class="mi ${mi===x.menuIdx?"hit":""}"><div class="mi-h"><span>${mi===x.menuIdx?`<span class="hitb">今回のメニュー</span>`:""}${esc(m.name)}</span><em>${esc(m.price)}</em></div>${m.desc?`<small>${esc(m.desc)}${m.min?`（約${m.min}分）`:""}</small>`:""}</div>`).join("")}<small class="fine">料金は髪の長さなどで変わる場合があります。</small></div>`:""}
-      <p class="say">${esc(say)}</p>
       <div class="staff">
-        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>${esc(st.name)} さん</b><small>スタイリスト歴${st.years}年 ・ ${esc(st.spec)}</small></div></div>
-        ${(()=>{ const rs = [...new Set(staffReasons(st, S.answers).concat(x.common||[]))];
-          const pick = rs.slice(0,2).join("、");
-          return `<p class="say">この店なら、${esc(st.name)}さんに任せな。${storyFor(x)?"":pick?esc(pick)+"。":""}${(x.common||[]).length?"初めてでも話しやすいはずだよ。":esc(st.line)}</p>
-          ${storyFor(x)?`<div class="story"><b>AISIから君へ</b><p>${esc(storyFor(x))}</p></div>`:""}
-          ${mixHTML(x)}
-          ${rs.length?`<div class="why"><b>AISIが${esc(st.name)}さんを選んだ理由</b><ul>${rs.slice(0,5).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}`; })()}
-        ${(()=>{ const p=st.p||{}; const t=[p.home&&("出身："+p.home+(p.homeDetail?"（"+p.homeDetail+"）":"")), p.club, (p.pets||[]).filter(x=>x!=="いない").length&&((p.pets||[]).filter(x=>x!=="いない").join("・")+"好き"), p.oshi&&("推し："+p.oshi.replace("（例）","")), ...(p.hobbies||[]).slice(0,3)].filter(Boolean);
-          return t.length?`<div class="prof">${t.map(v=>`<span>${esc(v)}</span>`).join("")}</div>`:""; })()}
-        ${st.hpbStyle ? `<a class="btn stylebtn" href="${esc(st.hpbStyle)}" target="_blank" rel="noopener" data-style="${esc(s.id)}">${esc(st.name)}さんのスタイル写真を見る<small>ホットペッパービューティーが開きます</small></a>`
+        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>担当：${esc(st.name)} さん</b><small>スタイリスト歴${st.years}年 ・ ${esc(st.spec)}</small></div></div>
+        ${rs.length?`<div class="why top3"><b>${esc(st.name)}さんをすすめる理由</b><ul>${rs.slice(0,3).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}
+        ${style ? `<a class="stylelink" href="${esc(style)}" target="_blank" rel="noopener" data-style="${esc(s.id)}">${esc(st.name)}さんのスタイル写真を見る（ホットペッパー）</a>`
           : s.sample ? `<p class="fine stylenone">本番では、ここから${esc(st.name)}さんのスタイル写真（ホットペッパービューティー）を見られます。</p>` : ""}
-      </div>
-      <div class="details" id="det-${esc(s.id)}" hidden>
-        
-        ${(s.appeal||[]).map(a=>`<span><b>${esc(a.label)}：</b>${esc(a.text)}</span>`).join("")}
-        ${s.target?`<span><b>こんな人におすすめ：</b>${esc(s.target)}</span>`:""}
-        <span>得意：${esc(st.spec)}</span>
-        ${other?`<span>もう一人のおすすめ：${esc(other.name)} さん（${esc(other.spec)}）</span>`:""}
       </div>
     </div>
     <div class="card-f">
       ${DEMO ? `<button class="btn book" type="button" disabled title="予約は掲載スタートから">予約は${BOOK_TEXT}から</button>` : `<button class="btn book" type="button" data-book="${esc(s.id)}">${esc(st.name)}さんで予約する</button>`}
-      ${(st.hpbUrl||s.bookUrl) ? `<a class="btn more linkbtn hpbbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(st.hpbUrl||s.bookUrl)}" target="_blank" rel="noopener" data-hpb="${esc(s.id)}">${st.hpbUrl?esc(st.name)+"さんの空きをホットペッパーで見る":"お店の空きをホットペッパーで見る"}<small>ホットペッパービューティーが開きます</small></a>`:""}
-      <button class="btn more" type="button" data-more="${esc(s.id)}">お店の詳細を見る</button>
+      ${s.perk && !DEMO ? `<p class="perkline">LINEで予約すると ${esc(s.perk)}</p>`:""}
+      ${book ? `<a class="btn linkbtn hpbbtn ${COND&&COND.when==="soon"?"hot":""}" href="${esc(book)}" target="_blank" rel="noopener" data-hpb="${esc(s.id)}">${hpb?esc(st.name)+"さんの空きをホットペッパーで見る":"お店の空きを予約ページで見る"}</a>`:""}
     </div>
+    <details class="morebox" data-view="${esc(s.id)}">
+      <summary>もっと見る<small>AISIのコメント・メニュー・プロフィール</small></summary>
+      <div class="card-b">
+        <p class="say">${esc(say)}</p>
+        <p class="say">この店なら、${esc(st.name)}さんに任せな。${(x.common||[]).length?"初めてでも話しやすいはずだよ。":esc(st.line)}</p>
+        ${storyFor(x)?`<div class="story"><b>AISIから君へ</b><p>${esc(storyFor(x))}</p></div>`:""}
+        ${mixHTML(x)}
+        ${rs.length>3?`<div class="why"><b>ほかにも合っているところ</b><ul>${rs.slice(3,8).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}
+        ${(()=>{ const p=st.p||{}; const t=[p.home&&("出身："+p.home+(p.homeDetail?"（"+p.homeDetail+"）":"")), p.club, (p.pets||[]).filter(x=>x!=="いない").length&&((p.pets||[]).filter(x=>x!=="いない").join("・")+"好き"), p.oshi&&("推し："+p.oshi.replace("（例）","")), ...(p.hobbies||[]).slice(0,3)].filter(Boolean);
+          return t.length?`<div class="prof"><b>${esc(st.name)}さんのこと</b>${t.map(v=>`<span>${esc(v)}</span>`).join("")}</div>`:""; })()}
+        ${s.concept?`<p class="concept">${esc(s.concept)}</p>`:""}
+        <div class="tags">${s.tags.map(t=>`<span>#${esc(t)}</span>`).join("")}${(s.mood?String(s.mood).split("、"):[]).map(t=>`<span>${esc(t)}</span>`).join("")}</div>
+        ${(s.menus||[]).length ? `<div class="menus"><b>一押しメニュー</b>${s.menus.map((m,mi)=>`<div class="mi ${mi===x.menuIdx?"hit":""}"><div class="mi-h"><span>${mi===x.menuIdx?`<span class="hitb">今回のメニュー</span>`:""}${esc(m.name)}</span><em>${esc(m.price)}</em></div>${m.desc?`<small>${esc(m.desc)}${m.min?`（約${m.min}分）`:""}</small>`:""}</div>`).join("")}<small class="fine">料金は髪の長さなどで変わる場合があります。</small></div>`:""}
+        <div class="details">
+          <span>受付 ${s.open}:00〜${s.close}:00 ・ 定休 ${s.closed.length?s.closed.map(d=>DAYS[d]).join("・")+"曜":"なし"}</span>
+          ${(s.appeal||[]).map(a=>`<span><b>${esc(a.label)}：</b>${esc(a.text)}</span>`).join("")}
+          ${s.target?`<span><b>こんな人におすすめ：</b>${esc(s.target)}</span>`:""}
+          ${other?`<span>もう一人のおすすめ：${esc(other.name)} さん（${esc(other.spec)}）</span>`:""}
+        </div>
+      </div>
+    </details>
   </article>`;
 }
-function toggleMore(b){
-  const id = b.dataset.more, el = document.getElementById("det-"+id);
-  el.hidden = !el.hidden;
-  b.textContent = el.hidden ? "お店の詳細を見る" : "詳細を閉じる";
-  if (!el.hidden && !S.viewed.includes(id)){
+function onMore(d){
+  const id = d.dataset.view;
+  if (d.open && !S.viewed.includes(id)){
     S.viewed.push(id);
     send("view", {salon: S.results.find(x=>x.salon.id===id).salon.name});
   }
@@ -2097,10 +2136,11 @@ function book(salonId){
     ms.href = `https://line.me/R/oaMessage/${CONFIG.LINE_ID}/?${encodeURIComponent("保存\n診断コード："+S.code)}`;
     ms.hidden = !(COND && COND.when==="someday");
     ml.onclick = ()=>send("line", {salon:r.salon.name});
-    document.getElementById("mLineNote").hidden = false;
-  } else { ml.hidden = true; ms.hidden = true; document.getElementById("mLineNote").hidden = true; }
+    document.getElementById("mLineNote").hidden = false; document.getElementById("mSteps").hidden = false;
+  } else { ml.hidden = true; ms.hidden = true; document.getElementById("mLineNote").hidden = true; document.getElementById("mSteps").hidden = true; }
   const a = document.getElementById("mLink");
-  if (r.salon.bookUrl){ a.href = r.salon.bookUrl; a.hidden = false; } else a.hidden = true;
+  const bu = hpbOk(r.salon.bookUrl) || httpsOk(r.salon.bookUrl);
+  if (bu){ a.href = bu; a.hidden = false; } else a.hidden = true;
   showView("vCode");
   document.getElementById("modal").hidden = false;
 }
