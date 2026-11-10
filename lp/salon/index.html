@@ -41,7 +41,7 @@ em{font-style:normal;color:var(--gold-d)}
 .hero-txt{order:2}
 .pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:.9rem;border-radius:999px;padding:6px 18px;letter-spacing:.04em}
 .pill b{color:#e8c98a}
-.hero h1{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(2rem,4.6vw,3.3rem);line-height:1.35;margin:18px 0 8px}
+.hero h1{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.9rem,4.2vw,2.9rem);line-height:1.35;margin:18px 0 8px}
 .hero .lead{font-size:1.05rem;color:var(--ink2);margin:0 0 22px}
 .medals{display:flex;gap:14px;flex-wrap:wrap}
 .medal{width:118px;height:118px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3d4,#e2bd6e 55%,#b8892f 100%);box-shadow:0 8px 20px rgba(138,106,46,.28),inset 0 0 0 4px rgba(255,255,255,.55);display:grid;place-items:center;text-align:center;color:#3b2a0c;font-weight:900;font-size:.84rem;line-height:1.35;padding:10px}
@@ -197,6 +197,54 @@ footer a{color:#c9ced8;margin:0 8px}
   .b-line,.b-form{min-width:0;width:100%}
 }
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* ===== AISI ===== */
+.hero-vis{order:1;justify-self:center;position:relative;width:min(470px,92vw);height:620px}
+.hero-vis .phone{position:absolute;right:0;top:20px;width:270px}
+.hero-aisi{position:absolute;left:0;bottom:0;height:560px;width:auto;z-index:3;filter:drop-shadow(0 18px 24px rgba(27,33,48,.25))}
+.hero-bub{position:absolute;left:0;top:-14px;z-index:4;background:#fff;border:2px solid var(--navy);border-radius:18px 18px 18px 4px;padding:10px 14px;font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1rem;line-height:1.5;box-shadow:0 6px 16px rgba(27,33,48,.12);max-width:240px;font-size:.92rem;white-space:nowrap}
+.hero-bub small{display:block;font-family:"Zen Kaku Gothic New";font-size:.62rem;letter-spacing:.2em;color:var(--gold-d)}
+.scr-top{padding-top:46px}
+.scr-top .bub{margin-left:4px}
+.guide{display:flex;gap:12px;align-items:flex-start;max-width:720px;margin:-12px auto 30px}
+.av{flex:none;width:58px;height:58px;border-radius:50%;overflow:hidden;background:var(--navy);border:2px solid var(--gold);box-shadow:0 4px 10px rgba(27,33,48,.15)}
+.av img{width:100%;height:100%;object-fit:cover}
+.gb{position:relative;margin:4px 0 0;background:#fff;border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:11px 16px;font-size:.95rem;line-height:1.7;box-shadow:0 4px 12px rgba(27,33,48,.05)}
+.gb b{color:var(--gold-d)}
+.gb::before{content:"AISI";display:block;font-size:.62rem;letter-spacing:.2em;color:var(--gold-d);font-weight:700}
+.alt .gb{background:#fffdf8}
+.aisi-row{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin:34px auto 0;max-width:820px}
+.aisi-row.r{flex-direction:row-reverse}
+.aisi-row .fig{height:300px;width:auto;flex:none;filter:drop-shadow(0 14px 18px rgba(27,33,48,.18))}
+.aisi-row .say{background:#fff;border:2px solid var(--navy);border-radius:22px 22px 22px 6px;padding:16px 20px;font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.05rem,2.2vw,1.3rem);line-height:1.6;margin-bottom:120px;box-shadow:0 8px 20px rgba(27,33,48,.08)}
+.aisi-row.r .say{border-radius:22px 22px 6px 22px}
+.aisi-row .say small{display:block;font-family:"Zen Kaku Gothic New";font-size:.66rem;letter-spacing:.22em;color:var(--gold-d);font-weight:700}
+.aisi-row .say em{color:var(--gold-d)}
+.last .wrap{position:relative}
+.last-in{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:end;text-align:left;max-width:900px;margin:0 auto}
+.last-in .fig{height:380px;width:auto;filter:drop-shadow(0 16px 22px rgba(0,0,0,.35))}
+.last-in .ctas{justify-content:flex-start}
+.last-in .lb{display:inline-block;background:#fff;color:var(--ink);border-radius:18px 18px 18px 4px;padding:8px 14px;font-weight:700;font-size:.9rem;margin-bottom:12px}
+.dock .in{grid-template-columns:auto 1.25fr 1fr;align-items:center}
+.dock .av{width:46px;height:46px}
+@media (max-width:860px){
+  .hero-vis{height:490px;width:min(360px,94vw);order:0!important}
+  .hero-txt{order:1}
+  .hero-vis .phone{width:220px;top:60px}
+  .hero-aisi{height:420px;left:-6px}
+  .hero-bub{left:0;top:0;font-size:.8rem;max-width:none;padding:8px 12px}
+  .guide{margin:-14px 0 24px}
+  .av{width:50px;height:50px}
+  .gb{font-size:.9rem;padding:10px 13px}
+  .aisi-row{gap:8px;margin-top:26px}
+  .aisi-row .fig{height:220px}
+  .aisi-row .say{margin-bottom:80px;padding:12px 14px}
+  .last-in{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
+  .last-in .fig{height:240px;order:2;margin-top:18px}
+  .last-in .ctas{justify-content:center}
+  .dock .in{grid-template-columns:auto 1.2fr 1fr;gap:8px}
+  .dock .av{width:40px;height:40px}
+}
 </style>
 </head>
 <body>
@@ -220,8 +268,8 @@ footer a{color:#c9ced8;margin:0 8px}
     </div>
     <p class="hero-note">※初回キャンペーン：札幌市中央区・先着50店。2026年11月19日 掲載スタート</p>
   </div>
-  <div class="phone" aria-hidden="true"><div class="screen">
-    <div class="scr-top"><img src="../../img/aisi_point.webp" alt=""><div class="bub">……見えたよ。<br>君に合うのは、この人。</div></div>
+  <div class="hero-vis"><img class="hero-aisi" src="../../img/aisi_point.webp" alt="案内役のAISI"><div class="hero-bub"><small>AISI</small>貴店に合うお客さまを、<br>私がご案内いたします。</div><div class="phone" aria-hidden="true"><div class="screen">
+    <div class="scr-top"><div class="bub">……見えたよ。<br>君に合うのは、この人。</div></div>
     <div class="mc">
       <div class="mc-ph"></div>
       <div class="mc-b">
@@ -231,7 +279,7 @@ footer a{color:#c9ced8;margin:0 8px}
         <div class="mc-btn">ユウナさんで予約する</div>
       </div>
     </div>
-  </div></div>
+  </div></div></div>
 </div></div>
 
 <!-- お悩み -->
@@ -242,12 +290,13 @@ footer a{color:#c9ced8;margin:0 8px}
     <div class="wc"><span class="ic">📱</span><span class="no">お悩み / 02</span><p>SNSを毎日がんばっても、<br>指名につながらない</p></div>
     <div class="wc"><span class="ic">💬</span><span class="no">お悩み / 03</span><p>得意な技術や人柄が、<br>来店前に伝わらない</p></div>
   </div>
-  <div class="arrow"><b>ぴたリストは、<span class="hl">「相性」でお客様とつなぎます</span></b></div>
+  <div class="aisi-row r"><img class="fig" src="../../img/aisi_think.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>どれも、努力が足りない<br>わけではございません。<br><em>見つけていただく場所</em>が<br>足りないだけかもしれません。</div></div><div class="arrow"><b>ぴたリストは、<span class="hl">「相性」でお客様とつなぎます</span></b></div>
 </div></section>
 
 <!-- しくみ -->
 <section class="alt"><div class="wrap">
   <div class="sec-h"><span class="en">HOW IT WORKS</span><h2>ぴたリストのしくみ</h2><p>性格診断や適性診断のように、質問に答えるだけ。</p></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">私がお客さまにご質問をして、<b>技術と人柄の両方</b>から、合うスタイリストさまをお選びいたします。そのため、「あなたに会いたい」と思ってくださるお客さまがご来店されます。</p></div>
   <div class="steps">
     <div class="st"><div class="big">🙋</div><h3>お客様がAISIの質問に答える</h3><p>髪の悩み・なりたい雰囲気・話しやすさ・出身や趣味まで。3分・5分・10分のコースから選べます。</p></div>
     <div class="st"><div class="big">🤝</div><h3>技術と人柄の両方でマッチ</h3><p>得意な技術とお客様の悩み、共通点や価値観を合わせて、お店と担当スタイリストを紹介します。</p></div>
@@ -258,6 +307,7 @@ footer a{color:#c9ced8;margin:0 8px}
 <!-- 機能 -->
 <section><div class="wrap">
   <div class="sec-h"><span class="en">FEATURES</span><h2>ぴたリストの<em>機能</em></h2></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">ご予約の受付から、ご来店後のアンケートまで。<b>すべてLINEで</b>、私がお手伝いさせていただきます。</p></div>
   <div class="feat">
     <div class="fr"><div class="lab"><small>機能 / 01</small><b>マッチング</b></div>
       <div class="fi"><span class="i">✂️</span><div><b>ダブルマッチング</b><span>得意な技術 × お客様の髪の悩み</span></div></div>
@@ -280,6 +330,7 @@ footer a{color:#c9ced8;margin:0 8px}
 <!-- 比較 -->
 <section class="alt"><div class="wrap">
   <div class="sec-h"><span class="en">COMPARISON</span><h2>ほかの集客方法との<em>ちがい</em></h2></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">今の集客は、そのまま続けていただけます。<b>新しい入口が1つ増える</b>とお考えいただけましたら幸いです。</p></div>
   <p class="swipe">← 表は横にスクロールできます →</p>
   <div class="tbl-w"><table>
     <thead><tr><th></th><th class="me">ぴたリスト</th><th>クーポン型の<br>予約サイト</th><th>SNSでの集客<br>（自分で運用）</th></tr></thead>
@@ -315,12 +366,13 @@ footer a{color:#c9ced8;margin:0 8px}
       <p>2027年2月15日に、札幌全域へ広がります。それまでは札幌市中央区のお店だけを掲載します。</p>
     </div>
   </div>
-  <p class="fine">※金額はすべて税抜です。※LINE予約の特典（施術料金500円引き）は、サロンさまのご負担です。</p>
+  <div class="aisi-row"><img class="fig" src="../../img/aisi_thumb.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>最初の6か月は、<em>掲載料0円</em>です。<br>ご来店いただいた分だけ<br>頂戴いたします。</div></div><p class="fine">※金額はすべて税抜です。※LINE予約の特典（施術料金500円引き）は、サロンさまのご負担です。</p>
 </div></section>
 
 <!-- 流れ -->
 <section class="alt"><div class="wrap">
   <div class="sec-h"><span class="en">FLOW</span><h2>掲載までの流れ</h2></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">ご相談には、私がLINEですぐにお答えいたします。くわしい内容は、担当者からもご連絡させていただきます。</p></div>
   <div class="flow">
     <div class="fl"><span class="n">STEP 1</span><b>相談</b><span>LINEかフォームで気軽に</span></div>
     <div class="fl"><span class="n">STEP 2</span><b>プラン決定</b><span>料金とプランを確認</span></div>
@@ -333,7 +385,7 @@ footer a{color:#c9ced8;margin:0 8px}
 <!-- FAQ -->
 <section><div class="wrap">
   <div class="sec-h"><span class="en">FAQ</span><h2>よくあるご質問</h2></div>
-  <div class="faq">
+  <div class="aisi-row r"><img class="fig" src="../../img/aisi_open.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>気になることは、<br>何でもお尋ねください。</div></div><div class="faq">
     <details><summary>本当に6か月、掲載料は0円ですか？</summary><div class="a">はい。初回キャンペーン（札幌市中央区・先着50店）は、掲載を始めた月から6か月間、掲載料が0円です。かかるのは、LINEに登録するスタッフ1人あたり月300円と、ぴたリストからの予約で来店した分だけの1件300円です（税抜）。</div></details>
     <details><summary>ホットペッパービューティーと一緒に使えますか？</summary><div class="a">使えます。ぴたリストの予約はLINEに届き、お店が返事をして確定します（ホットペッパーとは連動していません）。お客様は、スタイリストのホットペッパーのページで空き状況やスタイル写真を見ることもできます。</div></details>
     <details><summary>お店の手間はどれくらいですか？</summary><div class="a">最初に、お店の情報とスタッフのプロフィールを登録していただきます。スタッフのプロフィールは、AISIとの会話で質問に答えるだけです。あとは、届いた予約にLINEのボタンで返事をするだけで、毎日の投稿などはいりません。</div></details>
@@ -345,12 +397,13 @@ footer a{color:#c9ced8;margin:0 8px}
 
 <!-- 最後のCTA -->
 <section class="last" id="contact"><div class="wrap">
+  <div class="last-in"><img class="fig" src="../../img/aisi_peace.webp" alt="AISI" loading="lazy"><div><span class="lb">お気軽にご相談くださいませ。</span>
   <h2>まずは、気軽に相談してください</h2>
   <p>相談は無料です。担当者から折り返しご連絡します。</p>
   <div class="ctas">
     <a class="b-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（無料）<small>サロンさま窓口LINEが開きます</small></a>
     <a class="b-form js-form" href="../../inquiry/?from=lp2" target="_blank" rel="noopener">フォームで問い合わせる<small>LINEを使っていない方はこちら</small></a>
-  </div>
+  </div></div></div>
 </div></section>
 </main>
 
@@ -360,8 +413,8 @@ footer a{color:#c9ced8;margin:0 8px}
 </footer>
 
 <div class="dock">
-  <div class="in">
-    <a class="b-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（無料）</a>
+  <div class="in"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span>
+    <a class="b-line js-line" href="#" target="_blank" rel="noopener">LINEで相談（無料）</a>
     <a class="b-form js-form" href="../../inquiry/?from=lp2" target="_blank" rel="noopener">フォームで相談</a>
   </div>
 </div>

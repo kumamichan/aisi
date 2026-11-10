@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ぴたリスト｜質問に答えるだけで、合う美容師さんが見つかる</title>
+<meta name="description" content="札幌の美容室さがし。AISIの質問に答えるだけで、技術と人柄の相性で合うお店と担当スタイリストが見つかります。無料・登録なし・3分から。">
+<meta property="og:title" content="ぴたリスト｜札幌の美容室さがし">
+<meta property="og:description" content="札幌の美容室さがし。AISIの質問に答えるだけで、技術と人柄の相性で合うお店と担当スタイリストが見つかります。無料・登録なし・3分から。">
+<meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --ink:#1b2130; --ink2:#4a5263; --bg:#fbfaf7; --cream:#f3efe6; --line:#e4ded2;
+  --gold:#b8892f; --gold-l:#f4e7cc; --gold-d:#8a6a2e; --navy:#1e2738;
+  --green:#06c755; --green-d:#05a647; --mint:#eaf7ef;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,sans-serif;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere;padding-bottom:96px}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.mincho{font-family:"Shippori Mincho B1",serif}
+em{font-style:normal;color:var(--gold-d)}
+.hl{background:linear-gradient(transparent 62%,var(--gold-l) 62%)}
+
+/* header */
+.hd{position:sticky;top:0;z-index:20;background:rgba(251,250,247,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1.35rem;letter-spacing:.06em;text-decoration:none}
+.logo small{font-family:"Zen Kaku Gothic New";font-weight:500;font-size:.68rem;letter-spacing:.12em;color:var(--ink2);margin-left:8px}
+.hd-cta{background:var(--green);color:#fff;text-decoration:none;font-weight:700;font-size:.85rem;border-radius:999px;padding:8px 16px;white-space:nowrap}
+
+/* hero */
+.hero{background:radial-gradient(90% 80% at 85% 20%,#fff 0%,var(--cream) 60%,#ece5d6 100%);overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:36px;align-items:center;padding-top:48px;padding-bottom:56px}
+.hero-txt{order:2}
+.pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:.9rem;border-radius:999px;padding:6px 18px;letter-spacing:.04em}
+.pill b{color:#e8c98a}
+.hero h1{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.9rem,4.2vw,2.9rem);line-height:1.35;margin:18px 0 8px}
+.hero .lead{font-size:1.05rem;color:var(--ink2);margin:0 0 22px}
+.medals{display:flex;gap:14px;flex-wrap:wrap}
+.medal{width:118px;height:118px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3d4,#e2bd6e 55%,#b8892f 100%);box-shadow:0 8px 20px rgba(138,106,46,.28),inset 0 0 0 4px rgba(255,255,255,.55);display:grid;place-items:center;text-align:center;color:#3b2a0c;font-weight:900;font-size:.84rem;line-height:1.35;padding:10px}
+.medal b{display:block;font-size:1.3rem;line-height:1.15}
+.medal .sm{font-style:normal;font-size:.72rem;display:block;line-height:1.3}
+.hero-note{font-size:.8rem;color:var(--ink2);margin-top:14px}
+
+/* phone mockup */
+.phone{order:1;justify-self:center;width:min(300px,82vw);aspect-ratio:9/18.5;background:#11151f;border-radius:42px;padding:12px;box-shadow:0 30px 60px rgba(17,21,31,.28);position:relative}
+.phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:22px;border-radius:12px;background:#11151f;z-index:2}
+.screen{background:#1b2232;border-radius:32px;height:100%;overflow:hidden;display:flex;flex-direction:column;color:#f3f1ec}
+.scr-top{padding:44px 16px 10px;display:flex;gap:10px;align-items:flex-end}
+.scr-top img{width:66px;height:auto}
+.bub{background:#f3f1ec;color:var(--ink);border-radius:14px 14px 14px 4px;padding:8px 10px;font-size:.72rem;line-height:1.5;font-family:"Shippori Mincho B1",serif;font-weight:700}
+.mc{margin:6px 12px 0;background:#fbfaf7;color:var(--ink);border-radius:14px;overflow:hidden;font-size:.7rem;line-height:1.5}
+.mc-ph{height:70px;background:linear-gradient(135deg,#d9cfbb,#b9ab8f)}
+.mc-b{padding:9px 11px;display:grid;gap:5px}
+.mc-r{display:flex;justify-content:space-between;align-items:baseline;color:var(--ink2);font-size:.62rem;letter-spacing:.08em}
+.mc-r b{font-family:"Shippori Mincho B1";font-size:1.15rem;color:var(--gold-d);letter-spacing:0}
+.mc-n{font-family:"Shippori Mincho B1";font-weight:800;font-size:.95rem}
+.mc-why{background:#fbf3e3;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:5px 8px}
+.mc-why b{color:var(--gold-d);font-size:.6rem}
+.mc-why ul{margin:2px 0 0;padding-left:1.1em}
+.mc-btn{background:var(--ink);color:#fff;text-align:center;font-weight:700;border-radius:6px;padding:7px}
+
+/* sections */
+section{padding:72px 0}
+.sec-h{text-align:center;margin:0 0 36px}
+.sec-h .en{display:block;font-size:.78rem;letter-spacing:.3em;color:var(--gold);font-weight:700}
+.sec-h h2{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.55rem,3.4vw,2.2rem);line-height:1.45;margin:6px 0 0}
+.sec-h p{color:var(--ink2);margin:10px 0 0}
+.alt{background:var(--cream)}
+
+/* お悩み */
+.worry{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.wc{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;position:relative}
+.wc .no{font-size:.72rem;letter-spacing:.2em;color:var(--gold);font-weight:700}
+.wc p{font-weight:700;font-size:1.05rem;margin:6px 0 0;line-height:1.6}
+.wc .ic{position:absolute;right:16px;top:14px;font-size:1.6rem;opacity:.85}
+.arrow{text-align:center;margin:30px 0 0}
+.arrow b{display:inline-block;font-family:"Shippori Mincho B1";font-size:clamp(1.25rem,2.8vw,1.7rem);line-height:1.5}
+.arrow b::before{content:"";display:block;margin:0 auto 16px;width:0;height:0;border:22px solid transparent;border-top:22px solid var(--gold);border-bottom:0}
+
+/* しくみ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
+.st{background:#fff;border-radius:var(--r);padding:26px 22px;text-align:center;box-shadow:0 6px 20px rgba(27,33,48,.06);position:relative}
+.st::before{counter-increment:s;content:counter(s);position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;font-weight:900;display:grid;place-items:center}
+.st .big{font-size:2.2rem;line-height:1}
+.st h3{margin:10px 0 6px;font-size:1.08rem}
+.st p{margin:0;font-size:.9rem;color:var(--ink2)}
+
+/* 機能 */
+.feat{display:grid;gap:14px}
+.fr{display:grid;grid-template-columns:170px 1fr 1fr;background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.fr .lab{background:var(--navy);color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:center}
+.fr .lab small{font-size:.68rem;letter-spacing:.18em;color:#e8c98a}
+.fr .lab b{font-size:1.02rem}
+.fi{padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-left:1px solid var(--line)}
+.fi .i{font-size:1.4rem;line-height:1.3;flex:none}
+.fi b{display:block;font-size:.98rem}
+.fi span{font-size:.82rem;color:var(--ink2);line-height:1.6;display:block}
+
+/* 比較表 */
+.tbl-w{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--line);background:#fff}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+thead th{background:#f6f2ea;font-size:.85rem}
+thead th.me{background:var(--navy);color:#fff;font-size:1rem}
+td.me{background:#fbf3e3;font-weight:700}
+tbody th{text-align:left;font-weight:700;background:#fcfbf8;white-space:nowrap}
+.o{color:var(--gold-d);font-size:1.2rem;font-weight:900}
+.t{color:#9aa0ab;font-size:1.1rem}
+.swipe{display:none;text-align:center;font-size:.76rem;color:var(--ink2);margin:0 0 8px}
+.cmp-note{font-size:.75rem;color:var(--ink2);margin:10px 4px 0}
+
+/* 料金 */
+.price{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch}
+.pc{background:#fff;border-radius:22px;border:2px solid var(--gold);padding:30px 28px;position:relative}
+.pc .tag{position:absolute;top:-15px;left:24px;background:var(--gold);color:#fff;font-weight:700;font-size:.82rem;border-radius:999px;padding:4px 14px}
+.pc h3{margin:0;font-size:1rem;color:var(--ink2)}
+.yen{font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(2.6rem,6vw,3.6rem);line-height:1.15;margin:4px 0 8px}
+.yen small{font-size:1.1rem;color:var(--ink2);font-family:"Zen Kaku Gothic New";font-weight:700}
+.plist{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.plist li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.plist li::before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold-l);color:var(--gold-d);font-weight:900;font-size:.8rem;display:grid;place-items:center;margin-top:3px}
+.pc2{background:var(--navy);color:#f3f1ec;border-radius:22px;padding:30px 28px;display:flex;flex-direction:column;gap:12px}
+.pc2 h3{margin:0;font-size:1rem;color:#c9ced8}
+.pc2 .yen{color:#e8c98a}
+.pc2 p{margin:0;font-size:.9rem;color:#c9ced8}
+.fine{font-size:.76rem;color:var(--ink2);margin:14px 4px 0}
+
+/* 流れ */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.fl{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 12px;text-align:center;position:relative}
+.fl:not(:last-child)::after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border:7px solid transparent;border-left:8px solid var(--gold);z-index:1}
+.fl .n{font-size:.7rem;letter-spacing:.18em;color:var(--gold);font-weight:700}
+.fl b{display:block;font-size:.98rem;margin:2px 0 4px}
+.fl span{font-size:.78rem;color:var(--ink2);line-height:1.55;display:block}
+
+/* FAQ */
+.faq{max-width:820px;margin:0 auto;display:grid;gap:12px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px}
+.faq summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:700;position:relative;display:flex;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"Q";flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:.85rem}
+.faq summary::after{content:"＋";position:absolute;right:18px;top:16px;color:var(--gold-d);font-weight:900}
+.faq details[open] summary::after{content:"−"}
+.faq .a{padding:0 18px 18px 58px;font-size:.92rem;color:var(--ink2)}
+
+/* 最後のCTA */
+.last{background:var(--navy);color:#f3f1ec;text-align:center}
+.last h2{font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.5;margin:0 0 10px}
+.last p{color:#c9ced8;margin:0 0 26px}
+.ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.b-line,.b-form{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;font-weight:700;border-radius:999px;padding:12px 28px;min-width:260px;line-height:1.35}
+.b-line{background:var(--green);color:#fff;box-shadow:0 6px 0 var(--green-d)}
+.b-line small,.b-form small{font-size:.72rem;font-weight:500;opacity:.9}
+.b-form{background:#fff;color:var(--ink);border:2px solid var(--gold)}
+.last .b-form{border-color:#e8c98a}
+@media (hover:hover){.b-line:hover{transform:translateY(2px);box-shadow:0 4px 0 var(--green-d)}}
+
+/* 下に固定のCTA */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom))}
+.dock .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+.dock a{min-width:0;padding:9px 10px;font-size:.95rem}
+.dock .b-line{box-shadow:0 4px 0 var(--green-d)}
+
+footer{background:#11151f;color:#9aa3b5;font-size:.8rem;text-align:center;padding:30px 20px}
+footer a{color:#c9ced8;margin:0 8px}
+
+@media (max-width:860px){
+  .logo small{display:none}
+  br.pc{display:none}
+  .swipe{display:block}
+  .hero .wrap{grid-template-columns:1fr;padding-top:30px;gap:30px}
+  .hero-txt{order:1;text-align:center}
+  .medals{justify-content:center}
+  .phone{order:2}
+  .worry,.steps{grid-template-columns:1fr}
+  .steps{gap:30px}
+  .fr{grid-template-columns:1fr}
+  .fr .lab{flex-direction:row;gap:10px;align-items:baseline;padding:10px 16px}
+  .fi{border-left:0;border-top:1px solid var(--line)}
+  .price{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .fl{display:grid;grid-template-columns:70px 1fr;text-align:left;align-items:center;gap:4px 10px}
+  .fl .n{grid-row:span 2}
+  .fl:not(:last-child)::after{right:auto;left:50%;top:auto;bottom:-15px;transform:translateX(-50%);border:7px solid transparent;border-top:8px solid var(--gold)}
+  section{padding:56px 0}
+  .medal{width:100px;height:100px;font-size:.76rem}
+  .medal b{font-size:1.1rem}
+  .medal .sm{font-size:.6rem;letter-spacing:-.02em}
+  .b-line,.b-form{min-width:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* 期間ごとの費用（ディーラー） */
+.term{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tm{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.tm.on{border:2px solid var(--gold);background:#fffaf0}
+.tm .n{font-size:.75rem;letter-spacing:.12em;color:var(--gold);font-weight:700}
+.tm>b{display:block;font-size:1.08rem;margin:2px 0 10px}
+.tm dl{margin:0;display:grid;gap:4px}
+.tm dt{font-size:.75rem;color:var(--ink2)}
+.tm dd{margin:0 0 6px;font-weight:700}
+.calc{margin:30px auto 0;max-width:720px;background:var(--navy);color:#f3f1ec;border-radius:22px;padding:26px 26px 22px}
+.calc h3{margin:0 0 12px;font-family:"Shippori Mincho B1";font-size:1.25rem}
+.calc label{display:grid;gap:6px;font-size:.88rem;color:#c9ced8}
+.calc label span{display:flex;gap:14px;align-items:center}
+.calc input{flex:1;accent-color:#e8c98a}
+.calc output{min-width:56px;font-weight:700;color:#fff;font-size:1.1rem}
+.calc-out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.calc-out div{background:rgba(255,255,255,.06);border-radius:14px;padding:14px;display:grid;gap:2px}
+.calc-out small{font-size:.75rem;color:#c9ced8}
+.calc-out b{font-family:"Shippori Mincho B1";font-size:1.7rem;color:#e8c98a;line-height:1.2}
+.calc .fine{color:#9aa3b5}
+.flow.f4{grid-template-columns:repeat(4,1fr)}
+/* 4ステップ・コース（お客様） */
+.steps.s4{grid-template-columns:repeat(4,1fr)}
+.course{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin:0 auto}
+.cs{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:24px 18px;text-align:center;position:relative;display:grid;gap:2px}
+.cs.mid{border:2px solid var(--gold);background:#fffaf0}
+.cs .badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 12px}
+.cs .t{font-family:"Shippori Mincho B1";font-weight:800;font-size:2.3rem;line-height:1.1;color:var(--gold-d)}
+.cs b{font-size:1.1rem}
+.cs>span:not(.t):not(.badge){font-size:.82rem;color:var(--ink2)}
+.cs p{margin:8px 0 0;font-size:.88rem;color:var(--ink2)}
+.b-go{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;font-weight:700;border-radius:999px;padding:12px 28px;min-width:260px;line-height:1.35;background:linear-gradient(180deg,#e2bd6e,#b8892f);color:#1b2130;box-shadow:0 6px 0 #8a6a2e}
+.b-go small{font-size:.72rem;font-weight:500;opacity:.9}
+.hd-cta.go{background:linear-gradient(180deg,#e2bd6e,#b8892f);color:#1b2130}
+.dock .b-go{min-width:0;padding:9px 10px;font-size:.95rem;box-shadow:0 4px 0 #8a6a2e}
+@media (hover:hover){.b-go:hover{transform:translateY(2px);box-shadow:0 4px 0 #8a6a2e}}
+@media (max-width:860px){
+  .term,.course{grid-template-columns:1fr}
+  .steps.s4{grid-template-columns:1fr}
+  .flow.f4{grid-template-columns:1fr}
+  .calc-out{grid-template-columns:1fr}
+  .b-go{min-width:0;width:100%}
+  .course{gap:22px}
+}
+
+/* ===== AISI ===== */
+.hero-vis{order:1;justify-self:center;position:relative;width:min(470px,92vw);height:620px}
+.hero-vis .phone{position:absolute;right:0;top:20px;width:270px}
+.hero-aisi{position:absolute;left:0;bottom:0;height:560px;width:auto;z-index:3;filter:drop-shadow(0 18px 24px rgba(27,33,48,.25))}
+.hero-bub{position:absolute;left:0;top:-14px;z-index:4;background:#fff;border:2px solid var(--navy);border-radius:18px 18px 18px 4px;padding:10px 14px;font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1rem;line-height:1.5;box-shadow:0 6px 16px rgba(27,33,48,.12);max-width:240px;font-size:.92rem;white-space:nowrap}
+.hero-bub small{display:block;font-family:"Zen Kaku Gothic New";font-size:.62rem;letter-spacing:.2em;color:var(--gold-d)}
+.scr-top{padding-top:46px}
+.scr-top .bub{margin-left:4px}
+.guide{display:flex;gap:12px;align-items:flex-start;max-width:720px;margin:-12px auto 30px}
+.av{flex:none;width:58px;height:58px;border-radius:50%;overflow:hidden;background:var(--navy);border:2px solid var(--gold);box-shadow:0 4px 10px rgba(27,33,48,.15)}
+.av img{width:100%;height:100%;object-fit:cover}
+.gb{position:relative;margin:4px 0 0;background:#fff;border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:11px 16px;font-size:.95rem;line-height:1.7;box-shadow:0 4px 12px rgba(27,33,48,.05)}
+.gb b{color:var(--gold-d)}
+.gb::before{content:"AISI";display:block;font-size:.62rem;letter-spacing:.2em;color:var(--gold-d);font-weight:700}
+.alt .gb{background:#fffdf8}
+.aisi-row{display:flex;align-items:flex-end;justify-content:center;gap:18px;margin:34px auto 0;max-width:820px}
+.aisi-row.r{flex-direction:row-reverse}
+.aisi-row .fig{height:300px;width:auto;flex:none;filter:drop-shadow(0 14px 18px rgba(27,33,48,.18))}
+.aisi-row .say{background:#fff;border:2px solid var(--navy);border-radius:22px 22px 22px 6px;padding:16px 20px;font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.05rem,2.2vw,1.3rem);line-height:1.6;margin-bottom:120px;box-shadow:0 8px 20px rgba(27,33,48,.08)}
+.aisi-row.r .say{border-radius:22px 22px 6px 22px}
+.aisi-row .say small{display:block;font-family:"Zen Kaku Gothic New";font-size:.66rem;letter-spacing:.22em;color:var(--gold-d);font-weight:700}
+.aisi-row .say em{color:var(--gold-d)}
+.last .wrap{position:relative}
+.last-in{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:end;text-align:left;max-width:900px;margin:0 auto}
+.last-in .fig{height:380px;width:auto;filter:drop-shadow(0 16px 22px rgba(0,0,0,.35))}
+.last-in .ctas{justify-content:flex-start}
+.last-in .lb{display:inline-block;background:#fff;color:var(--ink);border-radius:18px 18px 18px 4px;padding:8px 14px;font-weight:700;font-size:.9rem;margin-bottom:12px}
+.dock .in{grid-template-columns:auto 1.25fr 1fr;align-items:center}
+.dock .av{width:46px;height:46px}
+@media (max-width:860px){
+  .hero-vis{height:490px;width:min(360px,94vw);order:0!important}
+  .hero-txt{order:1}
+  .hero-vis .phone{width:220px;top:60px}
+  .hero-aisi{height:420px;left:-6px}
+  .hero-bub{left:0;top:0;font-size:.8rem;max-width:none;padding:8px 12px}
+  .guide{margin:-14px 0 24px}
+  .av{width:50px;height:50px}
+  .gb{font-size:.9rem;padding:10px 13px}
+  .aisi-row{gap:8px;margin-top:26px}
+  .aisi-row .fig{height:220px}
+  .aisi-row .say{margin-bottom:80px;padding:12px 14px}
+  .last-in{grid-template-columns:1fr;text-align:center;justify-items:center;gap:0}
+  .last-in .fig{height:240px;order:2;margin-top:18px}
+  .last-in .ctas{justify-content:center}
+  .dock .in{grid-template-columns:auto 1.2fr 1fr;gap:8px}
+  .dock .av{width:40px;height:40px}
+}
+</style>
+</head>
+<body>
+<header class="hd"><div class="wrap">
+  <a class="logo" href="#top">ぴたリスト<small>札幌の美容室さがし</small></a>
+  <a class="hd-cta go" href="../../?from=lp2-user">診断をはじめる</a>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+  <div class="hero-txt">
+    <span class="pill"><b>相性</b>で見つける、札幌の美容室さがし</span>
+    <h1>質問に答えるだけで、<br><em>私に合う美容師さん</em>が<br>見つかる。</h1>
+    <p class="lead">案内役のAISIが、髪の悩みや好みを聞いて、<br class="pc">札幌で相性ぴったりのお店と担当スタイリストを紹介します。</p>
+    <div class="medals">
+      <div class="medal"><span>登録なし<b>無料で<br>使える</b></span></div>
+      <div class="medal"><span>いちばん短い<b>コースは<br>3分</b></span></div>
+      <div class="medal"><span><i class="sm">LINE予約で施術料金</i><b>500円<br>引き</b></span></div>
+    </div>
+    <p class="hero-note">※2026年11月19日から札幌市中央区のお店で予約スタート。2027年2月15日から札幌全域へ</p>
+  </div>
+  <div class="hero-vis"><img class="hero-aisi" src="../../img/aisi_point.webp" alt="案内役のAISI"><div class="hero-bub"><small>AISI</small>君に合う美容師さん、<br>僕が見つけるよ。</div><div class="phone" aria-hidden="true"><div class="screen">
+    <div class="scr-top"><div class="bub">……見えたよ。<br>君に合うのは、この人。</div></div>
+    <div class="mc">
+      <div class="mc-ph"></div>
+      <div class="mc-b">
+        <div class="mc-r"><span>いちばんのおすすめ</span><b>92%</b></div>
+        <div class="mc-n">Hair Salon ○○</div>
+        <div class="mc-why"><b>ユウナさんをすすめる理由</b><ul><li>くせ毛のカットが得意</li><li>同じ高校の部活出身</li><li>無理なすすめはしない</li></ul></div>
+        <div class="mc-btn">ユウナさんで予約する</div>
+      </div>
+    </div>
+  </div></div></div>
+</div></div>
+
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">WORRIES</span><h2>こんなこと、ありませんか？</h2></div>
+  <div class="worry">
+    <div class="wc"><span class="ic">🤔</span><span class="no">01</span><p>新しい美容室、<br>どこがいいか分からない</p></div>
+    <div class="wc"><span class="ic">📷</span><span class="no">02</span><p>写真や口コミだけでは、<br>担当の人柄が分からない</p></div>
+    <div class="wc"><span class="ic">😣</span><span class="no">03</span><p>前の美容室で失敗した。<br>今度こそ合う人がいい</p></div>
+  </div>
+  <div class="aisi-row r"><img class="fig" src="../../img/aisi_think.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>それ、よく分かる。<br>だから僕が、<br><em>技術と人柄の両方</em>を<br>見て選ぶんだ。</div></div><div class="arrow"><b>ぴたリストは、<span class="hl">技術と人柄の「相性」</span>で選びます</b></div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">HOW IT WORKS</span><h2>使い方は、かんたん4ステップ</h2><p>性格診断や適性診断のように、質問に答えるだけ。</p></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">僕の質問に、「はい」「いいえ」で答えていくだけ。<b>性格診断みたいに</b>、気軽にやってみて。</p></div>
+  <div class="steps s4">
+    <div class="st"><div class="big">✂️</div><h3>メニューと<br>場所・日時を選ぶ</h3><p>カット・カラー・縮毛矯正など、今回やりたいこと。</p></div>
+    <div class="st"><div class="big">💬</div><h3>AISIの質問に答える</h3><p>髪の悩み、なりたい雰囲気、話しやすさ、出身や趣味まで。</p></div>
+    <div class="st"><div class="big">💇</div><h3>お店と担当が<br>理由つきでわかる</h3><p>お店の写真、担当の顔写真、選んだ理由を表示します。</p></div>
+    <div class="st"><div class="big">📩</div><h3>LINEで予約</h3><p>日時をボタンで選ぶだけ。施術料金から500円引き。</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">COURSE</span><h2>時間に合わせて、<em>3つのコース</em></h2><p>結果を見たあとに、もっとくわしいコースへ続けることもできます。</p></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">時間がないなら3分、迷っているなら5分。<b>本気で探したい</b>ときは10分のコースで、じっくり聞くよ。</p></div>
+  <div class="course">
+    <div class="cs"><span class="t">3分</span><b>ちょっと見る</b><span>約10問</span><p>大事なところだけ。まずは気軽に。</p></div>
+    <div class="cs mid"><span class="badge">おすすめ</span><span class="t">5分</span><b>ちゃんと探す</b><span>約25問</span><p>悩みや好みも聞いて、しっかり選ぶ。</p></div>
+    <div class="cs"><span class="t">10分</span><b>本気で探す</b><span>約50問</span><p>髪の歴史から毎日のことまで、じっくり。</p></div>
+  </div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">SAFE</span><h2>はじめてでも、<em>安心</em></h2></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">名前や電話番号は、<b>予約が決まるまで</b>お店には伝えない。安心して使ってね。</p></div>
+  <div class="feat">
+    <div class="fr"><div class="lab"><small>安心 / 01</small><b>個人情報</b></div>
+      <div class="fi"><span class="i">🔒</span><div><b>診断は登録なし</b><span>名前やメールアドレスはいりません</span></div></div>
+      <div class="fi"><span class="i">📇</span><div><b>名前・電話は予約が決まってから</b><span>予約が確定するまで、お店には届きません</span></div></div></div>
+    <div class="fr"><div class="lab"><small>安心 / 02</small><b>伝えること</b></div>
+      <div class="fi"><span class="i">✅</span><div><b>お店に伝える内容を選べる</b><span>診断の答えのうち、伝えたくない項目は外せます</span></div></div>
+      <div class="fi"><span class="i">🗑️</span><div><b>いつでも削除できる</b><span>LINEで「削除」と送ると、連絡先を消せます</span></div></div></div>
+    <div class="fr"><div class="lab"><small>安心 / 03</small><b>予約のあと</b></div>
+      <div class="fi"><span class="i">⏰</span><div><b>前日にお知らせ</b><span>予約の前日に、LINEでお知らせが届きます</span></div></div>
+      <div class="fi"><span class="i">🔁</span><div><b>返事が遅いときも</b><span>お店の返事が遅いときは、AISIがほかの候補を案内します</span></div></div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">COMPARISON</span><h2>ほかの探し方との<em>ちがい</em></h2></div>
+  <div class="guide"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span><p class="gb">写真や値段だけじゃ分からない<b>「人」</b>まで見て選ぶ。それが、ぴたリストのやり方。</p></div>
+  <p class="swipe">← 表は横にスクロールできます →</p>
+  <div class="tbl-w"><table>
+    <thead><tr><th></th><th class="me">ぴたリスト</th><th>予約サイトで<br>探す</th><th>SNSで<br>探す</th></tr></thead>
+    <tbody>
+      <tr><th>決め手</th><td class="me">技術と人柄の相性</td><td>価格・クーポン・口コミ</td><td>写真・投稿</td></tr>
+      <tr><th>担当スタイリストまで選べる</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>選んだ理由がわかる</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>共通点（出身・趣味など）で探せる</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>探す手間</th><td class="me">質問に答えるだけ</td><td>自分で比べる</td><td>自分で探す</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cmp-note">※ほかの探し方は一般的な傾向です。</p>
+</div></section>
+
+<section class="alt" id="price"><div class="wrap">
+  <div class="sec-h"><span class="en">PRICE</span><h2>使うのは、<em>無料</em></h2></div>
+  <div class="aisi-row"><img class="fig" src="../../img/aisi_thumb.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>使うのは<em>無料</em>。<br>LINEで予約すると、<br>500円引きになるよ。</div></div><div class="price">
+    <div class="pc"><span class="tag">お客さまの料金</span>
+      <h3>診断・予約</h3>
+      <div class="yen">0<small>円</small></div>
+      <ul class="plist">
+        <li>診断は何回でも無料。登録もいりません</li>
+        <li>予約はぴたリストのLINEから（友だち追加だけ）</li>
+        <li>お支払いは、ふだんどおりお店で</li>
+      </ul>
+    </div>
+    <div class="pc2">
+      <h3>ぴたリストのLINEで予約すると</h3>
+      <div class="yen">500<small style="color:#c9ced8">円引き</small></div>
+      <p>施術料金から500円引き。どのお店でも共通の特典です。</p>
+      <p>※メールやホットペッパーからの予約は対象外です。</p>
+    </div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">FAQ</span><h2>よくあるご質問</h2></div>
+  <div class="aisi-row r"><img class="fig" src="../../img/aisi_shrug.webp" alt="AISI" loading="lazy"><div class="say"><small>AISI</small>分からないことは、<br>ここを見てね。</div></div><div class="faq">
+    <details><summary>本当に無料ですか？</summary><div class="a">はい。診断も予約も無料です。お支払いは、施術の料金をふだんどおりお店でお支払いいただくだけです。</div></details>
+    <details><summary>会員登録は必要ですか？</summary><div class="a">診断は登録なしで使えます。予約するときだけ、ぴたリストのLINEを友だち追加してください（メールでの予約もできます）。</div></details>
+    <details><summary>予約は、いつ確定しますか？</summary><div class="a">お店の返事で確定します。返事の目安は24時間以内です（営業時間外は、次の営業時間）。返事が遅いときは、AISIがほかの候補をご案内します。</div></details>
+    <details><summary>どこのお店が出てきますか？</summary><div class="a">2026年11月19日から、札幌市中央区のお店で予約が始まります。2027年2月15日から札幌全域に広がります。それまでの診断は、デモ体験としてお楽しみください。</div></details>
+    <details><summary>担当が合わなかったら？</summary><div class="a">来店の翌日に届くアンケートで教えてください。合わなかったところもふまえて、AISIともう一度探せます。</div></details>
+    <details><summary>個人情報は大丈夫ですか？</summary><div class="a">お名前と電話番号は、予約が確定するまでお店に届きません。お店に伝える内容も選べます。LINEで「削除」と送ると、いつでも連絡先を消せます。くわしくは<a href="../../privacy/">プライバシーポリシー</a>をご覧ください。</div></details>
+  </div>
+</div></section>
+
+<section class="last" id="contact"><div class="wrap">
+  <div class="last-in"><img class="fig" src="../../img/aisi_peace.webp" alt="AISI" loading="lazy"><div><span class="lb">待ってるよ。</span>
+  <h2>あなたに合う美容師さん、<br>探してみませんか</h2>
+  <p>いちばん短いコースなら3分。登録なしで、今すぐはじめられます。</p>
+  <div class="ctas">
+    <a class="b-go" href="../../?from=lp2-user">診断をはじめる（無料）<small>登録なし・3分から</small></a>
+    <a class="b-line" href="https://line.me/R/ti/p/@933trlwv" target="_blank" rel="noopener">LINEで友だち追加<small>予約やお知らせはLINEに届きます</small></a>
+  </div></div></div>
+</div></section>
+</main>
+
+<footer>
+  <div>ぴたリスト ｜ 株式会社Indepe</div>
+  <div style="margin-top:8px"><a href="../../privacy/">プライバシーポリシー</a><a href="../salon/">美容室の方はこちら</a></div>
+</footer>
+
+<div class="dock"><div class="in"><span class="av"><img src="../../img/aisi_face.webp" alt="AISI" loading="lazy"></span>
+  <a class="b-go" href="../../?from=lp2-user">無料で診断する</a>
+  <a class="b-line" href="https://line.me/R/ti/p/@933trlwv" target="_blank" rel="noopener">LINE友だち追加</a>
+</div></div>
+<script src="../../js/bx.js" defer></script>
+</body>
+</html>
