@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ぴたリスト｜美容室向け 掲載のご案内（掲載料6か月0円）</title>
+<meta name="description" content="札幌の美容室マッチングサービス「ぴたリスト」。AISIがお客様の悩みと好みを聞いて、技術と人柄の両方で合うスタイリストを紹介します。札幌市中央区・先着50店は掲載料6か月0円。">
+<meta property="og:title" content="ぴたリスト｜美容室向け 掲載のご案内">
+<meta property="og:description" content="クーポンの安さではなく、技術と人柄で選ばれる。札幌市中央区・先着50店は掲載料6か月0円。">
+<meta property="og:image" content="https://kumamichan.github.io/aisi/img/ogp.jpg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --ink:#1b2130; --ink2:#4a5263; --bg:#fbfaf7; --cream:#f3efe6; --line:#e4ded2;
+  --gold:#b8892f; --gold-l:#f4e7cc; --gold-d:#8a6a2e; --navy:#1e2738;
+  --green:#06c755; --green-d:#05a647; --mint:#eaf7ef;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,sans-serif;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere;padding-bottom:96px}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.mincho{font-family:"Shippori Mincho B1",serif}
+em{font-style:normal;color:var(--gold-d)}
+.hl{background:linear-gradient(transparent 62%,var(--gold-l) 62%)}
+
+/* header */
+.hd{position:sticky;top:0;z-index:20;background:rgba(251,250,247,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1.35rem;letter-spacing:.06em;text-decoration:none}
+.logo small{font-family:"Zen Kaku Gothic New";font-weight:500;font-size:.68rem;letter-spacing:.12em;color:var(--ink2);margin-left:8px}
+.hd-cta{background:var(--green);color:#fff;text-decoration:none;font-weight:700;font-size:.85rem;border-radius:999px;padding:8px 16px;white-space:nowrap}
+
+/* hero */
+.hero{background:radial-gradient(90% 80% at 85% 20%,#fff 0%,var(--cream) 60%,#ece5d6 100%);overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:36px;align-items:center;padding-top:48px;padding-bottom:56px}
+.hero-txt{order:2}
+.pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;font-size:.9rem;border-radius:999px;padding:6px 18px;letter-spacing:.04em}
+.pill b{color:#e8c98a}
+.hero h1{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(2rem,4.6vw,3.3rem);line-height:1.35;margin:18px 0 8px}
+.hero .lead{font-size:1.05rem;color:var(--ink2);margin:0 0 22px}
+.medals{display:flex;gap:14px;flex-wrap:wrap}
+.medal{width:118px;height:118px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3d4,#e2bd6e 55%,#b8892f 100%);box-shadow:0 8px 20px rgba(138,106,46,.28),inset 0 0 0 4px rgba(255,255,255,.55);display:grid;place-items:center;text-align:center;color:#3b2a0c;font-weight:900;font-size:.84rem;line-height:1.35;padding:10px}
+.medal b{display:block;font-size:1.3rem;line-height:1.15}
+.medal .sm{font-style:normal;font-size:.72rem;display:block;line-height:1.3}
+.hero-note{font-size:.8rem;color:var(--ink2);margin-top:14px}
+
+/* phone mockup */
+.phone{order:1;justify-self:center;width:min(300px,82vw);aspect-ratio:9/18.5;background:#11151f;border-radius:42px;padding:12px;box-shadow:0 30px 60px rgba(17,21,31,.28);position:relative}
+.phone::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:90px;height:22px;border-radius:12px;background:#11151f;z-index:2}
+.screen{background:#1b2232;border-radius:32px;height:100%;overflow:hidden;display:flex;flex-direction:column;color:#f3f1ec}
+.scr-top{padding:44px 16px 10px;display:flex;gap:10px;align-items:flex-end}
+.scr-top img{width:66px;height:auto}
+.bub{background:#f3f1ec;color:var(--ink);border-radius:14px 14px 14px 4px;padding:8px 10px;font-size:.72rem;line-height:1.5;font-family:"Shippori Mincho B1",serif;font-weight:700}
+.mc{margin:6px 12px 0;background:#fbfaf7;color:var(--ink);border-radius:14px;overflow:hidden;font-size:.7rem;line-height:1.5}
+.mc-ph{height:70px;background:linear-gradient(135deg,#d9cfbb,#b9ab8f)}
+.mc-b{padding:9px 11px;display:grid;gap:5px}
+.mc-r{display:flex;justify-content:space-between;align-items:baseline;color:var(--ink2);font-size:.62rem;letter-spacing:.08em}
+.mc-r b{font-family:"Shippori Mincho B1";font-size:1.15rem;color:var(--gold-d);letter-spacing:0}
+.mc-n{font-family:"Shippori Mincho B1";font-weight:800;font-size:.95rem}
+.mc-why{background:#fbf3e3;border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:5px 8px}
+.mc-why b{color:var(--gold-d);font-size:.6rem}
+.mc-why ul{margin:2px 0 0;padding-left:1.1em}
+.mc-btn{background:var(--ink);color:#fff;text-align:center;font-weight:700;border-radius:6px;padding:7px}
+
+/* sections */
+section{padding:72px 0}
+.sec-h{text-align:center;margin:0 0 36px}
+.sec-h .en{display:block;font-size:.78rem;letter-spacing:.3em;color:var(--gold);font-weight:700}
+.sec-h h2{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:clamp(1.55rem,3.4vw,2.2rem);line-height:1.45;margin:6px 0 0}
+.sec-h p{color:var(--ink2);margin:10px 0 0}
+.alt{background:var(--cream)}
+
+/* お悩み */
+.worry{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.wc{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px 20px;position:relative}
+.wc .no{font-size:.72rem;letter-spacing:.2em;color:var(--gold);font-weight:700}
+.wc p{font-weight:700;font-size:1.05rem;margin:6px 0 0;line-height:1.6}
+.wc .ic{position:absolute;right:16px;top:14px;font-size:1.6rem;opacity:.85}
+.arrow{text-align:center;margin:30px 0 0}
+.arrow b{display:inline-block;font-family:"Shippori Mincho B1";font-size:clamp(1.25rem,2.8vw,1.7rem);line-height:1.5}
+.arrow b::before{content:"";display:block;margin:0 auto 16px;width:0;height:0;border:22px solid transparent;border-top:22px solid var(--gold);border-bottom:0}
+
+/* しくみ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
+.st{background:#fff;border-radius:var(--r);padding:26px 22px;text-align:center;box-shadow:0 6px 20px rgba(27,33,48,.06);position:relative}
+.st::before{counter-increment:s;content:counter(s);position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;font-weight:900;display:grid;place-items:center}
+.st .big{font-size:2.2rem;line-height:1}
+.st h3{margin:10px 0 6px;font-size:1.08rem}
+.st p{margin:0;font-size:.9rem;color:var(--ink2)}
+
+/* 機能 */
+.feat{display:grid;gap:14px}
+.fr{display:grid;grid-template-columns:170px 1fr 1fr;background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.fr .lab{background:var(--navy);color:#fff;padding:16px;display:flex;flex-direction:column;justify-content:center}
+.fr .lab small{font-size:.68rem;letter-spacing:.18em;color:#e8c98a}
+.fr .lab b{font-size:1.02rem}
+.fi{padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-left:1px solid var(--line)}
+.fi .i{font-size:1.4rem;line-height:1.3;flex:none}
+.fi b{display:block;font-size:.98rem}
+.fi span{font-size:.82rem;color:var(--ink2);line-height:1.6;display:block}
+
+/* 比較表 */
+.tbl-w{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1px solid var(--line);background:#fff}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+thead th{background:#f6f2ea;font-size:.85rem}
+thead th.me{background:var(--navy);color:#fff;font-size:1rem}
+td.me{background:#fbf3e3;font-weight:700}
+tbody th{text-align:left;font-weight:700;background:#fcfbf8;white-space:nowrap}
+.o{color:var(--gold-d);font-size:1.2rem;font-weight:900}
+.t{color:#9aa0ab;font-size:1.1rem}
+.swipe{display:none;text-align:center;font-size:.76rem;color:var(--ink2);margin:0 0 8px}
+.cmp-note{font-size:.75rem;color:var(--ink2);margin:10px 4px 0}
+
+/* 料金 */
+.price{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch}
+.pc{background:#fff;border-radius:22px;border:2px solid var(--gold);padding:30px 28px;position:relative}
+.pc .tag{position:absolute;top:-15px;left:24px;background:var(--gold);color:#fff;font-weight:700;font-size:.82rem;border-radius:999px;padding:4px 14px}
+.pc h3{margin:0;font-size:1rem;color:var(--ink2)}
+.yen{font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(2.6rem,6vw,3.6rem);line-height:1.15;margin:4px 0 8px}
+.yen small{font-size:1.1rem;color:var(--ink2);font-family:"Zen Kaku Gothic New";font-weight:700}
+.plist{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.plist li{display:flex;gap:10px;align-items:flex-start;font-size:.95rem}
+.plist li::before{content:"✓";flex:none;width:22px;height:22px;border-radius:50%;background:var(--gold-l);color:var(--gold-d);font-weight:900;font-size:.8rem;display:grid;place-items:center;margin-top:3px}
+.pc2{background:var(--navy);color:#f3f1ec;border-radius:22px;padding:30px 28px;display:flex;flex-direction:column;gap:12px}
+.pc2 h3{margin:0;font-size:1rem;color:#c9ced8}
+.pc2 .yen{color:#e8c98a}
+.pc2 p{margin:0;font-size:.9rem;color:#c9ced8}
+.fine{font-size:.76rem;color:var(--ink2);margin:14px 4px 0}
+
+/* 流れ */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.fl{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 12px;text-align:center;position:relative}
+.fl:not(:last-child)::after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border:7px solid transparent;border-left:8px solid var(--gold);z-index:1}
+.fl .n{font-size:.7rem;letter-spacing:.18em;color:var(--gold);font-weight:700}
+.fl b{display:block;font-size:.98rem;margin:2px 0 4px}
+.fl span{font-size:.78rem;color:var(--ink2);line-height:1.55;display:block}
+
+/* FAQ */
+.faq{max-width:820px;margin:0 auto;display:grid;gap:12px}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:14px}
+.faq summary{cursor:pointer;list-style:none;padding:16px 48px 16px 18px;font-weight:700;position:relative;display:flex;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"Q";flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:.85rem}
+.faq summary::after{content:"＋";position:absolute;right:18px;top:16px;color:var(--gold-d);font-weight:900}
+.faq details[open] summary::after{content:"−"}
+.faq .a{padding:0 18px 18px 58px;font-size:.92rem;color:var(--ink2)}
+
+/* 最後のCTA */
+.last{background:var(--navy);color:#f3f1ec;text-align:center}
+.last h2{font-family:"Shippori Mincho B1";font-weight:800;font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.5;margin:0 0 10px}
+.last p{color:#c9ced8;margin:0 0 26px}
+.ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.b-line,.b-form{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;font-weight:700;border-radius:999px;padding:12px 28px;min-width:260px;line-height:1.35}
+.b-line{background:var(--green);color:#fff;box-shadow:0 6px 0 var(--green-d)}
+.b-line small,.b-form small{font-size:.72rem;font-weight:500;opacity:.9}
+.b-form{background:#fff;color:var(--ink);border:2px solid var(--gold)}
+.last .b-form{border-color:#e8c98a}
+@media (hover:hover){.b-line:hover{transform:translateY(2px);box-shadow:0 4px 0 var(--green-d)}}
+
+/* 下に固定のCTA */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-left)) calc(10px + env(safe-area-inset-bottom))}
+.dock .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1.25fr 1fr;gap:10px}
+.dock a{min-width:0;padding:9px 10px;font-size:.95rem}
+.dock .b-line{box-shadow:0 4px 0 var(--green-d)}
+
+footer{background:#11151f;color:#9aa3b5;font-size:.8rem;text-align:center;padding:30px 20px}
+footer a{color:#c9ced8;margin:0 8px}
+
+@media (max-width:860px){
+  .logo small{display:none}
+  br.pc{display:none}
+  .swipe{display:block}
+  .hero .wrap{grid-template-columns:1fr;padding-top:30px;gap:30px}
+  .hero-txt{order:1;text-align:center}
+  .medals{justify-content:center}
+  .phone{order:2}
+  .worry,.steps{grid-template-columns:1fr}
+  .steps{gap:30px}
+  .fr{grid-template-columns:1fr}
+  .fr .lab{flex-direction:row;gap:10px;align-items:baseline;padding:10px 16px}
+  .fi{border-left:0;border-top:1px solid var(--line)}
+  .price{grid-template-columns:1fr}
+  .flow{grid-template-columns:1fr}
+  .fl{display:grid;grid-template-columns:70px 1fr;text-align:left;align-items:center;gap:4px 10px}
+  .fl .n{grid-row:span 2}
+  .fl:not(:last-child)::after{right:auto;left:50%;top:auto;bottom:-15px;transform:translateX(-50%);border:7px solid transparent;border-top:8px solid var(--gold)}
+  section{padding:56px 0}
+  .medal{width:100px;height:100px;font-size:.76rem}
+  .medal b{font-size:1.1rem}
+  .medal .sm{font-size:.6rem;letter-spacing:-.02em}
+  .b-line,.b-form{min-width:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="hd"><div class="wrap">
+  <a class="logo" href="#top">ぴたリスト<small>美容室のみなさまへ</small></a>
+  <a class="hd-cta js-line" href="#contact">無料で相談する</a>
+</div></header>
+
+<main id="top">
+<!-- ヒーロー -->
+<div class="hero"><div class="wrap">
+  <div class="hero-txt">
+    <span class="pill">クーポンの<b>"安さ"</b>より、技術と人柄で</span>
+    <h1>ぴたリストなら、<br><em>あなたに合うお客様</em>が<br>見つけてくれる。</h1>
+    <p class="lead">札幌の美容室マッチングサービス。<br>案内役のAISIが、お客様の悩みと好みを聞いて<br>合うスタイリストまで紹介します。</p>
+    <div class="medals">
+      <div class="medal"><span>掲載料<b>6か月<br>0円</b></span></div>
+      <div class="medal"><span>成果報酬<b>来店1件<br>300円</b></span></div>
+      <div class="medal"><span><i class="sm">ホットペッパー<br>と</i><b>併用OK</b></span></div>
+    </div>
+    <p class="hero-note">※初回キャンペーン：札幌市中央区・先着50店。2026年11月19日 掲載スタート</p>
+  </div>
+  <div class="phone" aria-hidden="true"><div class="screen">
+    <div class="scr-top"><img src="../../img/aisi_point.webp" alt=""><div class="bub">……見えたよ。<br>君に合うのは、この人。</div></div>
+    <div class="mc">
+      <div class="mc-ph"></div>
+      <div class="mc-b">
+        <div class="mc-r"><span>いちばんのおすすめ</span><b>92%</b></div>
+        <div class="mc-n">Hair Salon ○○</div>
+        <div class="mc-why"><b>ユウナさんをすすめる理由</b><ul><li>くせ毛のカットが得意</li><li>同じ高校の部活出身</li><li>無理なすすめはしない</li></ul></div>
+        <div class="mc-btn">ユウナさんで予約する</div>
+      </div>
+    </div>
+  </div></div>
+</div></div>
+
+<!-- お悩み -->
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">WORRIES</span><h2>こんなお悩み、ありませんか？</h2></div>
+  <div class="worry">
+    <div class="wc"><span class="ic">🏷️</span><span class="no">お悩み / 01</span><p>クーポンの安さで<br>比べられてしまう</p></div>
+    <div class="wc"><span class="ic">📱</span><span class="no">お悩み / 02</span><p>SNSを毎日がんばっても、<br>指名につながらない</p></div>
+    <div class="wc"><span class="ic">💬</span><span class="no">お悩み / 03</span><p>得意な技術や人柄が、<br>来店前に伝わらない</p></div>
+  </div>
+  <div class="arrow"><b>ぴたリストは、<span class="hl">「相性」でお客様とつなぎます</span></b></div>
+</div></section>
+
+<!-- しくみ -->
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">HOW IT WORKS</span><h2>ぴたリストのしくみ</h2><p>性格診断や適性診断のように、質問に答えるだけ。</p></div>
+  <div class="steps">
+    <div class="st"><div class="big">🙋</div><h3>お客様がAISIの質問に答える</h3><p>髪の悩み・なりたい雰囲気・話しやすさ・出身や趣味まで。3分・5分・10分のコースから選べます。</p></div>
+    <div class="st"><div class="big">🤝</div><h3>技術と人柄の両方でマッチ</h3><p>得意な技術とお客様の悩み、共通点や価値観を合わせて、お店と担当スタイリストを紹介します。</p></div>
+    <div class="st"><div class="big">📩</div><h3>LINEで予約がとどく</h3><p>選ばれた理由と「お客様のこと」も一緒に。カウンセリングの参考になります。</p></div>
+  </div>
+</div></section>
+
+<!-- 機能 -->
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">FEATURES</span><h2>ぴたリストの<em>機能</em></h2></div>
+  <div class="feat">
+    <div class="fr"><div class="lab"><small>機能 / 01</small><b>マッチング</b></div>
+      <div class="fi"><span class="i">✂️</span><div><b>ダブルマッチング</b><span>得意な技術 × お客様の髪の悩み</span></div></div>
+      <div class="fi"><span class="i">🎯</span><div><b>共通点で紹介</b><span>出身・部活・趣味・推しから共通点を見つける</span></div></div></div>
+    <div class="fr"><div class="lab"><small>機能 / 02</small><b>予約</b></div>
+      <div class="fi"><span class="i">📲</span><div><b>LINEで予約を受付</b><span>届いたカードのボタンで、OKか別の時間を返すだけ</span></div></div>
+      <div class="fi"><span class="i">🗓️</span><div><b>予約ボード・空きあり表示</b><span>お店の予約を一覧で確認。空いている日は診断結果に表示</span></div></div></div>
+    <div class="fr"><div class="lab"><small>機能 / 03</small><b>お客様のこと</b></div>
+      <div class="fi"><span class="i">📝</span><div><b>来店前に好みがわかる</b><span>予約確定後に、診断の答えの要点が届く（お客様が選んだ項目だけ）</span></div></div>
+      <div class="fi"><span class="i">💡</span><div><b>選ばれた理由</b><span>AISIがあなたを選んだ理由も一緒に届く</span></div></div></div>
+    <div class="fr"><div class="lab"><small>機能 / 04</small><b>分析</b></div>
+      <div class="fi"><span class="i">📊</span><div><b>今月のレポート</b><span>表示回数・予約ボタンが押された数・よく選ばれた理由</span></div></div>
+      <div class="fi"><span class="i">⭐</span><div><b>来店翌日のアンケート</b><span>満足度・また行きたいか・担当が合っていたか</span></div></div></div>
+    <div class="fr"><div class="lab"><small>機能 / 05</small><b>登録・管理</b></div>
+      <div class="fi"><span class="i">🤖</span><div><b>AISIとの会話で登録</b><span>スタッフのプロフィールは、質問に答えるだけ</span></div></div>
+      <div class="fi"><span class="i">👥</span><div><b>スタッフの追加・管理もLINEで</b><span>通知は「営業時間内だけ」も選べる</span></div></div></div>
+  </div>
+</div></section>
+
+<!-- 比較 -->
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">COMPARISON</span><h2>ほかの集客方法との<em>ちがい</em></h2></div>
+  <p class="swipe">← 表は横にスクロールできます →</p>
+  <div class="tbl-w"><table>
+    <thead><tr><th></th><th class="me">ぴたリスト</th><th>クーポン型の<br>予約サイト</th><th>SNSでの集客<br>（自分で運用）</th></tr></thead>
+    <tbody>
+      <tr><th>選ばれる決め手</th><td class="me">技術・人柄の相性</td><td>価格・クーポン</td><td>投稿の写真</td></tr>
+      <tr><th>担当スタイリストまで紹介</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>来店前にお客様の好みがわかる</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>選ばれた理由がわかる</th><td class="me"><span class="o">◎</span></td><td><span class="t">△</span></td><td><span class="t">△</span></td></tr>
+      <tr><th>毎日の更新作業</th><td class="me">なし</td><td>クーポン・ブログなど</td><td>毎日の投稿</td></tr>
+      <tr><th>はじめの費用</th><td class="me">掲載料<br>6か月0円</td><td>プランによる</td><td>0円（手間がかかる）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="cmp-note">※ほかの方法は一般的な傾向です。ぴたリストはホットペッパービューティーなどと一緒に使えます。</p>
+</div></section>
+
+<!-- 料金 -->
+<section id="price"><div class="wrap">
+  <div class="sec-h"><span class="en">PRICE</span><h2>ぴたリストの<em>料金</em></h2></div>
+  <div class="price">
+    <div class="pc"><span class="tag">初回キャンペーン｜札幌市中央区・先着50店</span>
+      <h3>掲載を始めた月から6か月間</h3>
+      <div class="yen">掲載料 0<small>円</small></div>
+      <ul class="plist">
+        <li>LINEに登録するスタッフ1人あたり 月300円</li>
+        <li>成果報酬：ぴたリストからの予約で来店した分だけ 1件300円（キャンセルは0円）</li>
+        <li>7か月目から：月5,000円（分析レポートつき）か 月6,000円（掲載）。成果報酬はなし。続けるかは、その時に選べます</li>
+      </ul>
+    </div>
+    <div class="pc2">
+      <h3>先着50店のあと・2027年2月15日以降のお申し込み</h3>
+      <div class="yen">月3,000<small style="color:#c9ced8">円</small></div>
+      <p>オープニングキャンペーン<br>（スタッフ1人あたり 月300円は別）</p>
+      <p>2027年2月15日に、札幌全域へ広がります。それまでは札幌市中央区のお店だけを掲載します。</p>
+    </div>
+  </div>
+  <p class="fine">※金額はすべて税抜です。※LINE予約の特典（施術料金500円引き）は、サロンさまのご負担です。</p>
+</div></section>
+
+<!-- 流れ -->
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">FLOW</span><h2>掲載までの流れ</h2></div>
+  <div class="flow">
+    <div class="fl"><span class="n">STEP 1</span><b>相談</b><span>LINEかフォームで気軽に</span></div>
+    <div class="fl"><span class="n">STEP 2</span><b>プラン決定</b><span>料金とプランを確認</span></div>
+    <div class="fl"><span class="n">STEP 3</span><b>申し込み確定</b><span>登録コードをお送りします</span></div>
+    <div class="fl"><span class="n">STEP 4</span><b>登録</b><span>お店とスタッフの情報を入力</span></div>
+    <div class="fl"><span class="n">STEP 5</span><b>掲載開始</b><span>診断結果に表示されます</span></div>
+  </div>
+</div></section>
+
+<!-- FAQ -->
+<section><div class="wrap">
+  <div class="sec-h"><span class="en">FAQ</span><h2>よくあるご質問</h2></div>
+  <div class="faq">
+    <details><summary>本当に6か月、掲載料は0円ですか？</summary><div class="a">はい。初回キャンペーン（札幌市中央区・先着50店）は、掲載を始めた月から6か月間、掲載料が0円です。かかるのは、LINEに登録するスタッフ1人あたり月300円と、ぴたリストからの予約で来店した分だけの1件300円です（税抜）。</div></details>
+    <details><summary>ホットペッパービューティーと一緒に使えますか？</summary><div class="a">使えます。ぴたリストの予約はLINEに届き、お店が返事をして確定します（ホットペッパーとは連動していません）。お客様は、スタイリストのホットペッパーのページで空き状況やスタイル写真を見ることもできます。</div></details>
+    <details><summary>お店の手間はどれくらいですか？</summary><div class="a">最初に、お店の情報とスタッフのプロフィールを登録していただきます。スタッフのプロフィールは、AISIとの会話で質問に答えるだけです。あとは、届いた予約にLINEのボタンで返事をするだけで、毎日の投稿などはいりません。</div></details>
+    <details><summary>7か月目からはどうなりますか？</summary><div class="a">6か月目に、管理者のLINEへ続けるかどうかの確認が届きます。続ける場合は、月5,000円（分析レポートつき）か月6,000円（掲載）から選べます。成果報酬はかかりません。</div></details>
+    <details><summary>近くのお店とお客様を取り合いになりませんか？</summary><div class="a">地区ごとに掲載するお店の数に上限があります。すぐ近く（50m以内）のお店は、先にお申し込みいただいたお店を優先します。</div></details>
+    <details><summary>中央区以外のお店も掲載できますか？</summary><div class="a">2027年2月15日に札幌全域へ広がります。それまでは札幌市中央区のお店だけを掲載します。中央区以外のお店も、ご相談はお気軽にどうぞ。</div></details>
+  </div>
+</div></section>
+
+<!-- 最後のCTA -->
+<section class="last" id="contact"><div class="wrap">
+  <h2>まずは、気軽に相談してください</h2>
+  <p>相談は無料です。担当者から折り返しご連絡します。</p>
+  <div class="ctas">
+    <a class="b-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（無料）<small>サロンさま窓口LINEが開きます</small></a>
+    <a class="b-form js-form" href="../../inquiry/?from=lp2" target="_blank" rel="noopener">フォームで問い合わせる<small>LINEを使っていない方はこちら</small></a>
+  </div>
+</div></section>
+</main>
+
+<footer>
+  <div>ぴたリスト ｜ 株式会社Indepe</div>
+  <div style="margin-top:8px"><a href="../../privacy/">プライバシーポリシー</a><a href="../../terms/">利用規約</a><a href="../../salon/">くわしい説明はこちら</a></div>
+</footer>
+
+<div class="dock">
+  <div class="in">
+    <a class="b-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（無料）</a>
+    <a class="b-form js-form" href="../../inquiry/?from=lp2" target="_blank" rel="noopener">フォームで相談</a>
+  </div>
+</div>
+
+<script src="../../js/bx.js" defer></script>
+<script>
+(function(){
+  /* サロンさま窓口LINE。?d=会社名 があれば「紹介：会社名」をつける（お問い合わせの「紹介代理店」に入る） */
+  const SALON_LINE_ID = "@559dflyq";
+  let d = ""; try { d = (new URLSearchParams(location.search).get("d") || "").slice(0, 40); } catch (e) {}
+  const msg = "掲載の相談" + (d ? "（紹介：" + d + "）" : "");
+  const url = "https://line.me/R/oaMessage/" + SALON_LINE_ID + "/?" + encodeURIComponent(msg);
+  document.querySelectorAll(".js-line").forEach(a => { a.href = url; a.target = "_blank"; a.rel = "noopener"; });
+  if (d) document.querySelectorAll(".js-form").forEach(a => a.href = "../../inquiry/?from=lp2&d=" + encodeURIComponent(d));
+})();
+</script>
+</body>
+</html>
