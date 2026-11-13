@@ -108,8 +108,132 @@ textarea{min-height:84px;resize:vertical}
 .wz-a .btn.skip{background:transparent;border-color:rgba(255,255,255,.35);color:var(--paper);font-weight:500}
 .wz-a input{font-size:16px}
 @media (max-width:560px){.row2{grid-template-columns:1fr}.feat{grid-template-columns:1fr;gap:4px}}
+/* ===== 11/13 わかりやすくした登録画面 ===== */
+.flow3{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;counter-reset:f}
+.flow3 li{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.8rem;line-height:1.35;color:var(--ink-soft)}
+.flow3 li b{flex:none;width:24px;height:24px;border-radius:50%;background:#e8e3d8;color:var(--ink);display:grid;place-items:center;font-size:.8rem}
+.flow3 li small{display:block;font-size:.68rem;opacity:.8}
+.flow3 li.now{border:2px solid var(--accent);background:#fffaf0;color:var(--ink);font-weight:700}
+.flow3 li.now b{background:var(--accent);color:var(--accent-ink)}
+.flow3 li.done b{background:var(--ok);color:#fff}
+.checks{background:var(--night);color:var(--paper);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.checks>b{font-size:.95rem}
+.checks small{display:block;color:#c9ced8;font-size:.76rem}
+.checks div{display:flex;flex-wrap:wrap;gap:6px}
+.ck{font:inherit;font-size:.78rem;border:1px solid rgba(255,255,255,.3);background:transparent;color:#c9ced8;border-radius:999px;padding:3px 10px;cursor:pointer}
+.ck.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.stepnav{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.stepnav button{flex:none;font:inherit;font-size:.8rem;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.stepnav button i{font-style:normal;width:18px;height:18px;border-radius:50%;background:#e8e3d8;display:grid;place-items:center;font-size:.7rem}
+.stepnav button.ok i{background:var(--ok);color:#fff}
+.stepnav button.on{background:var(--night-2);color:#fff;border-color:var(--night-2);font-weight:700}
+.stepnav button.opt{border-style:dashed}
+.wiz{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.panels{display:grid;gap:16px;min-width:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:14px;min-width:0}
+.say{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:start}
+.say img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top;background:var(--night-2);border:2px solid var(--accent)}
+.say p{margin:0;background:#fff;border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:10px 13px;font-size:.92rem;line-height:1.75}
+.say p b{color:#8a6a2e}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px dashed var(--line);padding-top:12px}
+.nav .btn{padding:11px 18px}
+.tip{font-size:.78rem;color:var(--ink-soft);margin:0}
+.fl{font-size:.86rem;font-weight:500;display:block}
+.fl small{font-weight:400;color:var(--ink-soft);font-size:.74rem;margin-left:6px}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 10px}
+.ph-slot.opt .ph-box{opacity:.8}
+.fzs{display:flex;flex-wrap:wrap;gap:6px}
+.fz{font:inherit;font-size:.86rem;border:1px solid #cfc9bd;background:#fff;color:var(--ink);border-radius:999px;padding:6px 13px;cursor:pointer}
+.fz.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.fz.on::before{content:"★ "}
+.fz.off{background:#eee;color:#9a9a9a;text-decoration:line-through;border-color:#ddd}
+.legend{font-size:.76rem;color:var(--ink-soft);margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.legend .fz{font-size:.72rem;padding:2px 8px;cursor:default}
+details.more{border:1px solid var(--line);border-radius:10px;background:#fff;padding:0 12px}
+details.more summary{cursor:pointer;padding:12px 0;font-weight:700;font-size:.9rem}
+details.more[open]{padding-bottom:12px;display:grid;gap:10px}
+.mini3{margin:0;padding-left:1.3em;font-size:.86rem;display:grid;gap:2px}
+.invite{display:grid;gap:10px}
+.inv-b{display:flex;flex-wrap:wrap;gap:8px}
+.btn.line{background:#06c755;border-color:#06c755;color:#fff;text-decoration:none;display:inline-flex;align-items:center}
+.qr{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;justify-items:center;gap:8px;text-align:center}
+.qr p{margin:0;font-size:.8rem;color:var(--ink-soft)}
+.badge{display:inline-block;font-size:.7rem;font-weight:700;border-radius:999px;padding:1px 8px;vertical-align:2px}
+.b-inv{background:#eee;color:#666}.b-wait{background:#fde7c4;color:#8a5a00}.b-doing{background:#e2ebf7;color:#2a4f86}.b-ok{background:#d9f0e2;color:#1f6b40}.b-off{background:#f0e0de;color:#8b2c22}
+.sbar{height:6px;background:#ece7dc;border-radius:3px;overflow:hidden;margin:6px 0 2px}
+.sbar i{display:block;height:100%;background:linear-gradient(90deg,#9fb6d9,var(--accent))}
+/* 見本カード（お客さまに見える画面） */
+.pv{position:sticky;top:12px;display:grid;gap:6px}
+.pv-h{margin:0;font-size:.75rem;letter-spacing:.08em;color:var(--ink-soft);text-align:center}
+.pc{background:var(--paper);border-radius:10px;overflow:hidden;box-shadow:0 10px 30px rgba(20,26,38,.18);border:6px solid var(--night);font-size:.8rem}
+.pc .hl{outline:3px solid var(--accent);outline-offset:-3px;box-shadow:0 0 0 4px rgba(217,183,122,.35) inset;animation:hlp 1.6s ease-in-out infinite}
+@keyframes hlp{50%{outline-color:#f3d79a}}
+@media (prefers-reduced-motion:reduce){.pc .hl{animation:none}}
+.pc-ph{aspect-ratio:16/9;background:#d8cfbd;display:grid;place-items:center;color:#7b7466;font-size:.75rem}
+.pc-ph img{width:100%;height:100%;object-fit:cover}
+.pc-h{padding:10px 12px;border-bottom:1px solid #e2ded5}
+.pc-r{display:flex;justify-content:space-between;align-items:baseline;font-size:.66rem;letter-spacing:.1em;color:var(--ink-soft)}
+.pc-r b{font-family:var(--font-voice);font-size:1.3rem;color:var(--ink);letter-spacing:0}
+.pc-h h3{margin:2px 0;font-family:var(--font-voice);font-size:1.05rem}
+.pc-h p{margin:0;font-size:.7rem;color:var(--ink-soft)}
+.pc-b{padding:10px 12px;display:grid;gap:8px}
+.pc-menu{background:#fff;border:1px solid #e2ded5;border-radius:6px;padding:6px 8px;display:grid;gap:1px}
+.pc-menu small{font-size:.62rem;color:#8a6a2e;font-weight:700}
+.pc-menu em{font-style:normal;color:var(--ink-soft)}
+.pc-menu span{font-size:.66rem;color:var(--ink-soft)}
+.pc-c p{margin:0;line-height:1.6}
+.pc-c .ph{color:#aaa}
+.pc-t{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.pc-t span{font-size:.64rem;background:#e8e4da;border-radius:999px;padding:1px 7px}
+.pc-why{background:#fbf3e3;border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:6px 8px}
+.pc-why b{font-size:.66rem;color:#8a6a2e}
+.pc-why ul{margin:2px 0 0;padding-left:1.1em}
+.pc-st{display:flex;gap:8px;align-items:center;border-top:1px dashed #d4cfc4;padding-top:8px}
+.pc-st .av{width:34px;height:34px;border-radius:50%;background:var(--night-2);color:#fff;display:grid;place-items:center;font-weight:700;overflow:hidden;flex:none}
+.pc-st .av img{width:100%;height:100%;object-fit:cover}
+.pc-st small{display:block;font-size:.66rem;color:var(--ink-soft)}
+.pc-btn{background:var(--ink);color:#fff;text-align:center;border-radius:4px;padding:8px;font-weight:700}
+/* スタッフ */
+.quick{border:2px solid var(--accent)}
+.q3{display:grid;gap:14px}
+.q3i{display:grid;gap:8px}
+.q3i>b{display:flex;align-items:center;gap:8px;font-size:.92rem}
+.q3i>b i{font-style:normal;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.75rem}
+.q3i>b small{font-weight:400;color:var(--ink-soft);font-size:.74rem}
+.chips.sm .chip{font-size:.76rem;padding:3px 10px}
+.q3s{font-size:.82rem;color:var(--ink-soft)}
+.q3s b{color:var(--ok)}
+.chap{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.ch{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px;align-content:start}
+.ch.done{border-color:var(--ok)}
+.ch-h{display:flex;justify-content:space-between;gap:6px;font-size:.88rem}
+.ch-h span{font-size:.75rem;color:var(--ink-soft);white-space:nowrap}
+.ch p{margin:0;font-size:.78rem;color:var(--ink-soft)}
+.ch .btn{justify-self:start}
+.st-wiz{grid-template-columns:1fr}
+.st-wiz .pv{position:static;max-width:360px;justify-self:center;width:100%}
+details.full{display:grid;gap:16px}
+details.full>summary{cursor:pointer;background:#fff;border:1px dashed #cfc9bd;border-radius:10px;padding:12px 16px;font-weight:700;font-size:.9rem;list-style:none}
+details.full>summary::-webkit-details-marker{display:none}
+details.full>summary::after{content:"＋";float:right;color:#8a6a2e}
+details.full[open]>summary::after{content:"−"}
+details.full[open]>section{margin-top:16px}
+@media (max-width:860px){
+  .wiz{grid-template-columns:1fr}
+  .pv{position:static;max-width:360px;justify-self:center;width:100%}
+  .row4{grid-template-columns:1fr 1fr}
+}
+main:has(.wiz){max-width:1040px}
+#save{white-space:nowrap;flex:none}
+@media (max-width:560px){
+  .flow3 li{padding:6px;font-size:.7rem;gap:5px}
+  .flow3 li small{display:none}
+  .flow3 li b{width:20px;height:20px;font-size:.7rem}
+  .msg{font-size:.76rem}
+}
 </style>
 <script src="js/bx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </head>
 <body>
 <header>
@@ -125,7 +249,7 @@ textarea{min-height:84px;resize:vertical}
 </header>
 <main id="app"><div class="center">読み込み中…</div></main>
 <div class="bottom" id="bottom" hidden>
-  <div class="bin"><span class="msg" id="msg">入力したら保存してください。</span><button class="btn" id="save" type="button">保存する</button></div>
+  <div class="bin"><span class="msg" id="msg">「次へ」や「保存する」で保存されます。</span><button class="btn" id="save" type="button">いま保存する</button></div>
 </div>
 
 <script>
@@ -190,91 +314,219 @@ function wire(){
   }));
   document.querySelectorAll("#app input,#app select,#app textarea").forEach(el=>el.addEventListener("input",dirty));
 }
-function dirty(){ const m=$("msg"); m.className="msg"; m.textContent="変更があります。保存してください。"; }
+function dirty(){ const m=$("msg"); m.className="msg"; m.textContent="変更があります。保存してください。";
+  if (MODE==="salon" && $("checks")) refreshSalon(); if (MODE==="staff" && $("q3s")) refreshStaff(); }
 function meter(p, hint){ $("meterBox").hidden=false; $("pct").textContent=p+"%"; $("bar").style.width=p+"%"; $("hint").textContent=hint; }
 
-/* ---------------- お店 ---------------- */
+/* ---------------- 共通：3ステップ・見本カード・自動保存 ---------------- */
+/* 全体の流れ（どの画面にも出す）。now＝いまの段階（1〜3） */
+function flow3(now){
+  const L = [["お店のこと","管理者・約10分"],["スタッフを招待","1分"],["スタッフが自分のことを入力","1人5分〜"]];
+  return `<ol class="flow3">${L.map(([t,s],i)=>`<li class="${i+1===now?"now":i+1<now?"done":""}"><b>${i+1}</b><span>${t}<small>${s}</small></span></li>`).join("")}</ol>`;
+}
+/* AISIのひとこと（各画面のいちばん上） */
+function aisiSay(t, img){ return `<div class="say"><img src="img/aisi_face.webp" alt="AISI" onerror="this.src='img/${img||"aisi_point"}.webp'"><p>${t}</p></div>`; }
+/* 保存（silent＝「次へ」などでの自動保存） */
+let saving = false;
+async function doSave(silent){
+  const m=$("msg");
+  if (MODE==="staff" && !$("agree").checked){ if (!silent){ m.className="msg err"; m.textContent="「同意する」にチェックを入れてください。"; const a=$("agree"); if (a) a.scrollIntoView({behavior:"smooth",block:"center"}); } return false; }
+  if (saving) return false; saving = true;
+  const b=$("save"); b.disabled=true; b.textContent="保存中…";
+  const r = await api({type: MODE==="salon"?"save_salon":"save_staff", key:KEY, data: MODE==="salon"?collectSalon():collectStaff()});
+  b.disabled=false; b.textContent="いま保存する"; saving = false;
+  if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。";
+    if (r.done!=null){ D["プロフィール充実度"]=r.done; if (MODE==="staff") staffMeter(); }
+    if (r.near) m.textContent = "保存しました。住所の近くに、先に登録しているサロンがあるため、診断に出る前に運営から確認のご連絡をします。";
+    else if (r.outside) m.textContent = "保存しました。2027年2月15日までは札幌市中央区のお店だけを紹介しています。運営から確認のご連絡をします。";
+    return true; }
+  m.className="msg err"; m.textContent="保存できませんでした。電波の良いところで、もう一度お試しください。"; return false;
+}
+
+/* ---------------- お店（管理者）：5つの画面＋もっと選ばれるために＋スタッフ ---------------- */
+const SALON_STEPS = [
+  {k:"photo", t:"写真", hl:"photo", say:"まずは<b>お店の外観の写真を1枚</b>。診断結果のいちばん上に、大きく出るよ。店内の写真は、あとからでも大丈夫。"},
+  {k:"basic", t:"基本", hl:"basic", say:"次は、<b>住所と営業時間</b>。行ける日・時間で探すお客さまに、ちゃんと届けるために使うね。住所はお客さまには見せないよ。"},
+  {k:"menu", t:"一押しメニュー", hl:"menu", say:"お客さまは最初に「今回やりたいメニュー」を選ぶんだ。<b>まず1つ、名前と料金と種類</b>だけ入れて。"},
+  {k:"concept", t:"ひとこと", hl:"concept", say:"<b>お店をひとことで</b>言うと？　雰囲気もタップで選んで。結果カードの紹介文になるよ。"},
+  {k:"feat", t:"得意なこと", hl:"feat", say:"<b>得意なものだけタップ</b>して。していないものは2回タップ。ここが「このお店をすすめる理由」になるよ。"},
+  {k:"more", t:"もっと選ばれるために", hl:"", say:"ここからは<b>あとからでも大丈夫</b>。入れるほど、お客さまとの共通点が見つかりやすくなるよ。"},
+  {k:"staff", t:"スタッフを招待", hl:"staff", say:"最後に、<b>スタッフの名前を追加して、招待</b>しよう。スタッフは自分のスマホで、自分のことを入力するよ。"}
+];
+let sStep = 0;
+/* 「診断に出る準備」チェックリスト（必要なもの5つ） */
+function salonChecks(){
+  const v = id => ($(id) && $(id).value || "").trim();
+  return [
+    ["photo", "外観の写真", !!(D.photos && D.photos[0])],
+    ["basic", "住所と営業時間", !!(v("addr") && v("zone"))],
+    ["menu", "一押しメニュー1つ", !!(v("m0n") && chipVal("mc0").length)],
+    ["concept", "お店のひとこと", !!v("concept")],
+    ["feat", "得意なこと", Object.values(featVals()).some(x=>x===1)]
+  ];
+}
+/* 得意なこと：タップ1回＝得意、2回＝していない、3回＝ふつう（未選択） */
+const FZ = [["","ふつう"],[1,"得意"],[0,"していない"]];
+function featChip(k, l, v){ const s = v===""||v==null ? "" : (v>=.75?1:v<=.25?0:""); return `<button type="button" class="fz ${s===1?"on":s===0?"off":""}" data-f="${k}" data-v="${s}" aria-label="${esc(l)}：${s===1?"得意":s===0?"していない":"ふつう"}">${esc(l)}</button>`; }
+function featVals(){ const f={}; document.querySelectorAll("[data-f]").forEach(b=>{ const v=b.dataset.v; f[b.dataset.f] = v===""?"":Number(v); }); return f; }
 function renderSalon(){
-  $("kind").textContent="お店情報"; $("title").textContent=D.name;
-  meter(Number(D["プロフィール充実度"])||0, "入れた項目が多いほど、お客さまとの共通点が見つかりやすくなり、マッチ率が上がります。");
+  $("kind").textContent="お店の登録"; $("title").textContent=D.name;
+  $("meterBox").hidden = true;
   const m = D.menus;
+  const panel = (k, inner) => { const st = SALON_STEPS.find(x=>x.k===k), i = SALON_STEPS.indexOf(st);
+    return `<section class="panel" data-step="${k}" ${i===sStep?"":"hidden"}>${aisiSay(st.say)}${inner}
+      <div class="nav">${i>0?`<button class="btn sub" type="button" data-go="${i-1}">← 戻る</button>`:"<span></span>"}${i<SALON_STEPS.length-1?`<button class="btn" type="button" data-go="${i+1}">保存して次へ →</button>`:`<button class="btn" type="button" data-go="0">保存して最初の画面へ</button>`}</div></section>`; };
   $("app").innerHTML = `
-  <section><h2>お店の写真<small>3枚まで</small></h2>
-    <p class="lead">1枚目は<b>お店の外観</b>、2・3枚目は<b>店内</b>の写真がおすすめです。診断結果のいちばん上に、1枚目が大きく、2・3枚目が横に並んで出ます。人の顔が写っていない写真にしてください。</p>
-    <div class="photos">${[0,1,2].map(i=>`<div class="ph-slot">
-      <div class="ph-box" id="ph${i}">${D.photos&&D.photos[i]?`<img src="${esc(D.photos[i])}" alt="お店の写真${i+1}">`:`<span>${i===0?"1枚目（外観）":(i+1)+"枚目（店内）"}</span>`}</div>
+  ${flow3(sStep===6?2:1)}
+  <div class="checks" id="checks"></div>
+  <nav class="stepnav" id="stepnav">${SALON_STEPS.map((s,i)=>`<button type="button" data-go="${i}" class="${i===sStep?"on":""} ${i>=5?"opt":""}">${i<5?`<i>${i+1}</i>`:""}${esc(s.t)}</button>`).join("")}</nav>
+  <div class="wiz">
+  <div class="panels">
+  ${panel("photo", `
+    <div class="photos">${[0,1,2].map(i=>`<div class="ph-slot ${i?"opt":""}">
+      <div class="ph-box" id="ph${i}">${D.photos&&D.photos[i]?`<img src="${esc(D.photos[i])}" alt="お店の写真${i+1}">`:`<span>${i===0?"外観（必須）":"店内（あとでOK）"}</span>`}</div>
       <label class="btn sub" for="phIn${i}">${D.photos&&D.photos[i]?"入れ替える":"写真を選ぶ"}</label><input type="file" id="phIn${i}" accept="image/*" hidden data-slot="${i+1}">
       ${D.photos&&D.photos[i]?`<button class="btn sub" type="button" data-del="${i+1}">削除</button>`:""}
     </div>`).join("")}</div>
-  </section>
-
-  <section><h2>基本情報</h2>
+    <p class="tip">人の顔が写っていない写真にしてください。横長の写真がきれいに出ます。</p>`)}
+  ${panel("basic", `
+    <label class="f">お店の住所<small>番地・建物名まで（お客さまには見せません）${D.pre?"。2027年2月15日までは、札幌市中央区のお店だけを紹介しています":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
     <div class="row2">
+      <label class="f">エリア<select id="zone">${opts(OPT.zone, D["エリア区分"], "選ぶ")}</select></label>
       <label class="f">エリアの表示<small>例：大通、円山</small><input type="text" id="area" value="${esc(D["エリア表示"])}"></label>
-      <label class="f">エリア区分<select id="zone">${opts(OPT.zone, D["エリア区分"], "選ぶ")}</select></label>
     </div>
-    <label class="f">お店の住所<small>番地・建物名まで。地図で場所を確かめるために使います（お客さまには公開しません）。${D.pre?"2027年2月15日までは、札幌市中央区のお店だけを掲載しています。":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
-    <div class="f"><b style="font-size:.86rem">スタッフの人数</b>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","レセプション"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>
-    <label class="f">価格の目安<small>例：カット¥5,500〜</small><input type="text" id="price" value="${esc(D["価格表示"])}"></label>
     <div class="row2">
       <label class="f">受付開始<select id="open">${opts([...Array(14)].map((_,i)=>[i+7,(i+7)+":00"]), D["受付開始（時）"])}</select></label>
       <label class="f">受付終了<select id="close">${opts([...Array(14)].map((_,i)=>[i+11,(i+11)+":00"]), D["受付終了（時）"])}</select></label>
     </div>
-    <div class="f"><b style="font-size:.86rem">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
-    <label class="f">予約ページのURL<small>ホットペッパーなど</small><input type="url" id="book" value="${esc(D["予約ページURL"])}"></label>
-    <div class="f"><b style="font-size:.86rem">LINE予約の特典</b><small>ぴたリストのLINEで予約したお客さまには、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」になります（メールやホットペッパーからの予約は対象外）。お会計のときにお店で値引きしてください。</small></div>
-    <label class="f"${D.perkOwnOn?"":" hidden"}>お店独自の特典（オプション）<small>共通の特典に追加したいときだけ。例：ホームケアサンプル付き</small><input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label>
-    <label class="f">予約の連絡を受け取るメール<small>LINEを登録していないときに使います</small><input type="email" id="mail" value="${esc(D["お店の通知メール"])}"></label>
-    <label class="f">タグ<small>「、」で区切る。例：髪質改善、マンツーマン</small><input type="text" id="tags" value="${esc(D["タグ（、区切り）"])}"></label>
-  </section>
-
-  <section><h2>コンセプトとアピール</h2>
-    <label class="f">お店のコンセプト<small>200字まで。診断結果にそのまま出ます</small><textarea id="concept" maxlength="200">${esc(D["コンセプト"])}</textarea></label>
-    <div class="f"><b style="font-size:.86rem">メインターゲット（いくつでも）</b>${chips("target", OPT.target, D["メインターゲット"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">お店の雰囲気（いくつでも）</b>${chips("mood", OPT.mood, D["お店の雰囲気"], true)}</div>
-    <label class="f">アピール：立地<small>例：大通駅から徒歩3分、窓から公園が見える</small><textarea id="ap1" maxlength="300">${esc(D["アピール：立地"])}</textarea></label>
-    <label class="f">アピール：オーナーの考え方<textarea id="ap2" maxlength="300">${esc(D["アピール：オーナーの考え方"])}</textarea></label>
-    <label class="f">アピール：スタッフ・お店の雰囲気<textarea id="ap3" maxlength="300">${esc(D["アピール：スタッフ・雰囲気"])}</textarea></label>
-  </section>
-
-  <section><h2>得意なこと<small>マッチングの基本になります</small></h2>
-    ${FEATS.map(([g,items])=>`<p class="grp">${g}</p>`+items.map(([k,l])=>`<div class="feat"><span>${l}</span>${seg("f_"+k, LEVELS, D.f[k]===""||D.f[k]==null?"":(D.f[k]>=.75?1:D.f[k]<=.25?0:.5))}</div>`).join("")).join("")}
-  </section>
-
-  <section><h2>一押しメニュー<small>3つまで</small></h2>
-    <p class="lead">診断結果と予約のときに、料金と一緒に表示されます。お客さまは最初に「今回やりたいメニュー」を選び、そのメニューが一押しにあるお店から探されます。<b>メニューの種類</b>は必ず選んでください（カット＋カラーなら両方）。</p>
-    ${[0,1,2].map(i=>`<div class="menu"><b>一押しメニュー ${i+1}</b>
+    <div class="f"><b class="fl">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
+    <div class="f"><b class="fl">スタッフの人数</b>
+      <div class="row4">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","受付"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>`)}
+  ${panel("menu", [0].map(i=>`<div class="menu">
+      <label class="f">メニュー名<input type="text" id="m${i}n" maxlength="40" placeholder="例：カット＋透明感カラー" value="${esc(m[i].name)}"></label>
+      <div class="f"><b class="fl">メニューの種類<small>カット＋カラーなら両方</small></b>${chips("mc"+i, MENU_CATS.map(c=>c[1]), MENU_CATS.filter(c=>(m[i].cats||[]).includes(c[0])).map(c=>c[1]), true)}</div>
+      <div class="row2"><label class="f">料金（税込）<input type="text" id="m${i}p" maxlength="20" placeholder="例：9,900円〜" value="${esc(m[i].price)}"></label>
+      <label class="f">時間（分）<small>任意</small><input type="number" id="m${i}t" min="0" max="480" step="5" value="${esc(m[i].min)}"></label></div>
+      <label class="f">施術内容<small>任意・120字まで</small><textarea id="m${i}d" maxlength="120" placeholder="例：似合わせカットと、透明感のあるワンカラー">${esc(m[i].desc)}</textarea></label></div>`).join("") + `<p class="tip">2つ目・3つ目のメニューは「もっと選ばれるために」で入れられます。</p>`)}
+  ${panel("concept", `
+    <label class="f">お店のひとこと（コンセプト）<small>200字まで。診断結果にそのまま出ます</small><textarea id="concept" maxlength="200" placeholder="例：大通の路地裏にある、マンツーマンの小さなサロン。くせ毛を活かしたカットが得意です。">${esc(D["コンセプト"])}</textarea></label>
+    <div class="f"><b class="fl">お店の雰囲気<small>いくつでも</small></b>${chips("mood", OPT.mood, D["お店の雰囲気"], true)}</div>`)}
+  ${panel("feat", `<p class="legend"><span class="fz on">得意</span> 1回タップ　<span class="fz off">していない</span> 2回タップ　<span class="fz">ふつう</span> 何もしない</p>` +
+    FEATS.map(([g,items])=>`<p class="grp">${g}</p><div class="fzs">${items.map(([k,l])=>featChip(k, l, D.f[k])).join("")}</div>`).join(""))}
+  ${panel("more", `
+    <details class="more" open><summary>一押しメニュー 2・3</summary>${[1,2].map(i=>`<div class="menu"><b>一押しメニュー ${i+1}</b>
       <label class="f">メニュー名<input type="text" id="m${i}n" maxlength="40" value="${esc(m[i].name)}"></label>
-      <div class="f"><b style="font-size:.86rem">メニューの種類（いくつでも）</b>${chips("mc"+i, MENU_CATS.map(c=>c[1]), MENU_CATS.filter(c=>(m[i].cats||[]).includes(c[0])).map(c=>c[1]), true)}</div>
-      <div class="row2"><label class="f">料金（税込）<small>例：9,900円〜</small><input type="text" id="m${i}p" maxlength="20" value="${esc(m[i].price)}"></label>
+      <div class="f"><b class="fl">メニューの種類</b>${chips("mc"+i, MENU_CATS.map(c=>c[1]), MENU_CATS.filter(c=>(m[i].cats||[]).includes(c[0])).map(c=>c[1]), true)}</div>
+      <div class="row2"><label class="f">料金（税込）<input type="text" id="m${i}p" maxlength="20" value="${esc(m[i].price)}"></label>
       <label class="f">時間（分）<input type="number" id="m${i}t" min="0" max="480" step="5" value="${esc(m[i].min)}"></label></div>
-      <label class="f">施術内容<small>120字まで</small><textarea id="m${i}d" maxlength="120">${esc(m[i].desc)}</textarea></label></div>`).join("")}
-  </section>
-
-  <section><h2>スタッフ</h2>
-    <p class="lead">スタッフのプロフィール（出身・推し・部活など）は、本人がそれぞれのリンクから入力します。リンクをコピーして本人に送ってください。「ぴたリスト サロン窓口」に登録したスタッフには、自動でリンクが届きます。</p>
-    <p class="lead" style="margin-top:-4px"><b>スタッフが辞めたとき</b>は、「ぴたリスト サロンさま窓口」のトークで「スタッフの管理」と送り、その人の「外す」を押してください。予約が届かなくなり、スタッフ料金にも数えなくなります。ここで「診断に出す」を外すだけでは、LINEの登録は残ります。</p>
-    <div class="staff">${D.staff.map((s,i)=>`<div class="st"><div><span class="nm">${esc(s.name)}</span><small>プロフィール充実度 ${s.done}%</small>
+      <label class="f">施術内容<textarea id="m${i}d" maxlength="120">${esc(m[i].desc)}</textarea></label></div>`).join("")}</details>
+    <details class="more"><summary>お店のアピール（立地・考え方・雰囲気）</summary>
+      <label class="f">立地<small>例：大通駅から徒歩3分、窓から公園が見える</small><textarea id="ap1" maxlength="300">${esc(D["アピール：立地"])}</textarea></label>
+      <label class="f">オーナーの考え方<textarea id="ap2" maxlength="300">${esc(D["アピール：オーナーの考え方"])}</textarea></label>
+      <label class="f">スタッフ・お店の雰囲気<textarea id="ap3" maxlength="300">${esc(D["アピール：スタッフ・雰囲気"])}</textarea></label>
+      <div class="f"><b class="fl">来てほしいお客さま<small>いくつでも</small></b>${chips("target", OPT.target, D["メインターゲット"], true)}</div></details>
+    <details class="more"><summary>価格・予約ページ・タグ・連絡先</summary>
+      <label class="f">価格の目安<small>例：カット¥5,500〜</small><input type="text" id="price" value="${esc(D["価格表示"])}"></label>
+      <label class="f">予約ページのURL<small>ホットペッパーなど</small><input type="url" id="book" value="${esc(D["予約ページURL"])}"></label>
+      <label class="f">タグ<small>「、」で区切る。例：髪質改善、マンツーマン</small><input type="text" id="tags" value="${esc(D["タグ（、区切り）"])}"></label>
+      <label class="f">予約の連絡を受け取るメール<small>LINEを登録していないときに使います</small><input type="email" id="mail" value="${esc(D["お店の通知メール"])}"></label>
+      <p class="tip">LINE予約の特典：ぴたリストのLINEで予約したお客さまは、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」です（お会計のときにお店で値引き）。</p>
+      <label class="f"${D.perkOwnOn?"":" hidden"}>お店独自の特典（任意）<input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label></details>`)}
+  ${panel("staff", `
+    <ol class="mini3"><li><b>名前を追加</b>（下の欄）</li><li><b>招待メッセージを送る</b>か、<b>QRを見せる</b></li><li>スタッフが登録したら、LINEに届く<b>「承認する」</b>を押す</li></ol>
+    <div class="addrow"><input type="text" id="newStaff" maxlength="20" placeholder="追加するスタッフの名前（例：ユウナ）"><button class="btn" type="button" id="addStaff">追加</button></div>
+    <div class="invite" id="invite">${D.invite ? `
+      <div class="inv-b"><a class="btn line" href="${esc(D.invite.share)}" target="_blank" rel="noopener">LINEで招待メッセージを送る</a>
+      <button class="btn sub" type="button" id="invCopy">メッセージをコピー</button><button class="btn sub" type="button" id="invQr">QRコードを見せる</button></div>
+      <div class="qr" id="qrBox" hidden><div id="qr"></div><p>スタッフのスマホのカメラで読み取ってもらうと、サロンさま窓口LINEが開きます。</p></div>` : `<p class="tip">招待の準備がまだできていません。運営にご連絡ください。</p>`}</div>
+    ${D.waiting && D.waiting.length ? `<p class="tip warnline">承認待ち：${D.waiting.map(esc).join("、")}（サロンさま窓口LINEに届いた「承認する」を押してください）</p>` : ""}
+    <div class="staff">${D.staff.map((s,i)=>{ const st = staffState(s);
+      return `<div class="st"><div><span class="nm">${esc(s.name)}</span> <span class="badge b-${st[0]}">${st[1]}</span>
+      <div class="sbar"><i style="width:${Math.min(100,s.done)}%"></i></div><small>${esc(st[2])}</small>
       <label class="pub"><input type="checkbox" data-on="${i}" ${s.on?"checked":""}> 診断に出す</label></div>
-      <div class="acts"><button class="btn sub" type="button" data-copy="${esc(s.url)}">リンクをコピー</button></div></div>`).join("") || `<p class="lead">まだスタッフがいません。</p>`}</div>
-    <div class="addrow"><input type="text" id="newStaff" maxlength="20" placeholder="追加するスタッフの名前"><button class="btn sub" type="button" id="addStaff">スタッフを追加</button></div>
-  </section>`;
+      <div class="acts"><button class="btn sub" type="button" data-copy="${esc(s.url)}">入力リンクをコピー</button></div></div>`; }).join("") || `<p class="tip">まだスタッフがいません。上の欄から名前を追加してください。</p>`}</div>
+    <p class="tip"><b>スタッフが辞めたとき</b>は、サロンさま窓口LINEで「スタッフの管理」と送り、その人の「外す」を押してください（ここで「診断に出す」を外すだけでは、LINEの登録は残ります）。</p>`)}
+  </div>
+  <aside class="pv"><p class="pv-h">お客さまには、こう見えます</p><div id="pv"></div></aside>
+  </div>`;
   wire();
   wirePhotos("salon");
+  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ const n = {"":"1","1":"0","0":""}[b.dataset.v]; b.dataset.v = n;
+    b.classList.toggle("on", n==="1"); b.classList.toggle("off", n==="0"); dirty(); });
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>goStep(+b.dataset.go, b.closest(".nav")));
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
     try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="コピーしました"; }catch(e){ prompt("このリンクをコピーしてください", b.dataset.copy); }
-    setTimeout(()=>b.textContent="リンクをコピー",1800);
+    setTimeout(()=>b.textContent="入力リンクをコピー",1800);
   });
+  if (D.invite){
+    $("invCopy").onclick = async()=>{ try{ await navigator.clipboard.writeText(D.invite.text); $("invCopy").textContent="コピーしました"; }catch(e){ prompt("このメッセージをコピーしてください", D.invite.text); } setTimeout(()=>$("invCopy").textContent="メッセージをコピー",1800); };
+    $("invQr").onclick = showQr;
+  }
   $("addStaff").onclick=async()=>{
     const name=$("newStaff").value.trim(); if(!name) return;
+    if (dirtyNow()) await doSave(true);
     const r = await api({type:"add_staff", key:KEY, name});
-    if (r && r.ok){ await load(); $("msg").className="msg ok"; $("msg").textContent=name+"さんを追加しました。リンクを本人に送ってください。"; }
+    if (r && r.ok){ await load(); $("msg").className="msg ok"; $("msg").textContent=name+"さんを追加しました。次は招待メッセージを送ってください。"; }
     else { $("msg").className="msg err"; $("msg").textContent = r && r.error==="dup" ? "同じ名前のスタッフがいます。" : "追加できませんでした。"; }
   };
+  refreshSalon();
+}
+/* スタッフの状態：[色, ラベル, 説明] */
+function staffState(s){
+  if (s.line === "none") return ["inv", "招待中", "まだLINEで登録していません。招待メッセージを送ってください。"];
+  if (s.line === "wait") return ["wait", "承認待ち", "サロンさま窓口LINEに届いた「承認する」を押してください。"];
+  if (!s.photo || !s.spec || s.done < 15) return ["doing", "入力中", `入力 ${s.done}%：顔写真・得意なこと・ひとことが入ると、診断に出られます。`];
+  return s.on ? ["ok", "診断に出ています", `入力 ${s.done}%：AISIとの会話に答えるほど、選ばれやすくなります。`] : ["off", "診断に出していません", "「診断に出す」にチェックを入れると出ます。"];
+}
+function dirtyNow(){ return $("msg").textContent.startsWith("変更があります"); }
+async function goStep(i, fromNav){
+  if (fromNav || dirtyNow()) await doSave(true);
+  sStep = Math.max(0, Math.min(SALON_STEPS.length-1, i));
+  document.querySelectorAll(".panel").forEach(p=>p.hidden = p.dataset.step !== SALON_STEPS[sStep].k);
+  document.querySelectorAll("#stepnav button").forEach((b,j)=>b.classList.toggle("on", j===sStep));
+  const f = document.querySelector(".flow3"); if (f) f.outerHTML = flow3(sStep===6?2:1);
+  refreshSalon(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function showQr(){
+  const box = $("qrBox"); box.hidden = false;
+  if (!$("qr").childNodes.length){
+    if (window.QRCode) new QRCode($("qr"), {text:D.invite.join, width:200, height:200});
+    else $("qr").innerHTML = `<p class="tip">QRコードを表示できませんでした。「LINEで招待メッセージを送る」を使ってください。</p>`;
+  }
+  box.scrollIntoView({behavior:"smooth", block:"center"});
+}
+/* チェックリストと見本カードを、入力に合わせて描き直す */
+function refreshSalon(){
+  const c = salonChecks(), left = c.filter(x=>!x[2]).length;
+  $("checks").innerHTML = `<b>${left ? `診断に出る準備：あと${left}つ` : "診断に出る準備ができました"}</b>${left ? "" : "<small>運営が確認して、診断に出します（もう出ているお店は、保存するとすぐ反映されます）</small>"}
+    <div>${c.map(([k,l,ok])=>`<button type="button" class="ck ${ok?"ok":""}" data-go="${SALON_STEPS.findIndex(s=>s.k===k)}">${ok?"✓":"・"} ${esc(l)}</button>`).join("")}</div>`;
+  $("checks").querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>goStep(+b.dataset.go));
+  document.querySelectorAll("#stepnav button").forEach((b,j)=>{ const ck = c.find(x=>x[0]===SALON_STEPS[j].k); b.classList.toggle("ok", !!(ck && ck[2])); });
+  previewSalon();
+}
+function previewSalon(){
+  const hl = SALON_STEPS[sStep].hl, v = id => ($(id) && $(id).value || "").trim();
+  const H = k => hl===k ? " hl" : "";
+  const closed = chipVal("closed"), f = featVals();
+  /* 技術・髪の悩みは「〇〇が得意」、過ごし方・便利さはそのまま */
+  const good = FEATS.flatMap(([g,it],gi)=>it.map(x=>[x[0], gi<2 ? x[1]+"が得意" : x[1]])).filter(([k])=>f[k]===1).map(([,l])=>l);
+  const cats = chipVal("mc0"), mood = chipVal("mood"), st = (D.staff||[])[0];
+  const photo = D.photos && D.photos[0];
+  $("pv").innerHTML = `<article class="pc">
+    <div class="pc-ph${H("photo")}">${photo?`<img src="${esc(photo)}" alt="">`:`<span>外観の写真</span>`}</div>
+    <div class="pc-h${H("basic")}"><div class="pc-r"><span>いちばんのおすすめ</span><b>92<small>%</small></b></div>
+      <h3>${esc(D.name)}</h3><p>${esc(v("area")||"エリア")} ・ 受付 ${esc(v("open")||"10")}:00〜${esc(v("close")||"19")}:00 ・ 定休 ${closed.length?esc(closed.join("・"))+"曜":"なし"}</p></div>
+    <div class="pc-b">
+      <div class="pc-menu${H("menu")}"><small>今回のメニュー</small><b>${esc(v("m0n")||"一押しメニュー")}</b><em>${esc(v("m0p")||"")}</em>${cats.length?`<span>${esc(cats.join("・"))}</span>`:""}</div>
+      <div class="pc-c${H("concept")}">${v("concept")?`<p>${esc(v("concept").slice(0,70))}${v("concept").length>70?"…":""}</p>`:`<p class="ph">お店のひとこと</p>`}<div class="pc-t">${mood.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>
+      <div class="pc-why${H("feat")}"><b>このお店をすすめる理由</b><ul>${(good.length?good.slice(0,3):["得意なことを選ぶと、ここに出ます"]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="pc-st${H("staff")}"><span class="av">${st&&st.name?esc(st.name[0]):"?"}</span><span>担当：${st?esc(st.name)+" さん":"スタッフ"}<small>スタッフが自分で入力します</small></span></div>
+      <div class="pc-btn">${st?esc(st.name)+"さんで予約する":"予約する"}</div>
+    </div></article>`;
 }
 function collectSalon(){
-  const f={}; FEATS.forEach(([,items])=>items.forEach(([k])=>{ const v=segVal("f_"+k); if(v!=="") f[k]=Number(v); }));
+  /* 「ふつう」に戻したものは0.5で送る（前に得意・していないにしていたとき） */
+  const f = {}; Object.entries(featVals()).forEach(([k,v])=>{ if (v!=="") f[k]=v; else if (D.f[k]!=="" && D.f[k]!=null) f[k]=.5; });
   return {
     "エリア表示":$("area").value, "エリア区分":$("zone").value, "価格表示":$("price").value, "住所":$("addr").value.trim(),
     "スタイリスト数":$("sc0").value, "アシスタント数":$("sc1").value, "スパニスト数":$("sc2").value, "レセプション数":$("sc3").value,
@@ -287,84 +539,136 @@ function collectSalon(){
   };
 }
 
-/* ---------------- スタッフ ---------------- */
-function pubBox(key){ const off=(D.hidden||[]).includes(key); return `<label class="pub"><input type="checkbox" data-pub="${key}" ${off?"":"checked"}> お客さまに公開する</label>`; }
+/* ---------------- スタッフ：最初の3分 → AISIとの会話（5つの章）→ くわしく直す（フォーム） ---------------- */
+function pubBox(key){ const off=(D.hidden||[]).includes(key); return `<label class="pub"><input type="checkbox" data-pub="${key}" ${off?"":"checked"}> 公開</label>`; }
+/* 章ごとの「答えると、どうなるか」 */
+const WZ_HINT = {
+  tech:"答えると、技術や髪の悩みで探すお客さまに「〇〇が得意」と出やすくなるよ。",
+  work:"お客さまが大事にしていることと重なると、「すすめる理由」にあなたの考え方が出るよ。",
+  serve:"「静かに過ごしたい」「提案してほしい」など、過ごし方の合うお客さまとつながりやすくなるよ。",
+  guest:"あなたが得意なタイプのお客さまと、マッチしやすくなるよ。",
+  you:"出身・部活・推しなどの共通点で、「話しやすい担当」として選ばれやすくなるよ。"
+};
+const wzSaved = () => (D.wz && typeof D.wz === "object") ? D.wz : {};
+const wzHas = (A, st) => { const v = A[st.key]; return Array.isArray(v) || (v != null && v !== ""); };
+function staffMeter(){
+  const A = wzSaved(), n = WZ.filter(st => wzHas(A, st)).length;
+  meter(Math.round(n / WZ_TOTAL * 100), n >= WZ_TOTAL ? "AISIとの会話：全部答えました。ありがとう！" : `AISIとの会話：${n} / ${WZ_TOTAL}問。あと${WZ_TOTAL-n}問で、もっと選ばれやすくなります（全部答えなくても診断に出られます）。`);
+  const mh = document.querySelector(".meter-h span"); if (mh) mh.textContent = "AISIとの会話";
+}
+function quickDone(){ return { photo: !!D.photo, spec: !!($("spec") && $("spec").value.trim()), line: !!($("line") && $("line").value.trim()), agree: !!($("agree") && $("agree").checked) }; }
 function renderStaff(){
   $("kind").textContent="スタッフ"; $("title").textContent=D.name+" さん（"+D.salon+"）";
-  const wzN = D.wz && typeof D.wz === "object" ? WZ.filter(st => { const v = D.wz[st.key]; return Array.isArray(v) || (v != null && v !== ""); }).length : 0;
-  meter(Number(D["プロフィール充実度"])||0, `AISIとの会話：${wzN} / ${WZ_TOTAL}問 回答。答えた数が多いほど充実度が上がり、合うお客さまとマッチしやすくなります（全部答えなくても掲載できます）。`);
+  staffMeter();
+  const A = wzSaved();
+  const groups = Object.keys(WZ_GROUPS).map(g => { const qs = WZ.filter(st => st.g === g); return {g, n: qs.length, done: qs.filter(st => wzHas(A, st)).length}; });
   $("app").innerHTML = `
-  <button class="wz-open" type="button" id="wzOpen"><img src="img/aisi_peace.webp" alt=""><span><b>AISIと話しながら入力する（おすすめ・約50問）</b><small>${D.wz && D.wz._i > 0 && D.wz._i < WZ_TOTAL ? `前回の続き（${D.wz._i + 1}問目）から再開できます。` : "質問に答えていくだけで、あなたらしいプロフィールができます。"}途中で保存して、続きはあとからでも大丈夫。最後に「第三者から見たあなた」をAISIがまとめます。</small></span></button>
-  <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容は、ぴたリストのマッチングに使い、「公開する」にした項目はお客さまに表示されることに同意します。公開したくない項目は、いつでも「公開する」を外したり、消したりできます。</label></div>
-
-  <section><h2>顔写真</h2>
-    <div class="face-row">
-      <div class="face" id="face">${D.photo?`<img src="${esc(D.photo)}" alt="あなたの顔写真">`:`<span>${esc((D.name||"")[0]||"")}</span>`}</div>
-      <div class="face-act">
-        <label class="btn sub" for="faceIn">${D.photo?"入れ替える":"写真を選ぶ"}</label><input type="file" id="faceIn" accept="image/*" hidden>
-        ${D.photo?`<button class="btn sub" type="button" id="faceDel">削除</button>`:""}
-        ${pubBox("顔写真")}
-        <small class="lead" style="margin:0">顔がはっきり分かる、明るい写真がおすすめです。診断結果で、名前の横に丸く表示されます。</small>
-      </div>
+  ${flow3(3)}
+  <section class="panel quick">
+    ${aisiSay(`${esc(D.name)}さん、はじめまして。AISIです。<b>まずは3つだけ</b>（顔写真・得意なこと・ひとこと）。これだけで、診断に出られるよ。`)}
+    <div class="agree"><input type="checkbox" id="agree" ${D["同意日"]?"checked":""}><label for="agree">ここで入力した内容をぴたリストのマッチングに使い、「公開」にした項目がお客さまに表示されることに同意する（あとからいつでも外せます）</label></div>
+    <div class="q3">
+      <div class="q3i"><b><i>1</i>顔写真</b>
+        <div class="face-row"><div class="face" id="face">${D.photo?`<img src="${esc(D.photo)}" alt="あなたの顔写真">`:`<span>${esc((D.name||"")[0]||"")}</span>`}</div>
+        <div class="face-act"><label class="btn sub" for="faceIn">${D.photo?"入れ替える":"写真を選ぶ"}</label><input type="file" id="faceIn" accept="image/*" hidden>
+          ${D.photo?`<button class="btn sub" type="button" id="faceDel">削除</button>`:""}${pubBox("顔写真")}<small class="tip">明るくて、顔がはっきり分かる写真がおすすめ。</small></div></div></div>
+      <div class="q3i"><b><i>2</i>得意なこと<small>タップで入れられます</small></b>
+        <input type="text" id="spec" maxlength="60" placeholder="例：透明感カラー・くせ毛カット" value="${esc(D["得意なこと"])}">
+        <div class="chips sm" id="specTap">${OPT.tech.map(t=>`<button type="button" class="chip">${esc(t)}</button>`).join("")}</div></div>
+      <div class="q3i"><b><i>3</i>お客さまへのひとこと<small>120字まで</small></b>
+        <textarea id="line" maxlength="120" placeholder="例：くせ毛で悩んでいる人ほど、ぜひ一度。乾かすだけでまとまる髪を一緒につくります。">${esc(D["AISIのひとこと"])}</textarea>
+        <small class="tip">思いつかなければ空けておいて大丈夫。AISIとの会話の最後に、AISIが文章をつくるよ。</small></div>
     </div>
+    <div class="nav"><span class="q3s" id="q3s"></span><button class="btn" type="button" id="q3save">保存する</button></div>
   </section>
 
+  <section class="panel">
+    ${aisiSay("ここからは<b>AISIとの会話</b>。5つの章に分かれていて、1章3〜5分。好きな章から、1章ずつで大丈夫。")}
+    <div class="chap">${groups.map(({g,n,done},i)=>`<div class="ch ${done>=n?"done":""}">
+      <div class="ch-h"><b>${i+1}. ${esc(WZ_GROUPS[g])}</b><span>${done} / ${n}問</span></div>
+      <div class="sbar"><i style="width:${Math.round(done/n*100)}%"></i></div>
+      <p>${esc(WZ_HINT[g])}</p>
+      <button class="btn ${done>=n?"sub":""}" type="button" data-ch="${g}">${done>=n?"答えを見直す":done?"続きから":"この章をはじめる"}</button></div>`).join("")}</div>
+  </section>
+
+  <div class="wiz st-wiz"><aside class="pv"><p class="pv-h">お客さまには、こう見えます</p><div id="pv"></div></aside></div>
+
+  <details class="full"><summary>くわしく直す（フォームで入力）</summary>
   <section><h2>技術</h2>
-    <div class="row2">
-      <label class="f">美容師歴（年）<input type="number" id="years" min="0" max="60" value="${esc(D["歴（年）"])}"></label>
-      <label class="f">得意なこと（ひとこと）<small>例：透明感カラー・韓国風レイヤー</small><input type="text" id="spec" maxlength="60" value="${esc(D["得意なこと"])}"></label>
-    </div>
-    <div class="f"><b style="font-size:.86rem">得意な技術（いくつでも）</b>${chips("tech", OPT.tech, D["得意な技術"], true)}</div>
-    <label class="f">お客さまへのひとこと<small>120字まで。診断結果に出ます</small><textarea id="line" maxlength="120">${esc(D["AISIのひとこと"])}</textarea></label>
+    <label class="f">美容師歴（年）<input type="number" id="years" min="0" max="60" value="${esc(D["歴（年）"])}"></label>
+    <div class="f"><b class="fl">得意な技術（いくつでも）</b>${chips("tech", OPT.tech, D["得意な技術"], true)}</div>
     <label class="f">自分のホットペッパー予約ページのURL（任意）<input type="url" id="hpb" value="${esc(D["ホットペッパー予約URL"])}"></label>
-    <label class="f">ホットペッパーの「スタイリストページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見る普通のホットペッパービューティーのページです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
+    <label class="f">ホットペッパーの「スタイリストページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見るページのURLです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
   </section>
-
-  <section><h2>美容師としてのあなた<small>お客さまの「本音」とつなぐ</small></h2>
-    <p class="lead">お客さまがAISIに話した悩みや大事にしていることと、ここで選んだ内容が重なると、あなたが選ばれる理由として結果に表示されます。</p>
-    <div class="f"><b style="font-size:.86rem">お客さまのどんな悩みを解決するのが得意？（いくつでも）</b>${chips("worry", OPT.worry, D["得意な悩み"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">お客さまに、いちばん喜ばれること（3つまでがおすすめ）</b>${chips("please", OPT.please, D["喜ばれること"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">施術で、必ず大事にしていること（いくつでも）</b>${chips("value", OPT.value, D["大事にしていること"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">ホームケアやサロンの商品について</b>${chips("homecare", OPT.homecare, D["ホームケア提案"], false)}</div>
+  <section><h2>美容師としてのあなた</h2>
+    <div class="f"><b class="fl">得意な悩み（いくつでも）</b>${chips("worry", OPT.worry, D["得意な悩み"], true)}</div>
+    <div class="f"><b class="fl">いちばん喜ばれること（3つまでがおすすめ）</b>${chips("please", OPT.please, D["喜ばれること"], true)}</div>
+    <div class="f"><b class="fl">必ず大事にしていること</b>${chips("value", OPT.value, D["大事にしていること"], true)}</div>
+    <div class="f"><b class="fl">ホームケアやサロンの商品</b>${chips("homecare", OPT.homecare, D["ホームケア提案"], false)}</div>
   </section>
-
   <section><h2>接客のスタイル</h2>
-    <div class="f"><b style="font-size:.86rem">施術中の会話</b>${seg("talk", [1,2,3,4,5].map(n=>[n,String(n)]), D["会話（1〜5）"], "s5")}<div class="seg-l"><span>静かに過ごしてもらう</span><span>たくさん話す</span></div></div>
-    <div class="f"><b style="font-size:.86rem">スタイルの決め方</b>${seg("prop", [1,2,3,4,5].map(n=>[n,String(n)]), D["提案（1〜5）"], "s5")}<div class="seg-l"><span>希望に寄り添う</span><span>どんどん提案する</span></div></div>
+    <div class="f"><b class="fl">施術中の会話</b>${seg("talk", [1,2,3,4,5].map(n=>[n,String(n)]), D["会話（1〜5）"], "s5")}<div class="seg-l"><span>静かに過ごしてもらう</span><span>たくさん話す</span></div></div>
+    <div class="f"><b class="fl">スタイルの決め方</b>${seg("prop", [1,2,3,4,5].map(n=>[n,String(n)]), D["提案（1〜5）"], "s5")}<div class="seg-l"><span>希望に寄り添う</span><span>どんどん提案する</span></div></div>
   </section>
-
-  <section><h2>あなたのこと</h2>
-    <p class="lead">お客さまとの共通点を見つけるために使います。答えたくない項目は空欄のままで大丈夫です。</p>
+  <section><h2>あなたのこと<small>答えたくない項目は空欄で大丈夫</small></h2>
     <div class="row2">
-      <label class="f">性別<small>「男性スタイリストがいい」などの希望に使います</small><select id="sex">${opts(OPT.sex, D["性別"], "選ぶ")}</select></label>
+      <label class="f">性別<select id="sex">${opts(OPT.sex, D["性別"], "選ぶ")}</select></label>
       <label class="f">年代 ${pubBox("年代")}<select id="age">${opts(OPT.age, D["年代"], "選ぶ")}</select></label>
-    </div>
-    <div class="row2">
       <label class="f">出身 ${pubBox("出身")}<select id="home">${opts(OPT.home, D["出身"], "選ぶ")}</select></label>
-      <label class="f">出身（くわしく・任意）<small>例：旭川、仙台</small><input type="text" id="homeD" maxlength="20" value="${esc(D["出身（くわしく）"])}"></label>
-    </div>
-  </section>
-
-  <section><h2>好きなこと・共通点<small>入れるほどマッチしやすい</small></h2>
-    <div class="row2">
+      <label class="f">出身（くわしく）<input type="text" id="homeD" maxlength="20" placeholder="例：旭川" value="${esc(D["出身（くわしく）"])}"></label>
       <label class="f">推しのジャンル ${pubBox("推し")}<select id="oshiG">${opts(OPT.oshi, D["推しのジャンル"], "選ぶ")}</select></label>
-      <label class="f">推しの名前<small>グループ名・チーム名など</small><input type="text" id="oshi" maxlength="40" value="${esc(D["推しの名前"])}"></label>
+      <label class="f">推しの名前<input type="text" id="oshi" maxlength="40" value="${esc(D["推しの名前"])}"></label>
     </div>
     <label class="f">学生時代の部活 ${pubBox("部活")}<select id="club">${opts(OPT.club, D["部活"], "選ぶ")}</select></label>
-    <div class="f"><b style="font-size:.86rem">ペット</b> ${pubBox("ペット")}${chips("pets", OPT.pets, D["ペット"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">趣味（いくつでも）</b> ${pubBox("趣味")}${chips("hobby", OPT.hobby, D["趣味"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">休日の過ごし方</b> ${pubBox("休日の過ごし方")}${chips("holiday", OPT.holiday, D["休日の過ごし方"], true)}</div>
-    <div class="f"><b style="font-size:.86rem">好きな音楽</b> ${pubBox("好きな音楽")}${chips("music", OPT.music, D["好きな音楽"], true)}</div>
-  </section>`;
+    <div class="f"><b class="fl">ペット ${pubBox("ペット")}</b>${chips("pets", OPT.pets, D["ペット"], true)}</div>
+    <div class="f"><b class="fl">趣味 ${pubBox("趣味")}</b>${chips("hobby", OPT.hobby, D["趣味"], true)}</div>
+    <div class="f"><b class="fl">休日の過ごし方 ${pubBox("休日の過ごし方")}</b>${chips("holiday", OPT.holiday, D["休日の過ごし方"], true)}</div>
+    <div class="f"><b class="fl">好きな音楽 ${pubBox("好きな音楽")}</b>${chips("music", OPT.music, D["好きな音楽"], true)}</div>
+  </section>
+  </details>`;
   wire();
   wirePhotos("staff");
-  $("wzOpen").onclick = openWizard;
+  $("specTap").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ const v = $("spec").value.trim(), t = b.textContent;
+    if (v.split(/[・、,]/).includes(t)) return; $("spec").value = (v ? v + "・" : "") + t; dirty(); });
+  $("q3save").onclick = async () => { if (await doSave(false)) refreshStaff(); };
+  document.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>openWizard(b.dataset.ch));
   const hpbCheck = () => { const v = $("hpbStyle").value.trim(), m = $("hpbStyleMsg");
     m.hidden = !v || (/^https:\/\/beauty\.hotpepper\.jp\//.test(v) && !/salonboard/i.test(v));
     m.textContent = /salonboard/i.test(v) ? "サロンボードのURLは使えません。お客さまが見るホットペッパービューティーのページのURLを入れてください。" : "https://beauty.hotpepper.jp/ で始まるURLを入れてください。"; };
   $("hpbStyle").oninput = () => { hpbCheck(); dirty(); }; hpbCheck();
   $("agree").onchange=dirty;
   document.querySelectorAll("[data-pub]").forEach(c=>c.onchange=dirty);
+  refreshStaff();
+}
+/* すすめる理由の見本（答えた内容だけで組み立てる） */
+function staffReasonsPv(){
+  const A = Object.assign({}, wzSaved()), out = [];
+  const get = (k, id) => A[k] != null ? (Array.isArray(A[k]) ? A[k] : [A[k]]) : ($(id) ? (document.querySelector(`[data-chips="${id}"]`) ? chipVal(id) : [$(id).value].filter(Boolean)) : []);
+  const worry = get("worry","worry"), please = get("please","please"), value = get("value","value");
+  if (worry[0]) out.push(`「${worry[0]}」の悩みが得意`);
+  if (please[0]) out.push(`「${please[0]}」で喜ばれている`);
+  if (value[0]) out.push(`「${value[0]}」を大事にしている`);
+  const talk = A.talk || Number(segVal("talk")) || 0;
+  if (talk && talk <= 2) out.push("静かに過ごしたい人も安心");
+  else if (talk >= 4) out.push("会話を楽しめるタイプ");
+  return out.slice(0, 4);
+}
+function refreshStaff(){
+  const q = quickDone(), left = ["photo","spec","line"].filter(k=>!q[k]).length;
+  $("q3s").innerHTML = !q.agree ? "まず「同意する」にチェック" : left ? `あと${left}つで、診断に出られます` : "<b>診断に出る準備ができました</b>";
+  previewStaff();
+}
+function previewStaff(){
+  const v = id => ($(id) && $(id).value || "").trim(), rs = staffReasonsPv();
+  const prof = [v("home") && "出身：" + v("home") + (v("homeD") ? "（" + v("homeD") + "）" : ""), v("club"), v("oshi") && "推し：" + v("oshi"), ...chipVal("hobby").slice(0,2)].filter(Boolean);
+  $("pv").innerHTML = `<article class="pc">
+    <div class="pc-b">
+      <div class="pc-st"><span class="av">${D.photo?`<img src="${esc(D.photo)}" alt="">`:esc((D.name||"?")[0])}</span><span><b>担当：${esc(D.name)} さん</b><small>スタイリスト歴${esc(v("years")||"〇")}年 ・ ${esc(v("spec")||"得意なこと")}</small></span></div>
+      <div class="pc-why"><b>${esc(D.name)}さんをすすめる理由</b><ul>${(rs.length?rs:["AISIとの会話に答えると、ここに理由が出ます"]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+      ${v("line")?`<div class="pc-c"><p>「${esc(v("line"))}」</p></div>`:""}
+      ${prof.length?`<div class="pc-t">${prof.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+      <div class="pc-btn">${esc(D.name)}さんで予約する</div>
+    </div></article>`;
 }
 function collectStaff(){
   return {
@@ -479,16 +783,16 @@ const WZ = [
    say:v => "ありがとう。マッチしたお客さんが、あなたのスタイルを見てから予約できるようにするね。"}
 ];
 const WZ_TOTAL = WZ.length;
-let wzI = 0, wzA = {};
+let wzI = 0, wzA = {}, wzOnly = "";
 const wzAnswered = () => WZ.filter(st => { const v = wzA[st.key]; return Array.isArray(v) ? true : v != null && v !== ""; }).length;
 function wzLog(html, me){ const log = $("wzLog"); const d = document.createElement("div");
   if (me){ d.className = "wz-me"; d.textContent = html; }
   else { d.className = "wz-m"; d.innerHTML = `<img src="${pickOne(WZ_IMG)}" alt=""><p>${esc(html)}</p>`; }
   log.appendChild(d); log.scrollTop = log.scrollHeight; }
 function wzProgress(){ const el = $("wzPg"); if (el) el.textContent = `${wzAnswered()} / ${WZ_TOTAL}問`; }
-function openWizard(){
+function openWizard(g){
   const saved = (D.wz && typeof D.wz === "object") ? D.wz : {};
-  wzI = 0; wzA = {};
+  wzI = 0; wzA = {}; wzOnly = WZ_GROUPS[g] ? g : "";
   const el = document.createElement("div"); el.className = "wz"; el.id = "wz"; el.setAttribute("role","dialog"); el.setAttribute("aria-label","AISIと話しながら入力する");
   el.innerHTML = `<div class="wz-h"><span>AISIと話しながら入力 <small id="wzPg" style="opacity:.7"></small></span><span class="wz-hb"><button type="button" id="wzSave">保存して、続きはあとで</button><button type="button" id="wzClose">閉じる</button></span></div><div class="wz-log" id="wzLog"></div><div class="wz-a"><div class="wz-ain" id="wzAns"></div></div>`;
   document.body.appendChild(el); document.body.style.overflow = "hidden";
@@ -496,6 +800,13 @@ function openWizard(){
   $("wzSave").onclick = () => wzSave(false);
   const startAt = Number(saved._i) || 0;
   const begin = () => {
+    if (wzOnly){                       /* 章ごと：その章の、まだ答えていない最初の質問から */
+      wzA = Object.assign({}, saved); delete wzA._i;
+      const qs = WZ.map((st,i)=>[st,i]).filter(([st])=>st.g===wzOnly), rest = qs.filter(([st])=>!wzHas(wzA, st));
+      wzI = (rest[0] || qs[0])[1];
+      wzLog(`「${WZ_GROUPS[wzOnly]}」の章だよ。${qs.length}問${rest.length && rest.length < qs.length ? `（残り${rest.length}問）` : ""}。答えたくないものは飛ばしていいからね。`);
+      wzProgress(); setTimeout(wzAsk, 350); return;
+    }
     if (startAt > 0 && startAt < WZ_TOTAL){
       wzLog(`${D.name}さん、おかえり。前回は ${startAt}問目まで答えてくれたよ。続きから始める？`);
       $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzFresh">最初から</button><button class="btn" type="button" id="wzCont">続きから</button></div>`;
@@ -515,12 +826,27 @@ function openWizard(){
     $("wzAgree").onclick = () => { $("agree").checked = true; dirty(); wzLog("同意して始める", true); $("wzAns").innerHTML = ""; setTimeout(begin, 300); };
   } else begin();
 }
-function closeWizard(){ const el = $("wz"); if (el) el.remove(); document.body.style.overflow = ""; }
+function closeWizard(){ const el = $("wz"); if (el) el.remove(); document.body.style.overflow = ""; if (MODE==="staff" && D) keepAndRender(); }
+/* 章の終わり：保存して、次の章へ進むか閉じるかを選ぶ */
+async function wzChapterEnd(){
+  const g = wzOnly, order = Object.keys(WZ_GROUPS);
+  await wzSave(true);
+  const left = order.filter(x => WZ.some(st => st.g === x && !wzHas(wzA, st)));
+  const next = order.slice(order.indexOf(g) + 1).concat(order).find(x => x !== g && left.includes(x));
+  wzLog(`「${WZ_GROUPS[g]}」の章はここまで。保存したよ。おつかれさま！`);
+  $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzEnd">閉じる</button>${next ? `<button class="btn" type="button" id="wzNext">次の章へ（${esc(WZ_GROUPS[next])}）</button>` : `<button class="btn" type="button" id="wzSum">AISIにまとめてもらう</button>`}</div>`;
+  $("wzEnd").onclick = closeWizard;
+  if (next) $("wzNext").onclick = () => { wzOnly = next; const qs = WZ.map((st,i)=>[st,i]).filter(([st])=>st.g===next), rest = qs.filter(([st])=>!wzHas(wzA, st));
+    wzI = (rest[0] || qs[0])[1]; wzLog(`次の章へ`, true); setTimeout(() => { wzLog(`「${WZ_GROUPS[next]}」の章だよ。`); wzAsk(); }, 300); };
+  else $("wzSum").onclick = () => { wzLog("まとめて", true); wzSummary(); };
+}
 function wzAsk(){
+  if (wzOnly && (wzI >= WZ_TOTAL || WZ[wzI].g !== wzOnly)) return wzChapterEnd();
   if (wzI >= WZ_TOTAL) return wzSummary();
   const st = WZ[wzI], prev = WZ[wzI-1];
-  /* テーマが変わるところで、自動で途中保存して、ひとこと添える */
-  if (prev && prev.g !== st.g){ wzSave(true); wzLog(`ここからは「${WZ_GROUPS[st.g]}」のこと。`); }
+  /* テーマが変わるところで、自動で途中保存して、ひとこと添える（章ごとのときは章の終わりで保存） */
+  if (wzOnly){}
+  else if (prev && prev.g !== st.g){ wzSave(true); wzLog(`ここからは「${WZ_GROUPS[st.g]}」のこと。`); }
   else if (!prev) wzLog(`まずは「${WZ_GROUPS[st.g]}」のこと。`);
   wzLog(st.q);
   wzProgress();
@@ -565,7 +891,7 @@ async function wzSave(silent){
   if (r && r.ok){
     if (r.done != null){ $("pct").textContent = r.done + "%"; $("bar").style.width = r.done + "%"; D["プロフィール充実度"] = r.done; }
     const m = $("msg"); m.className = "msg ok"; m.textContent = `保存しました（AISIとの会話：${wzAnswered()} / ${WZ_TOTAL}問）。診断結果にすぐ反映されます。`;
-    if (!silent){ wzLog(`ここまで保存したよ（${wzAnswered()} / ${WZ_TOTAL}問）。続きは、このページの「AISIと話しながら入力する」から、いつでも再開できる。`); setTimeout(closeWizard, 1600); }
+    if (!silent){ wzLog(`ここまで保存したよ（${wzAnswered()} / ${WZ_TOTAL}問）。続きは、章のボタンからいつでも再開できる。`); setTimeout(closeWizard, 1600); }
   } else if (!silent) wzLog("保存できなかった。電波の良いところで、もう一度「保存して、続きはあとで」を押してね。");
 }
 /* 第三者から見た紹介文（120字まで）。答えた内容だけで組み立てる */
@@ -590,12 +916,11 @@ function wzSummary(){
   const log = $("wzLog"), d = document.createElement("div"); d.className = "wz-sum";
   d.innerHTML = `<b>第三者から見た${esc(D.name)}さん</b><br>${esc(bio || "（答えが少なかったので、まとめられませんでした）")}${spec?`<br><small>得意なこと：${esc(spec)}</small>`:""}`;
   log.appendChild(d); log.scrollTop = log.scrollHeight;
-  setTimeout(() => wzLog("こんな感じの人だよね。これで大丈夫？　あとから下のフォームで、いつでも直せるよ。"), 300);
+  setTimeout(() => wzLog("こんな感じの人だよね。これで大丈夫？　「お客さまへのひとこと」に入れておくね。あとからいつでも直せるよ。"), 300);
   $("wzAns").innerHTML = `<div class="row"><button class="btn skip" type="button" id="wzRedo">最初からやり直す</button><button class="btn" type="button" id="wzOk">これでOK</button></div>`;
-  $("wzRedo").onclick = () => { D.wz = Object.assign({}, wzA, {_i: 0}); closeWizard(); openWizard(); };
-  $("wzOk").onclick = () => { wzApply(bio, spec); D.wz = Object.assign({}, wzA, {_i: WZ_TOTAL}); closeWizard();
-    const m = $("msg"); m.className = "msg ok"; m.textContent = "変更があります。AISIとの会話の内容を入れたので、確認して「保存する」を押してください。";
-    $("agree").scrollIntoView({behavior:"smooth", block:"center"}); };
+  $("wzRedo").onclick = () => { D.wz = Object.assign({}, wzA, {_i: 0}); closeWizard(); openWizard("tech"); };
+  $("wzOk").onclick = async () => { wzApply(bio, spec); D.wz = Object.assign({}, wzA, {_i: WZ_TOTAL}); await doSave(true); closeWizard();
+    const m = $("msg"); m.className = "msg ok"; m.textContent = "AISIのまとめを「お客さまへのひとこと」に入れて、保存しました。いつでも直せます。"; };
 }
 /* 会話の答えを、フォームに入れる（bio・spec は最後のまとめのときだけ） */
 function wzApply(bio, spec){
@@ -710,20 +1035,12 @@ async function load(){
     D = await r.json();
   }catch(e){ D=null; }
   if (!D || !D.ok){ $("title").textContent="ページを開けませんでした"; $("app").innerHTML=`<div class="center">リンクが古いか、間違っている可能性があります。「ぴたリスト サロン窓口」のメニューから、もう一度開いてください。</div>`; return; }
+  if (MODE==="salon" && location.hash==="#invite") sStep = SALON_STEPS.length - 1;
   MODE==="salon" ? renderSalon() : renderStaff();
   $("bottom").hidden=false;
+  if (MODE==="salon" && location.hash==="#invite" && D.invite) setTimeout(showQr, 400);
 }
-$("save").onclick=async()=>{
-  const b=$("save"), m=$("msg");
-  if (MODE==="staff" && !$("agree").checked){ m.className="msg err"; m.textContent="いちばん上の同意にチェックを入れてください。"; window.scrollTo({top:0,behavior:"smooth"}); return; }
-  b.disabled=true; b.textContent="保存中…";
-  const r = await api({type: MODE==="salon"?"save_salon":"save_staff", key:KEY, data: MODE==="salon"?collectSalon():collectStaff()});
-  b.disabled=false; b.textContent="保存する";
-  if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。"; if (r.done!=null){ $("pct").textContent=r.done+"%"; $("bar").style.width=r.done+"%"; }
-    if (r.near) m.textContent = "保存しました。住所の近くに、先に登録しているサロンがあるため、掲載の前に運営から確認のご連絡をします。";
-    else if (r.outside) m.textContent = "保存しました。2027年2月15日までは札幌市中央区のお店だけを掲載しています。運営から確認のご連絡をします。"; }
-  else { m.className="msg err"; m.textContent="保存できませんでした。電波の良いところで、もう一度お試しください。"; }
-};
+$("save").onclick=()=>doSave(false);
 window.addEventListener("beforeunload", e=>{ if ($("msg").textContent.startsWith("変更があります")){ e.preventDefault(); e.returnValue=""; } });
 load();
 </script>
