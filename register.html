@@ -35,7 +35,7 @@ section h2 small{font-weight:400;color:var(--ink-soft);font-size:.75rem}
 .lead{margin:-6px 0 0;font-size:.82rem;color:var(--ink-soft)}
 label.f{display:grid;gap:4px;font-size:.86rem;font-weight:500}
 label.f small{font-weight:400;color:var(--ink-soft);font-size:.76rem}
-input[type=text],input[type=url],input[type=email],input[type=number],select,textarea{font:inherit;font-size:16px;width:100%;border:1px solid #cfc9bd;border-radius:6px;padding:9px 11px;background:#fff;color:var(--ink)}
+input[type=text],input[type=url],input[type=email],input[type=number],input[type=tel],select,textarea{font:inherit;font-size:16px;width:100%;border:1px solid #cfc9bd;border-radius:6px;padding:9px 11px;background:#fff;color:var(--ink)}
 textarea{min-height:84px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -224,6 +224,8 @@ details.full[open]>section{margin-top:16px}
   .row4{grid-template-columns:1fr 1fr}
 }
 main:has(.wiz){max-width:1040px}
+.flow3.two{grid-template-columns:repeat(2,1fr)}
+.solo-note{background:#eef4fb;border:1px solid #c9d8ec;border-radius:8px;padding:10px 12px;font-size:.85rem}
 #save{white-space:nowrap;flex:none}
 @media (max-width:560px){
   .flow3 li{padding:6px;font-size:.7rem;gap:5px}
@@ -321,8 +323,10 @@ function meter(p, hint){ $("meterBox").hidden=false; $("pct").textContent=p+"%";
 /* ---------------- 共通：3ステップ・見本カード・自動保存 ---------------- */
 /* 全体の流れ（どの画面にも出す）。now＝いまの段階（1〜3） */
 function flow3(now){
-  const L = [["お店のこと","管理者・約10分"],["スタッフを招待","1分"],["スタッフが自分のことを入力","1人5分〜"]];
-  return `<ol class="flow3">${L.map(([t,s],i)=>`<li class="${i+1===now?"now":i+1<now?"done":""}"><b>${i+1}</b><span>${t}<small>${s}</small></span></li>`).join("")}</ol>`;
+  const solo = MODE==="salon" && D && D.solo;
+  const L = solo ? [["掲載のこと","約10分"],["あなたのプロフィール","5分〜"]] : [["お店のこと","管理者・約10分"],["スタッフを招待","1分"],["スタッフが自分のことを入力","1人5分〜"]];
+  if (solo && now > 2) now = 2;
+  return `<ol class="flow3${L.length===2?" two":""}">${L.map(([t,s],i)=>`<li class="${i+1===now?"now":i+1<now?"done":""}"><b>${i+1}</b><span>${t}<small>${s}</small></span></li>`).join("")}</ol>`;
 }
 /* AISIのひとこと（各画面のいちばん上） */
 function aisiSay(t, img){ return `<div class="say"><img src="img/aisi_face.webp" alt="AISI" onerror="this.src='img/${img||"aisi_point"}.webp'"><p>${t}</p></div>`; }
@@ -359,7 +363,7 @@ function salonChecks(){
   const v = id => ($(id) && $(id).value || "").trim();
   return [
     ["photo", "外観の写真", !!(D.photos && D.photos[0])],
-    ["basic", "住所と営業時間", !!(v("addr") && v("zone"))],
+    ["basic", D.solo ? "住所・電話番号・勤務先の確認" : "住所とオーナーのお名前", !!(v("addr") && v("zone") && (D.solo ? v("tel").replace(/\D/g,"").length >= 10 && v("work") : v("ownerN")))],
     ["menu", "一押しメニュー1つ", !!(v("m0n") && chipVal("mc0").length)],
     ["concept", "お店のひとこと", !!v("concept")],
     ["feat", "得意なこと", Object.values(featVals()).some(x=>x===1)]
@@ -370,7 +374,9 @@ const FZ = [["","ふつう"],[1,"得意"],[0,"していない"]];
 function featChip(k, l, v){ const s = v===""||v==null ? "" : (v>=.75?1:v<=.25?0:""); return `<button type="button" class="fz ${s===1?"on":s===0?"off":""}" data-f="${k}" data-v="${s}" aria-label="${esc(l)}：${s===1?"得意":s===0?"していない":"ふつう"}">${esc(l)}</button>`; }
 function featVals(){ const f={}; document.querySelectorAll("[data-f]").forEach(b=>{ const v=b.dataset.v; f[b.dataset.f] = v===""?"":Number(v); }); return f; }
 function renderSalon(){
-  $("kind").textContent="お店の登録"; $("title").textContent=D.name;
+  $("kind").textContent = D.solo ? "個人の掲載" : "お店の登録"; $("title").textContent=D.name;
+  if (D.solo){ SALON_STEPS[6].t = "あなたのプロフィール"; SALON_STEPS[6].say = "個人で掲載するときは、<b>あなた自身のプロフィール</b>も入れよう。最初の3つ（顔写真・得意なこと・ひとこと）だけで、診断に出られるよ。";
+    SALON_STEPS[1].say = "次は、<b>施術する場所の住所と、あなたの連絡先</b>。住所と電話番号は、お客さまには見せないよ。自宅の住所はいらないからね。"; }
   $("meterBox").hidden = true;
   const m = D.menus;
   const panel = (k, inner) => { const st = SALON_STEPS.find(x=>x.k===k), i = SALON_STEPS.indexOf(st);
@@ -389,8 +395,23 @@ function renderSalon(){
       ${D.photos&&D.photos[i]?`<button class="btn sub" type="button" data-del="${i+1}">削除</button>`:""}
     </div>`).join("")}</div>
     <p class="tip">人の顔が写っていない写真にしてください。横長の写真がきれいに出ます。</p>`)}
-  ${panel("basic", `
-    <label class="f">お店の住所<small>番地・建物名まで（お客さまには見せません）${D.pre?"。2027年2月15日までは、札幌市中央区のお店だけを紹介しています":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
+  ${panel("basic", (D.solo ? `
+    <div class="solo-note">個人として掲載しています（${esc(D["個人の活動名"]||"")}さん）。予約はあなたのLINEに届きます。</div>
+    <div class="row2">
+      <label class="f">本名<small>契約と請求の相手（お客さまには見せません）</small><input type="text" id="ownerN" maxlength="30" value="${esc(D["オーナーのお名前"])}"></label>
+      <label class="f">電話番号<small>必須・お客さまには見せません</small><input type="tel" id="tel" maxlength="20" inputmode="tel" placeholder="090-1234-5678" value="${esc(D["電話番号"])}"></label>
+    </div>
+    <label class="f">勤務先との確認<select id="work">${opts(["業務委託・面貸しなどで、個人で集客してよい契約","勤務先のオーナーの了承を得ている"], D["勤務先の確認"], "選ぶ")}</select></label>
+    <div class="row2">
+      <label class="f">美容師免許の番号<small>任意・申告だけ（画像はいりません）</small><input type="text" id="lic" maxlength="20" value="${esc(D["美容師免許番号"])}"></label>
+      <label class="f">本人確認のURL<small>ホットペッパーのスタイリストページかSNS</small><input type="url" id="purl" value="${esc(D["本人確認URL"])}"></label>
+    </div>
+    <label class="f">屋号<small>任意・請求書の宛名</small><input type="text" id="yago" maxlength="60" value="${esc(D["屋号・運営会社名"])}"></label>` : `
+    <div class="row2">
+      <label class="f">オーナーのお名前<small>必須</small><input type="text" id="ownerN" maxlength="30" value="${esc(D["オーナーのお名前"])}"></label>
+      <label class="f">屋号・運営会社名<small>請求書の宛名。店名と同じなら空欄</small><input type="text" id="yago" maxlength="60" value="${esc(D["屋号・運営会社名"])}"></label>
+    </div>`) + `
+    <label class="f">${D.solo ? "施術する場所の住所" : "お店の住所"}<small>番地・建物名まで（お客さまには見せません）${D.pre?"。2027年2月15日までは、札幌市中央区のお店だけを紹介しています":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
     <div class="row2">
       <label class="f">エリア<select id="zone">${opts(OPT.zone, D["エリア区分"], "選ぶ")}</select></label>
       <label class="f">エリアの表示<small>例：大通、円山</small><input type="text" id="area" value="${esc(D["エリア表示"])}"></label>
@@ -400,7 +421,7 @@ function renderSalon(){
       <label class="f">受付終了<select id="close">${opts([...Array(14)].map((_,i)=>[i+11,(i+11)+":00"]), D["受付終了（時）"])}</select></label>
     </div>
     <div class="f"><b class="fl">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
-    <div class="f"><b class="fl">スタッフの人数</b>
+    <div class="f"${D.solo?" hidden":""}><b class="fl">スタッフの人数</b>
       <div class="row4">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","受付"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>`)}
   ${panel("menu", [0].map(i=>`<div class="menu">
       <label class="f">メニュー名<input type="text" id="m${i}n" maxlength="40" placeholder="例：カット＋透明感カラー" value="${esc(m[i].name)}"></label>
@@ -432,7 +453,9 @@ function renderSalon(){
       <label class="f">予約の連絡を受け取るメール<small>LINEを登録していないときに使います</small><input type="email" id="mail" value="${esc(D["お店の通知メール"])}"></label>
       <p class="tip">LINE予約の特典：ぴたリストのLINEで予約したお客さまは、どのお店も共通で「${esc(D.perkCommon||"施術料金から500円引き")}」です（お会計のときにお店で値引き）。</p>
       <label class="f"${D.perkOwnOn?"":" hidden"}>お店独自の特典（任意）<input type="text" id="perk" maxlength="40" value="${esc(D["特典（AISIコードで予約したとき）"])}"></label></details>`)}
-  ${panel("staff", `
+  ${panel("staff", D.solo ? `
+    <div class="invite"><a class="btn" href="${esc(D.selfUrl||"#")}">あなたのプロフィールを入れる →</a>
+    <p class="tip">個人の掲載なので、スタッフの招待はありません。予約・お客さまの情報・請求の連絡は、すべてあなたのLINEに届きます。</p></div>` : `
     <ol class="mini3"><li><b>名前を追加</b>（下の欄）</li><li><b>招待メッセージを送る</b>か、<b>QRを見せる</b></li><li>スタッフが登録したら、LINEに届く<b>「承認する」</b>を押す</li></ol>
     <div class="addrow"><input type="text" id="newStaff" maxlength="20" placeholder="追加するスタッフの名前（例：ユウナ）"><button class="btn" type="button" id="addStaff">追加</button></div>
     <div class="invite" id="invite">${D.invite ? `
@@ -462,7 +485,7 @@ function renderSalon(){
     $("invCopy").onclick = async()=>{ try{ await navigator.clipboard.writeText(D.invite.text); $("invCopy").textContent="コピーしました"; }catch(e){ prompt("このメッセージをコピーしてください", D.invite.text); } setTimeout(()=>$("invCopy").textContent="メッセージをコピー",1800); };
     $("invQr").onclick = showQr;
   }
-  $("addStaff").onclick=async()=>{
+  if ($("addStaff")) $("addStaff").onclick=async()=>{
     const name=$("newStaff").value.trim(); if(!name) return;
     if (dirtyNow()) await doSave(true);
     const r = await api({type:"add_staff", key:KEY, name});
@@ -535,7 +558,9 @@ function collectSalon(){
     "コンセプト":$("concept").value, "メインターゲット":chipVal("target"), "お店の雰囲気":chipVal("mood"),
     "アピール：立地":$("ap1").value, "アピール：オーナーの考え方":$("ap2").value, "アピール：スタッフ・雰囲気":$("ap3").value,
     f, menus:[0,1,2].map(i=>({name:$(`m${i}n`).value, price:$(`m${i}p`).value, desc:$(`m${i}d`).value, min:$(`m${i}t`).value, cats:chipVal("mc"+i).map(l=>MENU_CATS.find(c=>c[1]===l)[0])})),
-    staffOn: D.staff.map((s,i)=>({name:s.name, on: document.querySelector(`[data-on="${i}"]`).checked}))
+    staffOn: D.staff.map((s,i)=>({name:s.name, on: document.querySelector(`[data-on="${i}"]`) ? document.querySelector(`[data-on="${i}"]`).checked : s.on})),
+    "オーナーのお名前": $("ownerN").value, "屋号・運営会社名": $("yago").value,
+    ...(D.solo ? {"電話番号": $("tel").value, "勤務先の確認": $("work").value, "美容師免許番号": $("lic").value, "本人確認URL": $("purl").value} : {})
   };
 }
 

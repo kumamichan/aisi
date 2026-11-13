@@ -393,6 +393,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <a class="btn more linkbtn" id="mSave" href="#" target="_blank" rel="noopener" hidden>LINEに診断結果を保存して、あとで予約する</a>
       <button class="btn more" id="mReq" type="button">メールで予約する</button>
       <a class="btn more linkbtn" id="mLink" href="#" target="_blank" rel="noopener">ホットペッパーで予約する（要望欄にコードを入力）</a>
+      <p class="fine rule">予約の時間は、美容師さんがあなたのために空けて待つ時間です。<b>前々日までなら変更・キャンセルは自由</b>。前日・当日はイエローカード（3枚でご利用停止）、連絡なしのキャンセルは1回でご利用停止です。<a href="user-terms/" target="_blank" rel="noopener">ご利用のきまり</a></p>
       <p class="fine">LINEなら、日時を選ぶだけでお店とのやり取りが進みます。ホットペッパービューティーとは連動していないため、ぴたリストからのリクエストはご希望の日時でお受けできない場合があります。お店の返事をもって確定となります。</p>
       <div class="row">
         <button class="btn more" id="mCopy" type="button">コードをコピー</button>
@@ -429,7 +430,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
       <div class="share" id="fShare"><b>お店に伝える内容（予約が確定したあとに届きます）</b>
         <small>AISIの診断で答えたことを、カウンセリングの参考としてお店に伝えます。<b>お店のスタッフのLINEにも届きます。</b>伝えたくない項目は「伝えない」にしてください。</small>
         <div id="fShareList"></div></div>
-      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスは、予約が確定したあとにだけ伝わります。<a href="privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました</label>
+      <label class="agree" for="fAgree"><input type="checkbox" id="fAgree"> 予約のため、入力した内容をこのお店に伝えること（お名前・電話番号・メールアドレスは、予約が確定したあとにだけ伝わります。<a href="privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>）に同意します。ご希望の日時でお受けできない場合があり、お店からの返信メールで確定することも了解しました。<br><b>前日・当日の変更・キャンセルはイエローカード（3枚でご利用停止）、連絡なしのキャンセルは1回でご利用停止</b>になる<a href="user-terms/" target="_blank" rel="noopener">ご利用のきまり</a>にも同意します</label>
       <p class="ferr" id="fErr" hidden></p>
       <button class="btn book" type="submit" id="fSend">リクエストを送る</button>
       <button class="btn more" type="button" id="fBack">戻る</button>
@@ -2137,7 +2138,7 @@ function cardHTML(x,i){
     ${ph.length ? `<div class="shop-gal ${ph.length===1||i>0?"one":""}">${(i===0?ph.slice(0,3):ph.slice(0,1)).map((u,k)=>`<img src="${esc(u)}" alt="${esc(s.name)}の${k===0?"外観":"店内"}" loading="lazy">`).join("")}${s.sample&&!(s.photos||[]).length?`<span class="lb">写真はイメージです</span>`:""}</div>` : ""}
     <div class="card-h">
       <div class="rank"><span>${i===0?"いちばんのおすすめ":i===1?"第2位":"第3位"}</span><span class="pct ${x.score<GOAL?"low":""}">${Math.round(x.score)}<small>%</small></span></div>
-      <h3 class="name">${esc(s.name)}${s.sample?`<span class="sample">サンプル</span>`:""}</h3>
+      <h3 class="name">${esc(s.name)}${s.sample?`<span class="sample">サンプル</span>`:""}${s.solo?`<span class="sample">個人で掲載</span>`:""}</h3>
       <div class="area">${esc(s.area)} ・ ${esc(s.price)}</div>
       ${availOf(s) ? `<div class="availb">${availOf(s)}</div>`:""}
       ${s.rating && s.rating.n >= 3 ? `<div class="rate">★${s.rating.avg.toFixed(1)}<small>（来店したお客さま ${s.rating.n}人${s.rating.again!=null?` ・ また行きたい ${s.rating.again}%`:""}）</small></div>`:""}
@@ -2282,7 +2283,7 @@ document.getElementById("vForm").onsubmit=async(e)=>{
   try{
     const res = await fetch(CONFIG.GAS_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
     const j = await res.json(); ok = !!j.ok; rid = j.rid || "";
-    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err(j.error==="busy" ? "送信が続いたため、いったん受付を止めています。時間をおいてお試しください。" : "送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
+    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err(j.error==="blocked" ? "前の無断キャンセルや、前日・当日のキャンセルが3回あったため、いまはぴたリストからの予約をご利用いただけません。事情がある場合は、ぴたリストの公式LINEからご連絡ください。" : j.error==="busy" ? "送信が続いたため、いったん受付を止めています。時間をおいてお試しください。" : "送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
   }catch(ex){
     /* 返事が読めなくても届いていることが多いので、届かなかった場合に備えて案内する */
     try{ await fetch(CONFIG.GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body}); ok = true; }catch(ex2){}

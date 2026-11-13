@@ -158,7 +158,8 @@ function card(q){
       <div class="prop"><input type="datetime-local" step="1800" aria-label="別の日時" data-dt="${esc(q.rid)}"><button type="button" class="btn sub" data-act="prop" data-rid="${esc(q.rid)}">この日時を提案</button></div>
       <div class="acts"><button type="button" class="btn ng" data-act="ng" data-rid="${esc(q.rid)}">受けられない</button></div>`;
   } else if (q.state === ST.OK) {
-    acts = `<div class="acts"><button type="button" class="btn ok" data-act="visit" data-rid="${esc(q.rid)}">来店した</button><button type="button" class="btn ng" data-act="noshow" data-rid="${esc(q.rid)}">来なかった・キャンセル</button></div>`;
+    acts = `<div class="acts"><button type="button" class="btn ok" data-act="visit" data-rid="${esc(q.rid)}">来店した</button><button type="button" class="btn sub" data-act="cancel" data-rid="${esc(q.rid)}">前々日までにキャンセルの連絡があった</button><button type="button" class="btn sub" data-act="late" data-rid="${esc(q.rid)}">前日・当日にキャンセルの連絡があった</button><button type="button" class="btn ng" data-act="noshow" data-rid="${esc(q.rid)}">連絡なしで来なかった</button></div>
+      <small style="color:#5a6274;display:block;margin-top:4px">前日・当日のキャンセルはお客さまにイエローカード（3枚で利用停止）、連絡なしは1回で利用停止（3日間はお客さまの事情を確認）になります。</small>`;
   }
   return `<article class="card ${cls}">
     <div class="c-h"><span class="when">${esc(when)}</span><span class="pill ${pill}">${esc(q.state)}</span></div>
