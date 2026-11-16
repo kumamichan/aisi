@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ぴたリスト 札幌サロン診断</title>
-<meta name="description" content="ぴたリストがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタイリストを見つけます。">
+<meta name="description" content="ぴたリストがいくつかの質問から、札幌であなたに合う美容室3軒と担当スタッフを見つけます。">
 <meta property="og:title" content="ぴたリスト 札幌サロン診断">
 <meta property="og:description" content="質問に答えるだけ。AISIが札幌であなたに合う美容室と担当者を見つけます。">
 <meta property="og:type" content="website">
@@ -421,7 +421,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
         <label for="fT3">時間<select id="fT3"></select></label>
       </div>
       <p class="fine" id="fSoon" hidden>今日・明日は埋まっていることが多いので、候補を2〜3個出すと取りやすくなります。</p>
-      <label class="agree" for="fOmk"><input type="checkbox" id="fOmk" checked> 指名のスタイリストが埋まっていたら、同じお店の別のスタイリストでもOK</label>
+      <label class="agree" for="fOmk"><input type="checkbox" id="fOmk" checked> 指名のスタッフが埋まっていたら、同じお店の別のスタッフでもOK</label>
       <div class="fimg"><span>なりたい髪型のイメージ画像（任意・3枚まで）</span>
         <label class="fimg-btn" for="fImg">画像を選ぶ</label><input type="file" id="fImg" accept="image/*" multiple hidden>
         <div class="fimg-list" id="fImgList"></div>
@@ -547,7 +547,7 @@ const SAMPLE_HAIR = {"s1": {"volume": 0.6, "thin": 0.5, "bangs": 0.9, "easy": 0.
 /* お店独自の特典の例（今は使っていません。共通の500円引きに足すときに） */
 const SAMPLE_PERKS = ["初回カラー20%オフ", "髪質改善トリートメント無料", "炭酸スパ無料", "初回トリートメント無料", "ケアブリーチ無料", "子ども前髪カット無料", "ヘッドスパ10分延長", "炭酸泉無料", "ホームケアサンプル付き", "カラー500円オフ", "オーダーメイドトリートメント無料", "ヘッドスパ10分延長"];
 SALONS.forEach((s,i)=>{ s.sample=true; s.bookUrl=""; s.perk=CONFIG.PERK; s.menus=SAMPLE_MENUS[s.id]||[]; s.staff.forEach(st=>st.p=SAMPLE_PROFILES[st.id]||{}); Object.assign(s.f, SAMPLE_HAIR[s.id]||{}); const e=EXTRA[s.id]; Object.assign(s.f, e.f); s.zone=e.zone; s.open=e.open; s.close=e.close; s.closed=e.closed; });
-/* サンプルのスタイリストの「美容師としての価値」（喜ばれること・大事にしていること・得意な悩み・ホームケア提案） */
+/* サンプルのスタッフの「美容師としての価値」（喜ばれること・大事にしていること・得意な悩み・ホームケア提案） */
 const SAMPLE_VALUES = {"s1a": [["色の美しさ・透明感", "似合わせの提案"], ["写真でイメージを共有する", "家でのケア方法を教える"], ["ブリーチ毛", "ダメージ毛"], "しっかり提案する"], "s1b": [["似合わせの提案", "再現性（家でも同じに）"], ["切る前に長さ・仕上がりを確認する", "最初から最後まで自分が担当する"], ["似合う髪型が分からない", "前の美容室での失敗"], "聞かれたら提案する"], "s2a": [["扱いやすさ", "傷ませない"], ["髪の状態を正直に伝える", "会話の量をお客様に合わせる"], ["くせ毛・うねり", "ダメージ毛"], "聞かれたら提案する"], "s2b": [["傷ませない", "扱いやすさ"], ["無理なすすめはしない", "追加料金は事前に説明する"], ["ダメージ毛", "くせ毛・うねり"], "すすめない"], "s3a": [["時短", "再現性（家でも同じに）"], ["追加料金は事前に説明する", "切る前に長さ・仕上がりを確認する"], ["白髪", "多い髪・広がり"], "聞かれたら提案する"], "s3b": [["似合わせの提案", "リラックス・癒し"], ["会話の量をお客様に合わせる", "写真でイメージを共有する"], ["似合う髪型が分からない", "細い髪・ボリューム不足"], "聞かれたら提案する"], "s4a": [["若々しさ・エイジングケア", "扱いやすさ"], ["髪の状態を正直に伝える", "家でのケア方法を教える"], ["白髪", "細い髪・ボリューム不足", "頭皮の悩み"], "しっかり提案する"], "s4b": [["再現性（家でも同じに）", "扱いやすさ"], ["無理なすすめはしない", "会話の量をお客様に合わせる"], ["くせ毛・うねり", "多い髪・広がり"], "すすめない"], "s5a": [["色の美しさ・透明感", "似合わせの提案"], ["写真でイメージを共有する", "最初から最後まで自分が担当する"], ["ブリーチ毛", "前の美容室での失敗"], "聞かれたら提案する"], "s5b": [["傷ませない", "色の美しさ・透明感"], ["追加料金は事前に説明する", "写真でイメージを共有する"], ["ダメージ毛", "ブリーチ毛"], "しっかり提案する"], "s6a": [["時短", "リラックス・癒し"], ["会話の量をお客様に合わせる", "追加料金は事前に説明する"], ["似合う髪型が分からない", "多い髪・広がり"], "すすめない"], "s6b": [["扱いやすさ", "再現性（家でも同じに）"], ["切る前に長さ・仕上がりを確認する", "無理なすすめはしない"], ["くせ毛・うねり", "前の美容室での失敗"], "聞かれたら提案する"], "s7a": [["似合わせの提案", "若々しさ・エイジングケア"], ["切る前に長さ・仕上がりを確認する", "髪の状態を正直に伝える"], ["似合う髪型が分からない", "前の美容室での失敗"], "聞かれたら提案する"]};
 SALONS.forEach(s=>s.staff.forEach(st=>{ const v=SAMPLE_VALUES[st.id]; if (v) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]}); }));
 
@@ -642,12 +642,12 @@ const HAIR_QUESTIONS = [
  {id:"q_walkin",t:"予約は、前日や当日に入れることが多い？",sf:"walkin",w:1.2,label:"直前予約"},
  {id:"q_kids",t:"子どもを連れて行くことがある？",sf:"kids",w:1.2,label:"子連れOK"},
  {id:"q_mens",t:"メンズのスタイルを相談したい？",sf:"mens",w:1.3,label:"メンズ"},
- {id:"q_young",t:"担当スタイリストは、自分と年の近い人のほうが話しやすい？",tf:"young",w:1.5,staff:1,label:"年の近い担当",
+ {id:"q_young",t:"担当スタッフは、自分と年の近い人のほうが話しやすい？",tf:"young",w:1.5,staff:1,label:"年の近い担当",
    skipIf:{q_veteran:v=>v>=.75}},
  /* 「年の近い人がいい」と答えた人には聞かない。「いいえ」と答えた人には、つなぎの言葉を付けて聞く */
- {id:"q_veteran",t:"担当スタイリストは、経験10年以上のベテランがいい？",tf:"veteran",w:1.5,staff:1,label:"ベテラン",
-   skipIf:{q_young:v=>v>=.75}, after:{q_young:[v=>v<=.25,"年が近いかどうかは気にしないんだね。じゃあ……担当スタイリストは、経験10年以上のベテランがいい？"]}},
- {id:"q_male",t:"担当スタイリストは、男性がいい？",tf:"male",w:1.2,staff:1,label:"男性スタイリスト"},
+ {id:"q_veteran",t:"担当スタッフは、経験10年以上のベテランがいい？",tf:"veteran",w:1.5,staff:1,label:"ベテラン",
+   skipIf:{q_young:v=>v>=.75}, after:{q_young:[v=>v<=.25,"年が近いかどうかは気にしないんだね。じゃあ……担当スタッフは、経験10年以上のベテランがいい？"]}},
+ {id:"q_male",t:"担当スタッフは、男性がいい？",tf:"male",w:1.2,staff:1,label:"男性スタッフ"},
  {id:"q_propose",t:"自分で決めるより、似合うスタイルを提案してほしい？",tf:"propose",w:1.3,staff:1,label:"提案してほしい"},
  /* ===== メニューの深掘り（選んだメニューだけ、最初に聞く）=====
     cat=メニューの種類、kw=お店の一押しメニュー（名前・内容）・タグ・スタッフの得意技術から探す言葉 */
@@ -720,6 +720,8 @@ function salonsFor(theme){
   return SALONS.filter(s => wantSpa || !spaOnly(s));
 }
 const hasFeat = q => !!(q.sf || q.kw || q.fn);
+/* 担当の呼び方：ヘッドスパのテーマでは「スパニスト」、それ以外は「スタッフ」 */
+const ROLE = () => (typeof S !== "undefined" && S && S.theme === "spashop") ? "スパニスト" : "スタッフ";
 /* 深掘りの言葉を、正規表現にしておく */
 HAIR_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
 const DEEP_COVERS = { q_short:["d_cut_short"], q_gray:["d_col_gray"], q_design:["d_col_bright","d_col_inner"], q_fast:["d_cut_quick"],
@@ -752,7 +754,7 @@ const ANSWERS = [["はい",1],["いいえ",0],["わからない",null],["たぶ�
 const SOON = ["ネイルサロンを探す"];
 const THEMES = {
   salon:{label:"美容室を探す",boost:{}},
-  staff:{label:"担当スタイリストを探す",boost:{staff:1.5}},
+  staff:{label:"担当スタッフを探す",boost:{staff:1.5}},
   spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}},
   spashop:{label:"ヘッドスパのお店を探す",boost:{}}
 };
@@ -791,7 +793,7 @@ function qWeight(q, theme){
   const lifelong = typeof S !== "undefined" && S && S.cond && S.cond.tension === "lifelong";
   return q.w * (b[q.id] || 1) * (q.staff && b.staff ? b.staff : 1) * (q.staff && lifelong ? 1.3 : 1);
 }
-/* お客さまとスタイリストの年の近さ（お客さまが年代を選んだときだけ。選んでいなければ「若手かどうか」で判断） */
+/* お客さまとスタッフの年の近さ（お客さまが年代を選んだときだけ。選んでいなければ「若手かどうか」で判断） */
 const AGE_N = {"10代":1,"20代":2,"20代前半":2,"20代後半":2.5,"30代":3,"40代":4,"50代以上":5};
 function ageNear(st){
   const me = COND && AGE_N[COND.age], them = st.p && AGE_N[st.p.age];
@@ -958,7 +960,7 @@ function loadData(){
   if (!CONFIG.GAS_URL){ dataReady = Promise.resolve(); return; }
   dataReady = fetch(CONFIG.GAS_URL + "?action=data").then(r=>r.json()).then(d=>{
     if (d && Array.isArray(d.salons) && d.salons.length >= 3) SALONS = d.salons;
-    /* サンプルのお店で、まだ「価値」が入っていないスタイリストには、見本の値を入れておく */
+    /* サンプルのお店で、まだ「価値」が入っていないスタッフには、見本の値を入れておく */
     SALONS.forEach(x=>(x.staff||[]).forEach(st=>{ const v=SAMPLE_VALUES[st.id]; st.p=st.p||{}; if (x.sample && v && !(st.p.please||[]).length) Object.assign(st.p, {please:v[0], value:v[1], worry:v[2], homecare:v[3]}); }));
     /* サンプルのお店のスタッフには、じっくり質問の「得意なお客さん」も見本で入れておく（デモで違いが分かるように） */
     SALONS.forEach(x=>{ if (!x.sample) return; (x.staff||[]).forEach(st=>{ st.p=st.p||{}; if (st.p.jk && Object.keys(st.p.jk).length) return;
@@ -1411,7 +1413,7 @@ async function analyzePhoto(url){
 }
 
 /* ============ 相性（共通点）============
- 上位のお店が同じくらいのとき、スタイリストとの共通点を聞いて、担当者まで決める */
+ 上位のお店が同じくらいのとき、スタッフとの共通点を聞いて、担当者まで決める */
 const AFF_Q = [
   {key:"pets",    q:"ちょっと聞いてもいい？ ペットは飼ってる？（飼いたい、でもOK）", multi:true,  none:"いない"},
   {key:"oshiGenre",q:"推しはいる？", multi:false, none:"いない", name:true},
@@ -1432,14 +1434,14 @@ function staffValues(st, key){
   if (Array.isArray(v)) return v.filter(x=>x && x!=="いない");
   return v && v!=="いない" && v!=="その他" ? [v] : [];
 }
-/* 聞く価値のある質問（候補のスタイリストの誰かが登録している項目） */
+/* 聞く価値のある質問（候補のスタッフの誰かが登録している項目） */
 function affQuestions(top){
   const staff = top.flatMap(r=>r.salon.staff);
   return AFF_Q.map(a=>{
     const vals = {}; staff.forEach(st=>staffValues(st,a.key).forEach(v=>vals[v]=(vals[v]||0)+1));
     const keys = Object.keys(vals);
     const found = keys.sort((x,y)=>vals[y]-vals[x]);
-    /* よくある選択肢は、候補のスタイリストにいなくても必ず出す（それ以外は、候補のスタイリストが登録している内容） */
+    /* よくある選択肢は、候補のスタッフにいなくても必ず出す（それ以外は、候補のスタッフが登録している内容） */
     const always = AFF_ALWAYS[a.key] || [];
     const opts = always.concat(found.filter(v=>!always.includes(v))).slice(0, always.length ? 16 : 10);
     return Object.assign({}, a, {opts, spread: keys.length});
@@ -1510,10 +1512,10 @@ function startPersonal(){
       <div class="bubble">
         <p class="qno">お店は見えてきた</p>
         ${S.say?`<p class="aside">${esc(S.say)}</p>`:""}
-        <p class="voice">……だいたい分かった。<br>ここからは、君の担当スタイリストを決めたい。<br>ちょっと、個人的なこと聞いていい？</p>
+        <p class="voice">……だいたい分かった。<br>ここからは、君の担当${ROLE()}を決めたい。<br>ちょっと、個人的なこと聞いていい？</p>
       </div>
       <div class="choices"><button class="choice primary" type="button" id="pYes">いいよ</button><button class="choice" type="button" id="pNo">聞かずに結果を見る</button></div>
-      <p class="note">答えた内容は、担当スタイリストとの共通点を探すためだけに使います。</p>
+      <p class="note">答えた内容は、担当${ROLE()}との共通点を探すためだけに使います。</p>
     </div>
   </section>`;
   aisiReact("personal"); typeVoice($app.querySelector(".bubble .voice"));
@@ -1536,7 +1538,7 @@ function personalDone(){
     <div class="aisi">${aisiImg("thumb")}</div>
     <div class="panel">
       ${meterHTML(S.meter)}
-      <div class="bubble"><p class="voice">分かった、ありがとう。<br>じゃあ、君に合うお店と、担当スタイリストを伝えるね。</p></div>
+      <div class="bubble"><p class="voice">分かった、ありがとう。<br>じゃあ、君に合うお店と、担当${ROLE()}を伝えるね。</p></div>
       <div class="choices"><button class="choice primary" type="button" id="pShow">結果を見る</button></div>
     </div>
   </section>`;
@@ -2146,7 +2148,7 @@ function cardHTML(x,i){
     </div>
     <div class="card-b">
       <div class="staff">
-        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>担当：${esc(st.name)} さん</b><small>${spaOnly(s)?"経験":"スタイリスト歴"}${st.years}年 ・ ${esc(st.spec)}</small></div></div>
+        <div class="staff-h"><div class="avatar">${faceOf(st,s)?`<img src="${esc(faceOf(st,s))}" alt="${esc(st.name)}さん" loading="lazy">`:esc(st.name[0]||"")}</div><div><b>担当：${esc(st.name)} さん</b><small>経験${st.years}年 ・ ${esc(st.spec)}</small></div></div>
         ${rs.length?`<div class="why top3"><b>${esc(st.name)}さんをすすめる理由</b><ul>${rs.slice(0,3).map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`:""}
         ${style ? `<a class="stylelink" href="${esc(style)}" target="_blank" rel="noopener" data-style="${esc(s.id)}">${esc(st.name)}さんのスタイル写真を見る（ホットペッパー）</a>`
           : s.sample ? `<p class="fine stylenone">本番では、ここから${esc(st.name)}さんのスタイル写真（ホットペッパービューティー）を見られます。</p>` : ""}

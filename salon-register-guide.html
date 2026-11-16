@@ -226,6 +226,23 @@ footer a{color:#c9ced8;margin:0 8px}
 .step0 span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .step0 i{font-style:normal;color:var(--gold);align-self:center}
 @media (max-width:860px){.gs,.gs.rev{grid-template-columns:1fr;gap:18px}.gs.rev .gs-img{order:0}}
+
+/* 予約が入ったときのLINEのやり取り */
+.lx{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:18px}
+.lx figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.lx img{width:100%;height:auto;border-radius:10px;display:block}
+.lx .n{font-weight:700;font-size:.86rem}.lx .n b{display:inline-block;min-width:1.6em;text-align:center;background:var(--green);color:#fff;border-radius:99px;margin-right:4px}
+.lx .who2{font-size:.72rem;color:#6b7280}
+.lx figcaption{font-size:.82rem;line-height:1.6}
+.one{margin-top:18px;background:#fff8e6;border:2px solid #ecc770;border-radius:14px;padding:16px 18px}
+.one b.big{display:block;font-size:1.05rem;margin-bottom:6px}
+.one ul{margin:6px 0 0;padding-left:1.3em}
+.lk{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.lk a{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:10px;font-weight:700;font-size:.88rem;text-decoration:none;background:#fff;border:1.5px solid var(--green);color:var(--green-d)}
+.lk a.pri{background:var(--green);color:#fff;box-shadow:0 3px 0 var(--green-d)}
+.lk small{display:block;width:100%;font-size:.76rem;color:#6b7280}
+.af .lk{margin-top:8px}.af .lk a{padding:6px 10px;font-size:.8rem}
+@media (max-width:860px){.lx{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -251,7 +268,25 @@ footer a{color:#c9ced8;margin:0 8px}
   <div class="sec-h"><span class="en">BEFORE</span><h2>はじめに：LINEで相談して、プランを決める</h2></div>
   <div class="guide"><span class="av"><img src="img/aisi_face.webp" alt="AISI"></span><p class="gb">プランが決まると、サロンさま窓口のLINEに<b>「登録をはじめる」ボタン</b>が届きます。押して<b>「管理者」</b>を選ぶと、お店の登録ページのリンクが届きます。</p></div>
   <div class="step0"><span>相談</span><i>→</i><span>プラン決定</span><i>→</i><span>申し込み確定</span><i>→</i><span class="on">「登録をはじめる」→「管理者」</span><i>→</i><span>登録ページへ</span></div>
+  <div class="lk"><a class="pri" data-oa="掲載の相談" href="#">LINEで掲載を相談する</a><a data-open href="#">サロンさま窓口LINEを開く</a><small>まだ友だち追加していない場合は、「サロンさま窓口LINEを開く」から追加してください。</small></div>
 </div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="sec-h"><span class="en">RESERVATION</span><h2>予約が入ったときの<br>LINEのやり取り</h2><p>お客さまとお店のLINEは、実際にこのような画面になります（画面はサンプルです。タップすると大きく見られます）。</p></div>
+  <div class="one"><b class="big">お店に届くのは、日時・メニュー・料金がまとまった「1枚のカード」だけです。</b>
+    <ul><li>カードには、第1・第2希望の日時、メニュー、料金、担当の希望がまとめて書かれています</li>
+    <li>お店は<b>「第1希望でOK」などのボタンを1回押すだけ</b>。お客さまとの細かいやり取りはいりません</li>
+    <li>お名前と電話番号は、予約が確定したあとに届きます</li></ul></div>
+  <div class="lx">
+    <figure><span class="n"><b>1</b>リクエスト</span><span class="who2">お客さまのLINE</span><a href="img/line_c_request.webp" target="_blank" rel="noopener"><img src="img/line_c_request.webp" alt="お客さまが日時を選んで予約をリクエストする画面" loading="lazy"></a><figcaption>お客さまが診断結果から日時を選んで、リクエストします。</figcaption></figure>
+    <figure><span class="n"><b>2</b>カードが届く</span><span class="who2">お店のLINE</span><a href="img/line_s_request.webp" target="_blank" rel="noopener"><img src="img/line_s_request.webp" alt="お店に届く予約リクエストのカード" loading="lazy"></a><figcaption>日時・メニュー・料金が1枚にまとまって届きます。ボタンを1回押して返事します。</figcaption></figure>
+    <figure><span class="n"><b>3</b>お客さまが確定</span><span class="who2">お客さまのLINE</span><a href="img/line_c_confirm.webp" target="_blank" rel="noopener"><img src="img/line_c_confirm.webp" alt="お客さまに届く返事と確定ボタン" loading="lazy"></a><figcaption>お店の返事がお客さまに届き、お客さまが「確定」を押します。</figcaption></figure>
+    <figure><span class="n"><b>4</b>予約確定</span><span class="who2">お店のLINE</span><a href="img/line_s_confirmed.webp" target="_blank" rel="noopener"><img src="img/line_s_confirmed.webp" alt="お店に届く予約確定のお知らせ" loading="lazy"></a><figcaption>「予約確定」と、お客さまのお名前・電話番号・診断の答えが届きます。</figcaption></figure>
+    <figure><span class="n"><b>5</b>来店の確認</span><span class="who2">お店のLINE</span><a href="img/line_s_visit.webp" target="_blank" rel="noopener"><img src="img/line_s_visit.webp" alt="来店後に届く来店確認のカード" loading="lazy"></a><figcaption>予約日のあとに届くカードで、4つのボタンから1つ押します。</figcaption></figure>
+  </div>
+  <p style="margin-top:14px;font-size:.9rem">来店の確認で「前日・当日キャンセル（連絡あり）」を押すとお客さまにイエローカード、「来なかった（連絡なし）」を押すとレッドカードがつきます。前々日までの連絡は、カードはつきません。</p>
+</div></section>
+
 
 <section class="alt"><div class="wrap">
   <div class="gs">
@@ -266,6 +301,7 @@ footer a{color:#c9ced8;margin:0 8px}
         <li><b>得意なこと</b>：得意なものだけタップ</li>
       </ol>
       <p style="margin-top:12px">「保存して次へ」で自動で保存されます。上の<b>「診断に出る準備：あと〇つ」</b>がゼロになれば準備完了。運営が確認して、診断に出します。メニュー2・3やアピールは「もっと選ばれるために」から、あとで足せます。</p>
+      <div class="lk"><a class="pri js-reg" data-oa="お店情報" href="#">お店の登録ページを開く</a><small class="js-regnote">サロンさま窓口のトークで「お店情報」と送ると、登録ページのリンクが届きます（管理者だけ）。</small></div>
     </div>
     <figure class="gs-img" style="margin:0"><img src="img/guide_salon.webp" alt="お店の登録画面（左が入力、右がお客さまに見える見本）" loading="lazy"><figcaption>実際の登録画面（サンプルのお店）</figcaption></figure>
   </div>
@@ -282,6 +318,7 @@ footer a{color:#c9ced8;margin:0 8px}
         <li>スタッフが登録すると、管理者のLINEに<b>「承認する」</b>が届くので押す</li>
       </ol>
       <p style="margin-top:12px">スタッフごとに「招待中 → 承認待ち → 入力中 → 診断に出ています」と表示されるので、誰がどこまで進んだかひと目で分かります。サロンさま窓口のトークで<b>「招待」</b>と送っても、招待メッセージとQRコードが出ます。</p>
+      <div class="lk"><a class="pri js-inv" data-oa="招待" href="#">招待の画面を開く</a><a data-oa="招待" href="#">LINEで「招待」と送る</a></div>
     </div>
     <figure class="gs-img" style="margin:0;max-width:380px;justify-self:center"><img src="img/guide_invite.webp" alt="スタッフを招待する画面" loading="lazy"><figcaption>スタッフを招待する画面</figcaption></figure>
   </div>
@@ -298,6 +335,7 @@ footer a{color:#c9ced8;margin:0 8px}
         <li>答えるほど、見本の<b>「すすめる理由」</b>が増えていきます</li>
       </ol>
       <p style="margin-top:12px">出身・推し・部活などは、項目ごとに「公開」を外せます。外した項目はマッチングにだけ使い、画面には出ません。</p>
+      <div class="lk"><a class="pri" data-open href="#">サロンさま窓口LINEを開く（スタッフ用）</a><a data-oa="プロフィール" href="#">LINEで「プロフィール」と送る</a><small>スタッフの方は、届いた招待メッセージのリンクから登録します。登録後は「プロフィール」と送ると、自分のページが開けます。</small></div>
     </div>
     <div class="gs-img phone2"><figure style="margin:0"><img src="img/guide_quick.webp" alt="最初の3つを入れる画面" loading="lazy"><figcaption>最初の3つ</figcaption></figure><figure style="margin:0"><img src="img/guide_chap.webp" alt="AISIとの会話の5つの章" loading="lazy"><figcaption>AISIとの会話（5つの章）</figcaption></figure></div>
   </div>
@@ -306,13 +344,14 @@ footer a{color:#c9ced8;margin:0 8px}
 <section><div class="wrap">
   <div class="sec-h"><span class="en">AFTER</span><h2>あとから直すとき・困ったとき</h2></div>
   <div class="after">
-    <div class="af"><b>お店の情報を直す</b><p>サロンさま窓口LINEの下のメニュー<code>お店情報を編集</code>（管理者だけ）</p></div>
-    <div class="af"><b>自分のプロフィールを直す</b><p>同じメニューの<code>自分のプロフィール</code>（スタッフ本人）</p></div>
-    <div class="af"><b>スタッフを増やす</b><p>トークで<code>招待</code>と送る。登録ページの「スタッフを招待」からも</p></div>
-    <div class="af"><b>スタッフが辞めたとき</b><p>トークで<code>スタッフの管理</code>→ その人の「外す」。予約が届かなくなり、スタッフ料金にも数えません</p></div>
+    <div class="af"><b>毎月のレポートを見る</b><p>トークで<code>レポート</code>と送ると、診断に出た回数や予約の数が届きます</p><div class="lk"><a data-oa="レポート" href="#">「レポート」と送る</a></div></div>
+    <div class="af"><b>お店の情報を直す</b><p>サロンさま窓口LINEの下のメニュー<code>お店情報を編集</code>（管理者だけ）</p><div class="lk"><a data-oa="お店情報" href="#">「お店情報」と送る</a></div></div>
+    <div class="af"><b>自分のプロフィールを直す</b><p>同じメニューの<code>自分のプロフィール</code>（スタッフ本人）</p><div class="lk"><a data-oa="プロフィール" href="#">「プロフィール」と送る</a></div></div>
+    <div class="af"><b>スタッフを増やす</b><p>トークで<code>招待</code>と送る。登録ページの「スタッフを招待」からも</p><div class="lk"><a data-oa="招待" href="#">「招待」と送る</a></div></div>
+    <div class="af"><b>スタッフが辞めたとき</b><p>トークで<code>スタッフの管理</code>→ その人の「外す」。予約が届かなくなり、スタッフ料金にも数えません</p><div class="lk"><a data-oa="スタッフの管理" href="#">「スタッフの管理」と送る</a></div></div>
     <div class="af"><b>管理者を増やす・替える</b><p>トークで<code>スタッフの管理</code>→「管理者にする」</p></div>
-    <div class="af"><b>空いている日を出す</b><p>メニューの<code>空き日を登録</code>。診断結果に「空きあり」が出ます</p></div>
-    <div class="af"><b>休止・解約したいとき</b><p>トークで<code>休止</code>か<code>解約</code>と送ると、運営に届きます</p></div>
+    <div class="af"><b>空いている日を出す</b><p>メニューの<code>空き日を登録</code>。診断結果に「空きあり」が出ます</p><div class="lk"><a data-oa="空き" href="#">「空き」と送る</a></div></div>
+    <div class="af"><b>休止・解約したいとき</b><p>トークで<code>休止</code>か<code>解約</code>と送ると、運営に届きます</p><div class="lk"><a data-oa="相談" href="#">まず相談する</a></div></div>
     <div class="af"><b>招待のリンクがもれたかも</b><p>トークで<code>招待</code>→「コードを作り直す」。古いものは使えなくなります</p></div>
   </div>
 </div></section>
@@ -327,8 +366,23 @@ footer a{color:#c9ced8;margin:0 8px}
 <script src="js/bx.js" defer></script>
 <script>
 (function(){
-  var url = "https://line.me/R/oaMessage/@559dflyq/?" + encodeURIComponent("相談");
-  document.querySelectorAll(".js-line").forEach(function(a){ a.href = url; a.target = "_blank"; a.rel = "noopener"; });
+  var OA = "https://line.me/R/oaMessage/@559dflyq/?";
+  var OPEN = "https://line.me/R/ti/p/@559dflyq";
+  function ext(a, url){ a.href = url; a.target = "_blank"; a.rel = "noopener"; }
+  document.querySelectorAll(".js-line").forEach(function(a){ ext(a, OA + encodeURIComponent("相談")); });
+  document.querySelectorAll("[data-oa]").forEach(function(a){ ext(a, OA + encodeURIComponent(a.getAttribute("data-oa"))); });
+  document.querySelectorAll("[data-open]").forEach(function(a){ ext(a, OPEN); });
+  /* 申し込み確定のLINE・メールから来たとき（?s=編集キー）は、登録ページへ直接つなぐ */
+  var key = "";
+  try { key = new URLSearchParams(location.search).get("s") || ""; } catch(e) {}
+  if (/^[A-Za-z0-9_-]{6,80}$/.test(key)) {
+    var reg = "register.html?s=" + encodeURIComponent(key);
+    document.querySelectorAll(".js-reg").forEach(function(a){ a.href = reg; a.removeAttribute("target"); });
+    document.querySelectorAll(".js-inv").forEach(function(a){ a.href = reg + "#invite"; a.removeAttribute("target"); });
+    document.querySelectorAll(".js-regnote").forEach(function(n){ n.textContent = "このボタンは、あなたのお店専用の登録ページにつながっています。リンクは他の人に渡さないでください。"; });
+  } else {
+    document.querySelectorAll(".js-inv").forEach(function(a){ a.style.display = "none"; });
+  }
 })();
 </script>
 </body>

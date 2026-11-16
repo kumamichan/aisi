@@ -404,7 +404,7 @@ function renderSalon(){
     <label class="f">勤務先との確認<select id="work">${opts(["業務委託・面貸しなどで、個人で集客してよい契約","勤務先のオーナーの了承を得ている"], D["勤務先の確認"], "選ぶ")}</select></label>
     <div class="row2">
       <label class="f">美容師免許の番号<small>任意・申告だけ（画像はいりません）</small><input type="text" id="lic" maxlength="20" value="${esc(D["美容師免許番号"])}"></label>
-      <label class="f">本人確認のURL<small>ホットペッパーのスタイリストページかSNS</small><input type="url" id="purl" value="${esc(D["本人確認URL"])}"></label>
+      <label class="f">本人確認のURL<small>ホットペッパーのスタッフページかSNS</small><input type="url" id="purl" value="${esc(D["本人確認URL"])}"></label>
     </div>
     <label class="f">屋号<small>任意・請求書の宛名</small><input type="text" id="yago" maxlength="60" value="${esc(D["屋号・運営会社名"])}"></label>` : `
     <div class="row2">
@@ -422,7 +422,7 @@ function renderSalon(){
     </div>
     <div class="f"><b class="fl">定休日</b>${chips("closed", OPT.days, list(D["定休曜日（例：火、水）"]).map(x=>x.replace("曜","")), true)}</div>
     <div class="f"${D.solo?" hidden":""}><b class="fl">スタッフの人数</b>
-      <div class="row4">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","受付"]].map(([k,l],i)=>`<label class="f">${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>`)}
+      <div class="row4">${[["スタイリスト数","スタイリスト"],["アシスタント数","アシスタント"],["スパニスト数","スパニスト"],["レセプション数","受付"]].map(([k,l],i)=>`<label class="f"${spaShop() && i<2 ? " hidden" : ""}>${l}<input type="number" id="sc${i}" min="0" max="99" inputmode="numeric" value="${esc(D[k])}"></label>`).join("")}</div></div>`)}
   ${panel("menu", [0].map(i=>`<div class="menu">
       <label class="f">メニュー名<input type="text" id="m${i}n" maxlength="40" placeholder="例：カット＋透明感カラー" value="${esc(m[i].name)}"></label>
       <div class="f"><b class="fl">メニューの種類<small>カット＋カラーなら両方</small></b>${chips("mc"+i, MENU_CATS.map(c=>c[1]), MENU_CATS.filter(c=>(m[i].cats||[]).includes(c[0])).map(c=>c[1]), true)}</div>
@@ -494,6 +494,8 @@ function renderSalon(){
   };
   refreshSalon();
 }
+/* ヘッドスパのお店（一押しメニューが全部ヘッドスパ）は、スタッフの人数を「スパニスト・受付」だけにする */
+function spaShop(){ const ms = (D.menus||[]).filter(m=>m.name); return ms.length > 0 && ms.every(m => (m.cats||[]).length && m.cats.every(c => c === "spa")); }
 /* スタッフの状態：[色, ラベル, 説明] */
 function staffState(s){
   if (s.line === "none") return ["inv", "招待中", "まだLINEで登録していません。招待メッセージを送ってください。"];
@@ -623,7 +625,7 @@ function renderStaff(){
     <label class="f">美容師歴（年）<input type="number" id="years" min="0" max="60" value="${esc(D["歴（年）"])}"></label>
     <div class="f"><b class="fl">得意な技術（いくつでも）</b>${chips("tech", OPT.tech, D["得意な技術"], true)}</div>
     <label class="f">自分のホットペッパー予約ページのURL（任意）<input type="url" id="hpb" value="${esc(D["ホットペッパー予約URL"])}"></label>
-    <label class="f">ホットペッパーの「スタイリストページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見るページのURLです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
+    <label class="f">ホットペッパーの「スタッフページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見るページのURLです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
   </section>
   <section><h2>美容師としてのあなた</h2>
     <div class="f"><b class="fl">得意な悩み（いくつでも）</b>${chips("worry", OPT.worry, D["得意な悩み"], true)}</div>
@@ -688,7 +690,7 @@ function previewStaff(){
   const prof = [v("home") && "出身：" + v("home") + (v("homeD") ? "（" + v("homeD") + "）" : ""), v("club"), v("oshi") && "推し：" + v("oshi"), ...chipVal("hobby").slice(0,2)].filter(Boolean);
   $("pv").innerHTML = `<article class="pc">
     <div class="pc-b">
-      <div class="pc-st"><span class="av">${D.photo?`<img src="${esc(D.photo)}" alt="">`:esc((D.name||"?")[0])}</span><span><b>担当：${esc(D.name)} さん</b><small>スタイリスト歴${esc(v("years")||"〇")}年 ・ ${esc(v("spec")||"得意なこと")}</small></span></div>
+      <div class="pc-st"><span class="av">${D.photo?`<img src="${esc(D.photo)}" alt="">`:esc((D.name||"?")[0])}</span><span><b>担当：${esc(D.name)} さん</b><small>経験${esc(v("years")||"〇")}年 ・ ${esc(v("spec")||"得意なこと")}</small></span></div>
       <div class="pc-why"><b>${esc(D.name)}さんをすすめる理由</b><ul>${(rs.length?rs:["AISIとの会話に答えると、ここに理由が出ます"]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
       ${v("line")?`<div class="pc-c"><p>「${esc(v("line"))}」</p></div>`:""}
       ${prof.length?`<div class="pc-t">${prof.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
@@ -804,7 +806,7 @@ const WZ = [
   {key:"holiday", g:"you", q:"休日は、どう過ごすことが多い？", type:"many", opts:()=>OPT.holiday, skip:true, say:a => "いい休日だね。"},
   {key:"music", g:"you", q:"よく聴く音楽は？", type:"many", opts:()=>OPT.music, skip:true, say:a => `${a[0]}好きのお客さん、きっといるよ。`},
   O1("b_self","you","まわりから、どんな人だと言われる？", ["話しやすい","落ち着いている","明るい・元気","職人気質","面倒見がいい"], v => `「${v}」人、ってことだね。`, {skip:true}),
-  {key:"hpbStyle", g:"you", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタイリストページのURLを貼って。", type:"url", skip:true,
+  {key:"hpbStyle", g:"you", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタッフページのURLを貼って。", type:"url", skip:true,
    say:v => "ありがとう。マッチしたお客さんが、あなたのスタイルを見てから予約できるようにするね。"}
 ];
 const WZ_TOTAL = WZ.length;
