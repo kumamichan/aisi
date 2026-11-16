@@ -86,6 +86,24 @@ textarea{min-height:80px;resize:vertical}
 .box h2{font-family:"Shippori Mincho B1",serif;font-size:1.3rem;margin-bottom:8px}
 .btn-line{display:inline-block;margin-top:14px;background:var(--green);color:#fff;text-decoration:none;font-weight:900;border-radius:999px;padding:12px 22px}
 .hide{display:none!important}
+/* 全体の流れ（今ここ） */
+.flow6{display:flex;flex-wrap:wrap;gap:4px;margin:14px 0 0;padding:0;list-style:none;font-size:.74rem}
+.flow6 li{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--ink2)}
+.flow6 li.d{background:#e3f4e8;border-color:#bfe5cb;color:#1f6b40}
+.flow6 li.c{background:var(--green);border-color:var(--green);color:#fff;font-weight:900}
+.flow6 li.c::after{content:"　今ここ"}
+/* 進み具合（確定後） */
+.pg{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px}
+.pg h3{margin:0 0 8px;font-size:1.1rem}
+.pg ol{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.pg li{display:flex;gap:8px;align-items:flex-start;font-size:.92rem;color:var(--ink2)}
+.pg li i{font-style:normal;width:1.4em;text-align:center;flex:none}
+.pg li.d{color:#8a8f99}.pg li.c{color:var(--ink);font-weight:900}
+.pg .now{margin-top:12px;background:var(--mint);border-radius:12px;padding:12px 14px}
+.pg .now small{display:block;color:var(--gold-d);font-weight:900;font-size:.76rem}
+.pg .now b{display:block;font-size:1rem;line-height:1.6}
+.pg .now a{display:inline-block;margin-top:10px;background:var(--green);color:#fff;text-decoration:none;font-weight:900;border-radius:999px;padding:10px 18px;box-shadow:0 3px 0 var(--green-d)}
+.pg .now.op{background:#fff8e6}
 footer{text-align:center;font-size:.78rem;color:var(--ink2);padding:30px 16px 40px}
 footer a{margin:0 8px}
 </style>
@@ -97,7 +115,8 @@ footer a{margin:0 8px}
   <h1 id="ttl">お申し込みページ</h1>
   <p class="lead">プランを選んで、お店と管理者の方のお名前を入れるだけです（約2分）。</p>
   <div class="guide"><span class="av"><img src="../img/aisi_face.webp" alt="AISI"></span><p class="gb" id="hello">ご相談ありがとうございます。送っていただいた内容を運営が確認して確定したら、LINEのトークでご連絡します。そのあと<b>トークで「登録」と送ると、お店の登録ページのリンクが届きます</b>。</p></div>
-  <ol class="steps"><li><b>1</b>プラン</li><li><b>2</b>会社・お店</li><li><b>3</b>送信</li></ol>
+  <ol class="flow6" id="flow6"></ol>
+  <ol class="steps" id="formSteps"><li><b>1</b>プラン</li><li><b>2</b>会社・お店</li><li><b>3</b>送信</li></ol>
 </div></div>
 
 <main class="wrap">
@@ -108,6 +127,7 @@ footer a{margin:0 8px}
     <p style="margin:0" id="badMsg">お申し込みページは、LINEでご相談いただいたお店に、運営から専用のリンクをお送りしています。</p>
     <a class="btn-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（サロンさま窓口）</a>
   </div>
+  <div id="prog" class="hide"></div>
   <div id="thanks" class="box hide" style="margin-top:24px">
     <h2>送信ありがとうございました</h2>
     <p style="margin:0">運営で内容を確認して確定しましたら、LINEのトークでご連絡します。<br>そのあと<b>トークで「登録」と送ると</b>、お店の登録ページのリンクが届きます。<br>内容を直すときは、このページからもう一度送ってください。</p>
@@ -194,8 +214,28 @@ footer a{margin:0 8px}
   var $ = function(id){ return document.getElementById(id); };
   var key = ""; try { key = new URLSearchParams(location.search).get("k") || ""; } catch(e) {}
   document.querySelectorAll(".js-line").forEach(function(a){ a.href = LINE; });
-  function show(id){ ["loading","bad","thanks","f"].forEach(function(x){ $(x).classList.toggle("hide", x !== id); }); }
+  function show(id){ ["loading","bad","thanks","f","prog"].forEach(function(x){ $(x).classList.toggle("hide", x !== id); }); }
   function bad(msg){ if (msg) $("badMsg").textContent = msg; show("bad"); }
+
+  var STEPS = ["お申し込み","運営の確定","管理者の登録","お店の情報","スタッフの準備","診断に出る"];
+  function flow(cur){ $("flow6").innerHTML = STEPS.map(function(t, i){ return '<li class="' + (i < cur ? "d" : i === cur ? "c" : "") + '">' + (i + 1) + ' ' + t + '</li>'; }).join(""); }
+  function esc(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  /* 確定後：お店ごとの進み具合 */
+  function progress(o){
+    var ps = o.progress || [];
+    $("ttl").textContent = "登録の進み具合";
+    document.querySelector(".lead").textContent = "お店ごとに、いまどこまで進んだかと、次にやることを表示しています。";
+    $("hello").innerHTML = "「いまやること」のボタンから進めてください。LINEのトークで<b>「進み具合」</b>と送っても、同じ内容が届きます。";
+    $("formSteps").remove();
+    flow(Math.min.apply(null, ps.map(function(p){ return p.cur; }).concat([6])));
+    $("prog").innerHTML = ps.length ? ps.map(function(p){
+      return '<div class="pg"><h3>' + esc(p.name) + '</h3><ol>' + p.steps.map(function(t, i){
+        return '<li class="' + (p.done[i] ? "d" : i === p.cur ? "c" : "") + '"><i>' + (p.done[i] ? "✅" : i === p.cur ? "▶" : "□") + '</i>' + (i + 1) + ' ' + esc(t) + esc(p.detail[i] || "") + '</li>'; }).join("") + '</ol>' +
+        '<div class="now' + (p.next.who === "運営" ? " op" : "") + '"><small>' + (p.cur >= 6 ? "完了" : "いまやること" + (p.next.who === "運営" ? "（運営）" : "")) + '</small><b>' + esc(p.next.text) + '</b>' +
+        (p.next.uri && p.next.label ? '<a href="' + esc(p.next.uri) + '" target="_blank" rel="noopener">' + esc(p.next.label) + '</a>' : '') + '</div></div>';
+    }).join("") : '<div class="box">確定したお店が見つかりませんでした。LINEで「進み具合」と送ってください。</div>';
+    show("prog");
+  }
 
   /* お店の入力欄 */
   var n = 0;
@@ -247,7 +287,7 @@ footer a{margin:0 8px}
         if (!o || !o.ok) return bad();
         plans(o);
         if (o.guest) return bad("お申し込みページは、LINEでご相談いただいたお店に、運営から専用のリンクをお送りしています。まずはLINEでご相談ください。");
-        if (o.done) return bad("このお申し込みは、すでに確定しています。LINEのトークで「登録」と送ると、お店の登録ページのリンクが届きます。");
+        if (o.done) return progress(o);
         if (o.salon) { $("ttl").textContent = o.salon + " 様 お申し込みページ"; }
         var v = o.prev || {};
         $("self").value = v.self || o.name || ""; $("company").value = v.company || ""; $("owner").value = v.owner || "";
@@ -255,7 +295,7 @@ footer a{margin:0 8px}
         if (v.plan) { var r = document.querySelector('input[name=plan][value="' + v.plan + '"]'); if (r) r.checked = true; }
         if (v.after) { var a = document.querySelector('input[name=after][value="' + v.after + '"]'); if (a) a.checked = true; }
         (v.shops && v.shops.length ? v.shops : [{ name: o.salon || "" }]).forEach(addShop);
-        show("f");
+        flow(0); show("f");
       })
       .catch(function(){ bad("読み込めませんでした。電波のよいところで、もう一度開いてください。"); });
   }
@@ -281,7 +321,7 @@ footer a{margin:0 8px}
     fetch(GAS, { method: "POST", body: JSON.stringify(body) })
       .then(function(r){ return r.json(); })
       .then(function(o){
-        if (o && o.ok) { show("thanks"); window.scrollTo(0, 0); return; }
+        if (o && o.ok) { flow(1); show("thanks"); window.scrollTo(0, 0); return; }
         b.disabled = false; b.textContent = "この内容で申し込む";
         err.textContent = o && o.error === "done" ? "このお申し込みは、すでに確定しています" : (o && o.error && o.error !== "key" ? o.error : "送れませんでした。もう一度お試しください");
       })
