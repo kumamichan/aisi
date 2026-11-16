@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ぴたリスト｜お申し込みページ（サロンさま向け）</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+/* 申し込みページ：運営がLINEで送る専用リンク（?k=キー）で開く。プランを選んで、会社・お店・管理者を入れて送信 */
+:root{
+  --ink:#1b2130; --ink2:#4a5263; --bg:#fbfaf7; --cream:#f3efe6; --line:#e4ded2;
+  --gold:#b8892f; --gold-l:#f4e7cc; --gold-d:#8a6a2e; --navy:#1e2738;
+  --green:#06c755; --green-d:#05a647; --mint:#eaf7ef; --red:#b23b2a; --r:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Kaku Gothic New",system-ui,sans-serif;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+em{font-style:normal;color:var(--gold-d)}
+.hd{background:var(--navy);color:#fff}
+.hd .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:"Shippori Mincho B1",serif;font-weight:800;font-size:1.3rem;letter-spacing:.06em}
+.logo small{font-family:"Zen Kaku Gothic New";font-weight:500;font-size:.68rem;letter-spacing:.1em;color:#c9ced8;margin-left:8px}
+.hero{background:radial-gradient(90% 80% at 85% 20%,#fff 0%,var(--cream) 60%,#ece5d6 100%);padding:28px 0 24px}
+h1{font-family:"Shippori Mincho B1",serif;font-size:1.6rem;line-height:1.5;margin:0 0 8px}
+.lead{margin:0;color:var(--ink2);font-size:.95rem}
+.guide{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:start;margin-top:16px}
+.guide .av{width:52px;height:52px;border-radius:50%;overflow:hidden;border:2px solid var(--gold);background:#fff}
+.gb{margin:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:.92rem}
+.steps{display:flex;gap:6px;margin:18px 0 0;padding:0;list-style:none;font-size:.78rem;font-weight:700}
+.steps li{flex:1;text-align:center;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 4px;color:var(--ink2)}
+.steps li b{color:var(--gold-d);margin-right:4px}
+section{padding:24px 0 6px}
+h2{font-size:1.15rem;margin:0 0 4px}
+h2 .n{display:inline-block;background:var(--navy);color:#fff;border-radius:999px;font-size:.8rem;padding:2px 10px;margin-right:8px;vertical-align:2px}
+.sub{margin:0 0 12px;color:var(--ink2);font-size:.88rem}
+/* プラン */
+.plans{display:grid;gap:12px}
+.plan{position:relative;display:block;background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:16px 16px 14px 50px;cursor:pointer}
+.plan input{position:absolute;left:18px;top:20px;width:20px;height:20px;accent-color:var(--green)}
+.plan:has(> input:checked){border-color:var(--green);box-shadow:0 0 0 3px var(--mint)}
+.plan .tag{display:inline-block;font-size:.72rem;font-weight:900;border-radius:6px;padding:2px 8px;margin-bottom:4px}
+.tag.limit{background:#fdeaa8;color:#7a5b00}.tag.camp{background:var(--gold-l);color:var(--gold-d)}.tag.std{background:#e9ecf2;color:var(--ink2)}
+.plan b.t{display:block;font-size:1.05rem}
+.plan .price{font-size:1.5rem;font-weight:900;line-height:1.3;margin:4px 0}
+.plan .price small{font-size:.8rem;font-weight:700;color:var(--ink2)}
+.plan ul{margin:6px 0 0;padding-left:1.2em;font-size:.86rem}
+.plan li{margin:2px 0}
+.left{margin-top:10px;font-size:.84rem;font-weight:700}
+.bar{height:8px;background:#efe9dc;border-radius:99px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#e8b84a,#d98a1c)}
+.after{margin-top:10px;display:none;background:var(--cream);border-radius:10px;padding:10px 12px;font-size:.88rem}
+.plan:has(> input:checked) .after{display:block}
+.after label{display:block;margin:2px 0}
+/* 入力 */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.f{display:block;margin-bottom:12px}
+.f>span{display:block;font-weight:700;font-size:.9rem;margin-bottom:4px}
+.req,.opt{display:inline-block;font-size:.68rem;border-radius:6px;padding:0 6px;margin-left:6px;vertical-align:1px}
+.req{background:var(--red);color:#fff}.opt{background:#e9ecf2;color:var(--ink2)}
+input[type=text],input[type=email],input[type=tel],textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,textarea:focus{outline:none;border-color:var(--green)}
+textarea{min-height:80px;resize:vertical}
+.hint{font-size:.78rem;color:var(--ink2);margin-top:2px}
+.shop{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;background:#fff}
+.shop-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.shop-h b{font-size:.95rem}
+.rm{background:none;border:0;color:var(--red);font:inherit;font-size:.82rem;cursor:pointer;text-decoration:underline}
+.mgr{display:flex;flex-wrap:wrap;gap:8px}
+.mgr label{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;font-size:.88rem;cursor:pointer}
+.mgr label:has(input:checked){border-color:var(--green);background:var(--mint)}
+.mgr input{accent-color:var(--green)}
+.other{display:none;margin-top:8px}
+.add{width:100%;border:1.5px dashed var(--gold);background:#fffaf0;color:var(--gold-d);font:inherit;font-weight:700;border-radius:12px;padding:12px;cursor:pointer}
+.agree{display:flex;gap:8px;align-items:flex-start;font-size:.88rem;margin:6px 0 14px}
+.agree input{margin-top:6px;accent-color:var(--green);width:18px;height:18px}
+.go{width:100%;border:0;border-radius:999px;background:var(--green);color:#fff;font:inherit;font-size:1.1rem;font-weight:900;padding:15px;cursor:pointer;box-shadow:0 4px 0 var(--green-d)}
+.go[disabled]{opacity:.6}
+.err{color:var(--red);font-weight:700;font-size:.9rem;margin:10px 0 0;min-height:1.2em}
+.next{background:var(--mint);border-radius:14px;padding:14px 16px;font-size:.9rem;margin-top:16px}
+.next ol{margin:6px 0 0;padding-left:1.3em}
+.box{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px 18px;text-align:center}
+.box h2{font-family:"Shippori Mincho B1",serif;font-size:1.3rem;margin-bottom:8px}
+.btn-line{display:inline-block;margin-top:14px;background:var(--green);color:#fff;text-decoration:none;font-weight:900;border-radius:999px;padding:12px 22px}
+.hide{display:none!important}
+footer{text-align:center;font-size:.78rem;color:var(--ink2);padding:30px 16px 40px}
+footer a{margin:0 8px}
+</style>
+</head>
+<body>
+<header class="hd"><div class="wrap"><div class="logo">ぴたリスト<small>サロンさま お申し込み</small></div></div></header>
+
+<div class="hero"><div class="wrap">
+  <h1 id="ttl">お申し込みページ</h1>
+  <p class="lead">プランを選んで、お店と管理者の方のお名前を入れるだけです（約2分）。</p>
+  <div class="guide"><span class="av"><img src="../img/aisi_face.webp" alt="AISI"></span><p class="gb" id="hello">ご相談ありがとうございます。送っていただいた内容を運営が確認して確定したら、LINEのトークでご連絡します。そのあと<b>トークで「登録」と送ると、お店の登録ページのリンクが届きます</b>。</p></div>
+  <ol class="steps"><li><b>1</b>プラン</li><li><b>2</b>会社・お店</li><li><b>3</b>送信</li></ol>
+</div></div>
+
+<main class="wrap">
+  <!-- 読み込み中・エラー -->
+  <div id="loading" class="box" style="margin-top:24px"><p style="margin:0">読み込んでいます…</p></div>
+  <div id="bad" class="box hide" style="margin-top:24px">
+    <h2>このリンクは使えません</h2>
+    <p style="margin:0" id="badMsg">お申し込みページは、LINEでご相談いただいたお店に、運営から専用のリンクをお送りしています。</p>
+    <a class="btn-line js-line" href="#" target="_blank" rel="noopener">LINEで相談する（サロンさま窓口）</a>
+  </div>
+  <div id="thanks" class="box hide" style="margin-top:24px">
+    <h2>送信ありがとうございました</h2>
+    <p style="margin:0">運営で内容を確認して確定しましたら、LINEのトークでご連絡します。<br>そのあと<b>トークで「登録」と送ると</b>、お店の登録ページのリンクが届きます。<br>内容を直すときは、このページからもう一度送ってください。</p>
+    <div class="next" style="text-align:left"><b>このあとの流れ</b><ol>
+      <li>運営が確定 → トークでご連絡します</li><li>トークで「登録」と送る → 料金のご案内と、お店の登録ページのリンクが届きます</li>
+      <li>登録ページで、お店のことを5つの画面で入力（約10分）</li>
+      <li>最後の画面から、スタッフをLINEで招待</li>
+    </ol>
+    <p style="margin:8px 0 0"><a href="../salon-register-guide.html">登録の流れを、実際の画面で見る →</a></p></div>
+  </div>
+
+  <form id="f" class="hide" novalidate>
+    <!-- 1 プラン -->
+    <section>
+      <h2><span class="n">1</span>プランを選ぶ</h2>
+      <p class="sub">金額はすべて税抜です。</p>
+      <div class="plans">
+        <label class="plan" id="pPerf"><input type="radio" name="plan" value="perf">
+          <span class="tag limit" id="perfTag">限定</span>
+          <b class="t">限定モニタープラン</b>
+          <div class="price">月額 0円<small> ＋ ご来店1件 <span class="unit">300</span>円</small></div>
+          <ul><li>掲載料：0円</li><li>LINEに登録するスタッフの料金：0円</li><li>ぴたリストからの予約で、ご来店いただいた分だけ1件<span class="unit">300</span>円（キャンセルは数えません）</li></ul>
+          <div class="left" id="perfLeft"></div><div class="bar"><i id="perfBar"></i></div>
+        </label>
+        <label class="plan" id="pCamp"><input type="radio" name="plan" value="camp">
+          <span class="tag camp" id="campTag">初回キャンペーン</span>
+          <b class="t">6か月間 掲載料0円</b>
+          <div class="price">月額 0円<small> ＋ スタッフ1人300円 ＋ ご来店1件300円</small></div>
+          <ul><li>札幌市中央区のお店が対象です</li><li>掲載を始めた月から6か月間、掲載料0円</li><li>7か月目からは、下のどちらかのプラン（成果報酬はなくなります）。続けるかどうかは、そのときに決められます</li></ul>
+          <div class="left" id="campLeft"></div>
+          <div class="after"><b>7か月目からのプラン</b>
+            <label><input type="radio" name="after" value="5000" checked> 分析レポートプラン（月5,000円＋スタッフ1人300円）</label>
+            <label><input type="radio" name="after" value="6000"> 掲載プラン（月6,000円＋スタッフ1人300円）</label>
+          </div>
+        </label>
+        <label class="plan" id="pStd"><input type="radio" name="plan" value="std">
+          <span class="tag std">オープニングキャンペーン</span>
+          <b class="t">月3,000円</b>
+          <div class="price">月額 3,000円<small> ＋ スタッフ1人300円</small></div>
+          <ul><li>成果報酬はかかりません</li></ul>
+        </label>
+      </div>
+    </section>
+
+    <!-- 2 会社・お店 -->
+    <section>
+      <h2><span class="n">2</span>会社とお店のこと</h2>
+      <p class="sub">お店が複数ある場合は、「＋お店を追加」で、まとめてお申し込みいただけます。</p>
+      <div class="card">
+        <label class="f"><span>あなたのお名前<b class="req">必須</b></span><input type="text" id="self" autocomplete="name" placeholder="例）山田 花子"><div class="hint">このページを開いたLINEの方です。「管理者は自分」のお店は、このLINEにお知らせと予約が届きます。</div></label>
+        <label class="f"><span>会社名・屋号<b class="opt">任意</b></span><input type="text" id="company" autocomplete="organization" placeholder="例）株式会社〇〇（個人事業の方は屋号）"><div class="hint">請求書の宛名になります。店名と同じなら空欄で大丈夫です。</div></label>
+        <label class="f"><span>オーナーのお名前<b class="req">必須</b></span><input type="text" id="owner" placeholder="例）山田 太郎"></label>
+        <label class="f"><span>メールアドレス<b class="opt">任意</b></span><input type="email" id="mail" autocomplete="email" placeholder="例）info@example.com"><div class="hint">請求書や、毎月のレポートの送り先です。</div></label>
+        <label class="f" style="margin-bottom:0"><span>電話番号<b class="opt">任意</b></span><input type="tel" id="tel" autocomplete="tel" placeholder="例）011-123-4567"></label>
+      </div>
+      <div id="shops" style="margin-top:14px"></div>
+      <button type="button" class="add" id="addShop">＋ お店を追加</button>
+    </section>
+
+    <!-- 3 送信 -->
+    <section>
+      <h2><span class="n">3</span>確認して送信</h2>
+      <div class="card">
+        <label class="f"><span>ひとこと<b class="opt">任意</b></span><textarea id="note" placeholder="ご質問やご要望があれば"></textarea></label>
+        <label class="agree"><input type="checkbox" id="agree"><span><a href="../terms/" target="_blank" rel="noopener">利用規約（サロン向け）</a>と<a href="../privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意します</span></label>
+        <button type="submit" class="go" id="go">この内容で申し込む</button>
+        <p class="err" id="err"></p>
+      </div>
+      <div class="next"><b>送信したあとの流れ</b><ol>
+        <li>運営が内容を確認して確定し、LINEのトークでご連絡します</li>
+        <li>トークで<b>「登録」</b>と送ると、料金のご案内と<b>お店の登録ページのリンク</b>が届きます（登録コードの入力はいりません）</li>
+        <li>管理者が別の方のお店は、その方に転送するためのメッセージも一緒に届きます</li>
+        <li>登録ページで、お店のことを入力（約10分）→ スタッフをLINEで招待</li>
+      </ol></div>
+    </section>
+  </form>
+</main>
+<footer>ぴたリスト ｜ 株式会社Indepe<br><a href="../terms/">利用規約</a><a href="../privacy/">プライバシーポリシー</a><a href="../salon-register-guide.html">登録のながれ</a></footer>
+
+<script>
+(function(){
+  var GAS = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec";
+  var LINE = "https://line.me/R/oaMessage/@559dflyq/?" + encodeURIComponent("掲載の相談");
+  var $ = function(id){ return document.getElementById(id); };
+  var key = ""; try { key = new URLSearchParams(location.search).get("k") || ""; } catch(e) {}
+  document.querySelectorAll(".js-line").forEach(function(a){ a.href = LINE; });
+  function show(id){ ["loading","bad","thanks","f"].forEach(function(x){ $(x).classList.toggle("hide", x !== id); }); }
+  function bad(msg){ if (msg) $("badMsg").textContent = msg; show("bad"); }
+
+  /* お店の入力欄 */
+  var n = 0;
+  function addShop(v){
+    v = v || {}; n++;
+    var id = "s" + n, d = document.createElement("div");
+    d.className = "shop"; d.id = id;
+    d.innerHTML = '<div class="shop-h"><b>お店</b><button type="button" class="rm">このお店を消す</button></div>' +
+      '<label class="f"><span>店名（お客さまに見える名前）<b class="req">必須</b></span><input type="text" class="sn" placeholder="例）Hair Salon 〇〇"></label>' +
+      '<label class="f"><span>住所<b class="opt">任意</b></span><input type="text" class="sa" placeholder="例）札幌市中央区南1条西〇丁目"><div class="hint">お客さまには見せません。あとで登録ページでも入れられます。</div></label>' +
+      '<div class="f" style="margin-bottom:0"><span style="display:block;font-weight:700;font-size:.9rem;margin-bottom:4px">このお店の管理者<b class="req">必須</b></span>' +
+      '<div class="mgr"><label><input type="radio" name="m' + id + '" value="self" checked> 自分（このLINE）</label><label><input type="radio" name="m' + id + '" value="other"> 別の人</label></div>' +
+      '<div class="other"><input type="text" class="mn" placeholder="管理者になる方のお名前"><div class="hint">確定すると、その方に転送していただくメッセージをお送りします。</div></div></div>';
+    $("shops").appendChild(d);
+    var sn = d.querySelector(".sn"), sa = d.querySelector(".sa"), mn = d.querySelector(".mn"), oth = d.querySelector(".other");
+    sn.value = v.name || ""; sa.value = v.addr || ""; mn.value = v.mgrName || "";
+    d.querySelectorAll('input[type=radio]').forEach(function(r){
+      if (v.mgr && r.value === v.mgr) r.checked = true;
+      r.onchange = function(){ oth.style.display = d.querySelector('input[type=radio]:checked').value === "other" ? "block" : "none"; };
+    });
+    oth.style.display = v.mgr === "other" ? "block" : "none";
+    d.querySelector(".rm").onclick = function(){ if (document.querySelectorAll(".shop").length > 1) d.remove(); num(); };
+    num();
+  }
+  function num(){
+    var ss = document.querySelectorAll(".shop");
+    ss.forEach(function(s, i){ s.querySelector(".shop-h b").textContent = "お店 " + (i + 1); s.querySelector(".rm").style.visibility = ss.length > 1 ? "visible" : "hidden"; });
+    $("addShop").style.display = ss.length >= 10 ? "none" : "";
+  }
+  $("addShop").onclick = function(){ addShop(); };
+
+  /* プランの残り（限定・先着） */
+  function plans(o){
+    var p = o.perf || {}, c = o.camp || {};
+    document.querySelectorAll(".unit").forEach(function(x){ x.textContent = p.unit || 300; });
+    if (p.open) {
+      $("perfTag").textContent = "モニターサロン｜限定" + p.max + "件";
+      $("perfLeft").textContent = "のこり " + p.left + " 件（" + p.max + "件に達したら受付終了）";
+      $("perfBar").style.width = Math.max(4, Math.round(p.left / p.max * 100)) + "%";
+    } else $("pPerf").remove();
+    if (c.open) $("campLeft").textContent = "先着" + c.max + "店：のこり " + c.left + " 店";
+    else $("pCamp").remove();
+  }
+
+  function load(){
+    fetch(GAS + "?action=apply" + (key ? "&k=" + encodeURIComponent(key) : ""))
+      .then(function(r){ return r.json(); })
+      .then(function(o){
+        if (!o || !o.ok) return bad();
+        plans(o);
+        if (o.guest) return bad("お申し込みページは、LINEでご相談いただいたお店に、運営から専用のリンクをお送りしています。まずはLINEでご相談ください。");
+        if (o.done) return bad("このお申し込みは、すでに確定しています。LINEのトークで「登録」と送ると、お店の登録ページのリンクが届きます。");
+        if (o.salon) { $("ttl").textContent = o.salon + " 様 お申し込みページ"; }
+        var v = o.prev || {};
+        $("self").value = v.self || o.name || ""; $("company").value = v.company || ""; $("owner").value = v.owner || "";
+        $("mail").value = v.mail || o.mail || ""; $("tel").value = v.tel || ""; $("note").value = v.note || "";
+        if (v.plan) { var r = document.querySelector('input[name=plan][value="' + v.plan + '"]'); if (r) r.checked = true; }
+        if (v.after) { var a = document.querySelector('input[name=after][value="' + v.after + '"]'); if (a) a.checked = true; }
+        (v.shops && v.shops.length ? v.shops : [{ name: o.salon || "" }]).forEach(addShop);
+        show("f");
+      })
+      .catch(function(){ bad("読み込めませんでした。電波のよいところで、もう一度開いてください。"); });
+  }
+
+  $("f").onsubmit = function(ev){
+    ev.preventDefault();
+    var err = $("err"); err.textContent = "";
+    var plan = (document.querySelector("input[name=plan]:checked") || {}).value;
+    var shops = Array.prototype.map.call(document.querySelectorAll(".shop"), function(d){
+      return { name: d.querySelector(".sn").value.trim(), addr: d.querySelector(".sa").value.trim(),
+        mgr: d.querySelector("input[type=radio]:checked").value, mgrName: d.querySelector(".mn").value.trim() };
+    });
+    if (!plan) return err.textContent = "プランを選んでください";
+    if (!$("self").value.trim()) return err.textContent = "あなたのお名前を入れてください";
+    if (!$("owner").value.trim()) return err.textContent = "オーナーのお名前を入れてください";
+    if (shops.some(function(s){ return !s.name; })) return err.textContent = "店名を入れてください";
+    if (shops.some(function(s){ return s.mgr === "other" && !s.mgrName; })) return err.textContent = "管理者が別の方のお店は、その方のお名前を入れてください";
+    if (!$("agree").checked) return err.textContent = "利用規約とプライバシーポリシーへの同意が必要です";
+    var b = $("go"); b.disabled = true; b.textContent = "送っています…";
+    var body = { type: "apply", k: key, plan: plan, after: (document.querySelector("input[name=after]:checked") || {}).value,
+      self: $("self").value, company: $("company").value, owner: $("owner").value, mail: $("mail").value, tel: $("tel").value, note: $("note").value,
+      shops: shops, agree: true };
+    fetch(GAS, { method: "POST", body: JSON.stringify(body) })
+      .then(function(r){ return r.json(); })
+      .then(function(o){
+        if (o && o.ok) { show("thanks"); window.scrollTo(0, 0); return; }
+        b.disabled = false; b.textContent = "この内容で申し込む";
+        err.textContent = o && o.error === "done" ? "このお申し込みは、すでに確定しています" : (o && o.error && o.error !== "key" ? o.error : "送れませんでした。もう一度お試しください");
+      })
+      .catch(function(){ b.disabled = false; b.textContent = "この内容で申し込む"; err.textContent = "送れませんでした。電波のよいところで、もう一度お試しください"; });
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>

@@ -456,7 +456,7 @@ function renderSalon(){
   ${panel("staff", D.solo ? `
     <div class="invite"><a class="btn" href="${esc(D.selfUrl||"#")}">あなたのプロフィールを入れる →</a>
     <p class="tip">個人の掲載なので、スタッフの招待はありません。予約・お客さまの情報・請求の連絡は、すべてあなたのLINEに届きます。</p></div>` : `
-    <ol class="mini3"><li><b>名前を追加</b>（下の欄）</li><li><b>招待メッセージを送る</b>か、<b>QRを見せる</b></li><li>スタッフが登録したら、LINEに届く<b>「承認する」</b>を押す</li></ol>
+    <ol class="mini3"><li><b>名前を追加</b>（下の欄）</li><li><b>招待メッセージを送る</b>か、<b>QRを見せる</b></li><li>スタッフが登録したら完了（<b>承認はいりません</b>）</li></ol>
     <div class="addrow"><input type="text" id="newStaff" maxlength="20" placeholder="追加するスタッフの名前（例：ユウナ）"><button class="btn" type="button" id="addStaff">追加</button></div>
     <div class="invite" id="invite">${D.invite ? `
       <div class="inv-b"><a class="btn line" href="${esc(D.invite.share)}" target="_blank" rel="noopener">LINEで招待メッセージを送る</a>
@@ -499,7 +499,7 @@ function spaShop(){ const ms = (D.menus||[]).filter(m=>m.name); return ms.length
 /* スタッフの状態：[色, ラベル, 説明] */
 function staffState(s){
   if (s.line === "none") return ["inv", "招待中", "まだLINEで登録していません。招待メッセージを送ってください。"];
-  if (s.line === "wait") return ["wait", "承認待ち", "サロンさま窓口LINEに届いた「承認する」を押してください。"];
+  if (s.line === "wait") return ["wait", "承認待ち", "招待以外の方法で登録した人です。サロンさま窓口LINEに届いた「承認する」を押してください。"];
   if (!s.photo || !s.spec || s.done < 15) return ["doing", "入力中", `入力 ${s.done}%：顔写真・得意なこと・ひとことが入ると、診断に出られます。`];
   return s.on ? ["ok", "診断に出ています", `入力 ${s.done}%：AISIとの会話に答えるほど、選ばれやすくなります。`] : ["off", "診断に出していません", "「診断に出す」にチェックを入れると出ます。"];
 }
