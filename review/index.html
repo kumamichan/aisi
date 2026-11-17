@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ぴたリスト｜AISIの質問チェック（美容師さん向け）</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 美容師さんが、AISIの質問をプロの目でチェックするページ。1問ずつ、AISIが話しかける形 */
+:root{ --night:#141a26; --night2:#1e2738; --paper:#f3f1ec; --ink:#1b2130; --soft:#5a6274; --line:#ddd8cd; --accent:#d9b77a; --accent-ink:#3b2a08; --green:#06c755; --green-d:#05a647;
+  --voice:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif; --ui:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(120% 80% at 50% 0%,#26314a 0%,var(--night) 70%);color:var(--paper);font-family:var(--ui);min-height:100vh;line-height:1.7}
+.wrap{max-width:560px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-left,0px)) 48px max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:#b9c0cf}
+.top b{font-family:var(--voice);font-size:1.05rem;color:var(--paper);letter-spacing:.06em}
+.bar{height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin:10px 0 2px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.prog{font-size:.78rem;color:#b9c0cf;display:flex;justify-content:space-between}
+.stage{display:grid;grid-template-columns:76px minmax(0,1fr);gap:10px;align-items:start;margin-top:16px}
+.aisi{width:76px;height:76px;border-radius:50%;overflow:hidden;border:2px solid var(--accent);background:#0d121c}
+.aisi img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.bubble{background:var(--paper);color:var(--ink);border-radius:4px 16px 16px 16px;padding:14px 16px}
+.bubble .who{font-size:.7rem;letter-spacing:.2em;color:#8a6a2e;font-weight:700}
+.voice{font-family:var(--voice);font-size:1.08rem;margin:4px 0 0}
+.qbox{margin:10px 0 0;background:#fff;border:2px solid var(--accent);border-radius:10px;padding:12px 14px;font-size:1.05rem;font-weight:700;white-space:pre-line}
+.lead{font-size:.8rem;color:var(--soft);margin:8px 0 0}
+.opts{margin:8px 0 0;padding:0;list-style:none;font-size:.88rem;color:var(--soft)}
+.opts li::before{content:"・"}
+.what{font-size:.76rem;color:var(--soft);margin-top:6px}
+.choices{display:grid;gap:10px;margin-top:16px}
+.choice{width:100%;background:rgba(243,241,236,.94);color:var(--ink);border:0;border-radius:8px;padding:14px 16px;font:inherit;font-size:1rem;font-weight:500;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.25);cursor:pointer}
+.choice.picked{background:#fff;font-weight:700;box-shadow:0 0 0 3px var(--accent),0 3px 0 rgba(0,0,0,.25)}
+.choice.picked::before{content:"✓ ";color:#8a6a2e}
+.choice.primary{background:var(--green);color:#fff;font-weight:700;box-shadow:0 3px 0 var(--green-d)}
+.choice[disabled]{opacity:.45;cursor:default}
+.choice:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.field{margin-top:14px}
+.field label{display:block;font-size:.88rem;font-weight:700;margin-bottom:6px}
+.field small{display:block;color:#b9c0cf;font-weight:400;font-size:.76rem}
+input[type=text],textarea{width:100%;font:inherit;font-size:16px;padding:12px;border-radius:8px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.96);color:var(--ink)}
+textarea{min-height:96px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid rgba(255,255,255,.3);background:transparent;color:var(--paper);border-radius:99px;padding:9px 14px;font:inherit;font-size:.92rem;cursor:pointer}
+.chip.on{background:var(--paper);color:var(--ink);font-weight:700;border-color:var(--paper)}
+.chip.on::before{content:"✓ "}
+.chip small{opacity:.75;margin-left:4px}
+.back{background:none;border:0;color:#9aa3b5;font:inherit;font-size:.85rem;margin-top:14px;cursor:pointer;padding:4px 0}
+.err{color:#ffb4a8;font-weight:700;font-size:.9rem;min-height:1.2em;margin:8px 0 0}
+.note{font-size:.78rem;color:#9aa3b5;margin-top:18px}
+.done{text-align:center}
+.secs{margin:12px 0 0;padding:0;list-style:none;text-align:left;font-size:.9rem}
+.secs li{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><b>ぴたリスト</b><span>美容師さん向け・質問チェック</span></div>
+  <div id="app"></div>
+</div>
+<script>
+(function(){
+  var GAS = "https://script.google.com/macros/s/AKfycbyGZEEo6pLimN1SLQYxvyYozY0_DTm9qXwIkao2G_JE6EFxr1RzqCcrvnD_GDO0dEI4vA/exec";
+  var SECS = [{"k": "cut", "name": "カット", "sub": "メニューを選んだお客さんに、最初に聞く質問", "qs": [{"id": "d_cut_layer", "q": "顔まわりにレイヤーを入れて、小顔に見せたい？", "what": "レイヤー・似合わせカット"}, {"id": "d_cut_short", "q": "今回は、ショートやボブにしたい？", "what": "ショート・ボブ"}, {"id": "d_cut_easy", "q": "骨格に合わせて、扱いやすく切ってほしい？", "what": "骨格に合わせたカット"}, {"id": "d_cut_quick", "q": "カットは、サッと短い時間で済ませたい？", "what": "時短カット"}]}, {"k": "color", "name": "カラー", "sub": "メニューを選んだお客さんに、最初に聞く質問", "qs": [{"id": "d_col_bright", "q": "ブリーチを使った、明るい色やハイトーンにしたい？", "what": "ハイトーン・ブリーチ"}, {"id": "d_col_inner", "q": "インナーカラーみたいに、ポイントで色を入れたい？", "what": "インナー・デザインカラー"}, {"id": "d_col_clear", "q": "派手さより、透明感やツヤのある色がいい？", "what": "透明感・ツヤカラー"}, {"id": "d_col_gray", "q": "白髪をなじませたり、ぼかしたりしたい？", "what": "白髪ぼかし・グレイカラー"}]}, {"k": "perm", "name": "パーマ", "sub": "メニューを選んだお客さんに、最初に聞く質問", "qs": [{"id": "d_perm_curl", "q": "しっかりしたカールが、長持ちするパーマがいい？", "what": "デジタルパーマ"}, {"id": "d_perm_soft", "q": "乾かすだけでまとまる、ゆるいパーマがいい？", "what": "ゆるパーマ"}, {"id": "d_perm_vol", "q": "根元をふんわりさせて、ボリュームを出したい？", "what": "ボリュームパーマ"}, {"id": "d_perm_mens", "q": "ツイストや波巻きみたいな、メンズのパーマ？", "what": "メンズパーマ"}]}, {"k": "straight", "name": "縮毛矯正", "sub": "メニューを選んだお客さんに、最初に聞く質問", "qs": [{"id": "d_str_front", "q": "伸ばしたいのは、前髪や顔まわりだけ？", "what": "前髪・部分ストレート"}, {"id": "d_str_natural", "q": "ピンとしすぎない、自然なストレートがいい？", "what": "自然なストレート"}, {"id": "d_str_damage", "q": "前にかけた縮毛矯正で、傷んだことがある？", "what": "ダメージを抑えた矯正"}]}, {"k": "treat", "name": "トリートメント・髪質改善", "sub": "メニューを選んだお客さんに、最初に聞く質問", "qs": [{"id": "d_tr_frizz", "q": "広がりやうねりを抑えて、まとまる髪にしたい？", "what": "髪質改善"}, {"id": "d_tr_shine", "q": "いちばんは、ツヤと手触りをよくしたい？", "what": "ツヤ・手触り"}, {"id": "d_tr_home", "q": "自分の髪に合うケアを、診断して選んでほしい？", "what": "髪に合わせたケア"}]}, {"k": "spa", "name": "ヘッドスパ", "sub": "ヘッドスパを探しているお客さんへの質問", "qs": [{"id": "d_spa_relax", "q": "眠ってしまうくらい、ゆったりしたい？", "what": "リラックススパ"}, {"id": "d_spa_eye", "q": "目や首・肩の疲れも、ほぐしてほしい？", "what": "目・首肩の疲れケア"}, {"id": "d_spa_scalp", "q": "頭皮の状態を、チェックしてもらいたい？", "what": "頭皮チェック"}, {"id": "sp_relax", "q": "いちばんの目的は、眠ってしまうくらい癒されること？", "what": "とことん癒される"}, {"id": "sp_sleep1", "q": "夜、なかなか寝つけないことがある？", "what": "寝つきの悩みに向いている"}, {"id": "sp_sleep2", "q": "寝ても、疲れが取れていない気がする？", "what": "眠っても取れない疲れのケア"}, {"id": "sp_sleep3", "q": "夜中や朝早くに、目が覚めてしまうことがある？", "what": "眠りの質のケア"}, {"id": "sp_tired", "q": "この頃、疲れが抜けにくい・頭が重いと感じる？", "what": "疲れ・頭の重さをほぐす"}, {"id": "sp_eye", "q": "目の疲れや、スマホ・パソコンの疲れが気になる？", "what": "目の疲れのケア"}, {"id": "sp_neck", "q": "首や肩のこりも、一緒にほぐしてほしい？", "what": "首・肩までほぐせる"}, {"id": "sp_scalp", "q": "頭皮のかゆみ・乾燥・べたつきが気になる？", "what": "頭皮のケア"}, {"id": "sp_volume", "q": "抜け毛や、髪のボリュームが気になる？", "what": "抜け毛・ボリュームのケア"}, {"id": "sp_shine", "q": "髪のツヤやうるおいも、ほしい？", "what": "髪のツヤも出せる"}, {"id": "sp_diag", "q": "頭皮の状態を、スコープなどで見てほしい？", "what": "頭皮のチェックができる"}, {"id": "sp_wet", "q": "お湯をたっぷり使う、ウェットタイプのスパがいい？\n（「いいえ」なら、服のまま受けられるドライスパを探すよ）", "what": "ウェットスパ"}, {"id": "q_quiet", "q": "施術中は、話さずに静かに過ごしたい？", "what": "静かに過ごしたい"}, {"id": "sp_private", "q": "個室や半個室で、人目を気にせず過ごしたい？", "what": "個室・プライベート空間"}, {"id": "sp_aroma", "q": "アロマなど、香りを選べたらうれしい？", "what": "香りを選べる"}, {"id": "sp_long", "q": "60分以上、ゆっくり時間をとりたい？", "what": "60分以上のコース"}, {"id": "sp_night", "q": "仕事帰りなど、夜に行きたい？", "what": "夜も行ける"}, {"id": "sp_budget", "q": "1回の予算は、7,000円以内にしたい？", "what": "予算7,000円以内"}, {"id": "sp_regular", "q": "定期的に通いたい？（回数券など）", "what": "定期的に通いやすい"}, {"id": "sp_first", "q": "ヘッドスパは、初めて？", "what": "初めてでも安心"}, {"id": "sp_shop", "q": "ヘッドスパの専門店がいい？\n（「いいえ」なら、美容室の中にあるスパを探すよ）", "what": "ヘッドスパ専門店"}]}, {"k": "hair", "name": "髪の悩み・好み（全員）", "sub": "どのお客さんにも聞くかもしれない質問", "qs": [{"id": "q_car", "q": "車で行けて、駐車場があるほうがいい？", "what": "駐車場"}, {"id": "q_budget", "q": "1回の予算は、1万円以内に抑えたい？", "what": "予算1万円以内"}, {"id": "q_color", "q": "今回、カラーもしたい？", "what": "カラー"}, {"id": "q_design", "q": "ハイトーンやインナーカラー、ちょっと攻めた色に興味ある？", "what": "デザインカラー"}, {"id": "q_gray", "q": "白髪、少し気になり始めてる？", "what": "白髪ケア"}, {"id": "q_kusege", "q": "くせやうねり、気になってる？", "what": "くせ・うねり"}, {"id": "q_change", "q": "今回は、ガラッと変わりたい気分？", "what": "イメチェン"}, {"id": "q_short", "q": "ショートやボブにしたい？", "what": "ショート・ボブ"}, {"id": "q_perm", "q": "パーマやゆるいカール、気になってる？", "what": "パーマ"}, {"id": "q_damage", "q": "髪のダメージ、気になってる？", "what": "ダメージケア"}, {"id": "q_volume", "q": "髪の量が多くて、広がりやすい？", "what": "広がり・毛量"}, {"id": "q_thin", "q": "髪が細くて、ぺたんとしやすい？", "what": "ボリュームアップ"}, {"id": "q_bangs", "q": "前髪の形には、こだわりがある？", "what": "前髪"}, {"id": "q_easy", "q": "朝は、乾かすだけで決まる髪型がいい？", "what": "乾かすだけで決まる"}, {"id": "q_long", "q": "長さはあまり変えずに、ロングを保ちたい？", "what": "ロングを保つ"}, {"id": "q_care", "q": "頭皮ケアやヘッドスパにも、興味ある？", "what": "頭皮ケア・スパ"}, {"id": "q_gentle", "q": "頭皮が敏感で、薬剤のしみが心配？", "what": "低刺激の薬剤"}, {"id": "q_quiet", "q": "施術中は、静かに過ごしたいほう？", "what": "静かに過ごしたい"}, {"id": "q_casual", "q": "美容室って、ちょっと緊張するほう？", "what": "入りやすさ"}, {"id": "q_private", "q": "少人数の、隠れ家みたいなお店が落ち着く？", "what": "隠れ家"}, {"id": "q_lux", "q": "たまには贅沢な空間で、ゆっくり過ごしたい？", "what": "上質な空間"}, {"id": "q_fast", "q": "施術時間は、短めだとうれしい？", "what": "時短"}, {"id": "q_walkin", "q": "予約は、前日や当日に入れることが多い？", "what": "直前予約"}, {"id": "q_kids", "q": "子どもを連れて行くことがある？", "what": "子連れOK"}, {"id": "q_mens", "q": "メンズのスタイルを相談したい？", "what": "メンズ"}, {"id": "q_male", "q": "担当スタッフは、男性がいい？", "what": "男性スタッフ"}, {"id": "q_propose", "q": "自分で決めるより、似合うスタイルを提案してほしい？", "what": "提案してほしい"}]}, {"k": "counsel", "name": "カウンセリング", "sub": "美容師さんが気にすることを、AISIが先に聞いておく質問（予約が決まったらお店に伝わる）", "qs": [{"id": "t_life", "q": "長く通うなら、いちばん大事にしたいのは？", "lead": "生涯の美容師を探してるなら、ここは聞いておきたい。", "opts": ["技術の確かさ", "話しやすさ・相性", "悩みが変わっても相談できること", "毎回、新しい提案をくれること"]}, {"id": "t_casual", "q": "気軽に行くとき、いちばんうれしいのは？", "lead": "フラッと行けるお店なら、ここが大事。", "opts": ["さっと終わる", "気をつかわずに過ごせる", "毎回、同じ仕上がりになる", "料金が分かりやすい"]}, {"id": "t_explore", "q": "いつものお店に、ちょっと足りないものって何？", "lead": "いつものお店があるなら、ちょっと聞かせて。", "opts": ["新しい提案", "仕上がりの満足感", "話しやすさ", "特にない（気分転換したい）"]}, {"id": "t_model", "q": "モデルの条件で、いちばん近いのは？", "lead": "モデルで行くなら、先に確認させて。", "opts": ["デザインはお任せでOK", "写真撮影・SNS掲載もOK", "時間がかかってもOK", "希望の長さや色は守りたい"]}, {"id": "t_hc1", "q": "家でのケア、自分の髪に合ってる自信ある？", "lead": "ここからは、家での髪のこと。", "opts": ["自信ある", "あまりない", "何を使えばいいか分からない"]}, {"id": "t_hc2", "q": "もし自分に必要だって分かったら、サロンのシャンプーやトリートメントも試してみたい？", "lead": "", "opts": ["理由が分かれば、試してみたい", "まずは話だけ聞きたい", "すすめられたくない"]}, {"id": "t_talk", "q": "施術中の会話、どうしたい？", "lead": "ここからは、美容室で直接は言いにくいこと。俺が先に聞いて、予約が決まったらお店にそっと伝えておくね。", "opts": ["いっぱい話したい", "相手に合わせたい", "そっとしておいてほしい"]}, {"id": "t_fail", "q": "前に美容室で、イメージと違ったことある？", "lead": "ここからは、美容室で直接は言いにくいこと。俺が先に聞いて、予約が決まったらお店にそっと伝えておくね。", "opts": ["思ったより短く切られた", "色が思っていたのと違った", "伝えたことが、伝わらなかった", "特にない"]}, {"id": "t_price", "q": "当日、思ったより料金が上がるのは不安？", "lead": "", "opts": ["不安。先に教えてほしい", "あまり気にしない"]}, {"id": "t_assist", "q": "シャンプーやカラーを塗るのは、アシスタントさんでも大丈夫？", "lead": "", "opts": ["大丈夫", "できれば担当の人に最後まで見てほしい"]}, {"id": "t_body", "q": "シャンプー台で、首や腰がつらくなることはある？", "lead": "", "opts": ["ある", "ない"]}, {"id": "f_q_damage", "q": "それって、どこから来てると思う？", "lead": "「髪のダメージ、気になってる？」に「はい」と答えた人に聞く", "opts": ["カラーやブリーチを繰り返してる", "アイロンやコテを毎日使ってる", "縮毛矯正やパーマのあとから", "正直、よく分からない"]}, {"id": "f_q_kusege", "q": "くせでいちばんつらいのは、どんなとき？", "lead": "「くせやうねり、気になってる？」に「はい」と答えた人に聞く", "opts": ["雨や湿気の日に広がる", "毎朝のアイロンに時間がかかる", "前髪や顔まわりだけ、言うことを聞かない", "伸ばしたいけど、ピンとしすぎるのはイヤ"]}, {"id": "f_q_change", "q": "変わりたいって思った、きっかけはある？", "lead": "「今回は、ガラッと変わりたい気分？」に「はい」と答えた人に聞く", "opts": ["新しい環境が始まる（仕事・学校など）", "今の髪型に飽きた", "気分を変えたいことがあった", "なんとなく、ずっと変えたかった"]}, {"id": "f_q_gray", "q": "白髪とは、どうつきあっていきたい？", "lead": "「白髪、少し気になり始めてる？」に「はい」と答えた人に聞く", "opts": ["しっかり染めて隠したい", "なじませて、目立たなくしたい", "いつかは活かしたい"]}, {"id": "f_q_thin", "q": "ボリュームの悩み、いちばんはどこ？", "lead": "「髪が細くて、ぺたんとしやすい？」に「はい」と答えた人に聞く", "opts": ["トップがぺたんとする", "髪全体が細くなってきた気がする"]}, {"id": "f_q_volume", "q": "広がりやすい髪、どうなるのがいちばんいい？", "lead": "「髪の量が多くて、広がりやすい？」に「はい」と答えた人に聞く", "opts": ["乾かすだけで、まとまってほしい", "軽くしたいけど、すきすぎはイヤ"]}, {"id": "f_q_short", "q": "短くするとき、いちばん不安なことは？", "lead": "「ショートやボブにしたい？」に「はい」と答えた人に聞く", "opts": ["短くなりすぎないか", "本当に似合うかどうか", "家でうまくまとまるか"]}, {"id": "f_q_propose", "q": "どんなふうに提案してほしい？", "lead": "「自分で決めるより、似合うスタイルを提案してほしい？」に「はい」と答えた人に聞く", "opts": ["写真を見ながら決めたい", "似合う理由も一緒に聞きたい", "思い切ってお任せしたい"]}]}, {"k": "jk", "name": "じっくり質問", "sub": "「本気で探す」コースで聞く、髪の履歴や毎日のこと", "qs": [{"id": "j01", "q": "前に美容室へ行ったのは、どのくらい前？", "lead": "髪の履歴", "opts": ["1か月以内", "2〜3か月前", "半年くらい前", "1年以上前"]}, {"id": "j02", "q": "これまで、髪にどんなことをしてきた？", "lead": "髪の履歴", "opts": ["ほとんど何もしていない", "カラーを繰り返している"]}, {"id": "j03", "q": "自分で髪を染めたこと（セルフカラー）はある？", "lead": "髪の履歴", "opts": ["この半年くらいの間にある", "前にあるけど、最近はない", "ない"]}, {"id": "j04", "q": "髪の長さを最後に大きく変えたのは？", "lead": "髪の履歴", "opts": ["この1年以内", "数年前", "ずっと同じくらい"]}, {"id": "j05", "q": "前の美容室を変えたくなった理由に、いちばん近いのは？", "lead": "髪の履歴", "opts": ["仕上がりがしっくりこなかった"]}, {"id": "j06", "q": "朝、髪にかけられる時間はどのくらい？", "lead": "毎日のこと", "opts": ["5分以内"]}, {"id": "j07", "q": "毎日の髪、どうしていることが多い？", "lead": "毎日のこと", "opts": ["アイロンやコテを使う", "結んでいることが多い", "スタイリング剤で整える", "乾かすだけ"]}, {"id": "j08", "q": "仕事や学校で、髪色や髪型のきまりはある？", "lead": "毎日のこと", "opts": ["けっこう厳しい", "特にない"]}, {"id": "j09", "q": "冬の乾燥や静電気で、髪がまとまらなくなる？", "lead": "毎日のこと", "opts": ["すごく困る"]}, {"id": "j10", "q": "髪を乾かすのは、どんな感じ？", "lead": "毎日のこと", "opts": ["毎回しっかりドライヤー", "半乾きや自然乾燥が多い", "時間がかかって大変"]}, {"id": "j11", "q": "なりたい雰囲気に、いちばん近いのは？", "lead": "好み", "opts": ["かわいい", "かっこいい・クール", "大人っぽい・上品", "ナチュラル", "個性的"]}, {"id": "j12", "q": "前髪は、どうしたい？", "lead": "好み", "opts": ["作りたい・こだわりたい", "なしにしたい・伸ばしたい", "似合う方を相談したい"]}, {"id": "j13", "q": "仕上がりの質感は、どれが好き？", "lead": "好み", "opts": ["ふんわり軽め", "しっとりまとまる", "ツヤ重視", "動き・束感がほしい"]}, {"id": "j14", "q": "髪の色は、どう決めたい？", "lead": "好み", "opts": ["肌や雰囲気に合う色を提案してほしい"]}, {"id": "j15", "q": "次の美容室までの間隔は、どのくらいがいい？", "lead": "通い方", "opts": ["1か月くらい", "2か月くらい", "3か月以上あけたい"]}, {"id": "j16", "q": "1回の施術時間、どのくらいまでなら大丈夫？", "lead": "通い方", "opts": ["1時間くらいまで"]}, {"id": "j17", "q": "次の予約や、次回のおすすめはどうしてほしい？", "lead": "通い方", "opts": ["次はいつ・何をするか提案してほしい", "自分のペースで決めたい"]}, {"id": "j18", "q": "来店のあと、髪のことで気になったら？", "lead": "通い方", "opts": ["LINEなどで気軽に聞けるとうれしい", "次に行ったときに聞けば十分"]}]}];
+  var FACE = "../img/aisi_face.webp";
+  var $app = document.getElementById("app");
+  var KEY = "pt_review_v1";
+  var esc = function(t){ return String(t == null ? "" : t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); };
+  /* 保存（同じスマホなら途中から再開） */
+  var st = null;
+  try { st = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+  if (!st || !st.rid) st = { rid: "r" + Math.random().toString(36).slice(2, 12), name: "", shop: "", secs: [], si: 0, qi: 0, ans: {}, extra: {}, done: false };
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+  function send(o){
+    o.type = "qreview"; o.rid = st.rid; o.name = st.name; o.shop = st.shop;
+    try { fetch(GAS, { method: "POST", mode: "no-cors", keepalive: true, body: JSON.stringify(o) }); } catch (e) {}
+  }
+  function secOf(k){ for (var i = 0; i < SECS.length; i++) if (SECS[i].k === k) return SECS[i]; return null; }
+  function total(){ return st.secs.reduce(function(a, k){ return a + secOf(k).qs.length + 1; }, 0); }
+  function doneCount(){ var n = 0; st.secs.forEach(function(k, i){ var s = secOf(k); if (i < st.si) n += s.qs.length + 1; else if (i === st.si) n += st.qi; }); return n; }
+  function head(){
+    var t = total(), d = doneCount(), s = secOf(st.secs[st.si]);
+    return '<div class="bar"><i style="width:' + (t ? Math.round(d / t * 100) : 0) + '%"></i></div><div class="prog"><span>' + esc(s ? s.name : "") + (s ? "　" + Math.min(st.qi + 1, s.qs.length + 1) + "／" + (s.qs.length + 1) : "") + '</span><span>全体 ' + d + "／" + t + "</span></div>";
+  }
+  function aisi(who, html){ return '<div class="stage"><div class="aisi"><img src="' + FACE + '" alt="AISI"></div><div class="bubble"><div class="who">AISI</div>' + html + "</div></div>"; }
+
+  /* はじめ：名前・お店・担当メニュー */
+  function start(){
+    $app.innerHTML = aisi("", '<p class="voice">はじめまして、AISIです。<br>お客さんに聞く質問を、プロの目で見てほしいんだ。<br>1問ずつ聞くから、思ったとおりに答えてね。</p>') +
+      '<div class="field"><label for="nm">お名前</label><input type="text" id="nm" maxlength="30" autocomplete="name" placeholder="例）山田 花子"></div>' +
+      '<div class="field"><label for="sp">お店の名前</label><input type="text" id="sp" maxlength="40" placeholder="例）Lumo"></div>' +
+      '<div class="field"><label>見てもらうところ<small>いくつでも。担当しているメニューがおすすめです（1つ3〜5分）</small></label><div class="chips" id="cs">' +
+      SECS.map(function(s){ return '<button type="button" class="chip' + (st.secs.indexOf(s.k) >= 0 ? " on" : "") + '" data-k="' + s.k + '">' + esc(s.name) + "<small>" + s.qs.length + "問</small></button>"; }).join("") + "</div></div>" +
+      '<div class="choices"><button type="button" class="choice primary" id="go">はじめる →</button></div><p class="err" id="err"></p>' +
+      '<p class="note">答えは、ぴたリストの運営（株式会社Indepe）に届き、AISIの質問をよくするためだけに使います。途中でやめても、同じスマホで開けば続きから再開できます。</p>';
+    document.getElementById("nm").value = st.name; document.getElementById("sp").value = st.shop;
+    $app.querySelectorAll("#cs .chip").forEach(function(b){ b.onclick = function(){ b.classList.toggle("on"); }; });
+    document.getElementById("go").onclick = function(){
+      var nm = document.getElementById("nm").value.trim(), sp = document.getElementById("sp").value.trim();
+      var ks = [].map.call($app.querySelectorAll("#cs .chip.on"), function(b){ return b.dataset.k; });
+      var err = document.getElementById("err");
+      if (!nm) return err.textContent = "お名前を入れてね";
+      if (!ks.length) return err.textContent = "見てもらうところを1つ以上選んでね";
+      st.name = nm; st.shop = sp; st.secs = SECS.map(function(s){ return s.k; }).filter(function(k){ return ks.indexOf(k) >= 0; });
+      st.si = 0; st.qi = 0; st.done = false; save(); send({ step: "start", secs: st.secs.map(function(k){ return secOf(k).name; }).join("・") });
+      render();
+    };
+  }
+
+  /* 1問ずつ：この聞き方でいい？ */
+  function question(){
+    var s = secOf(st.secs[st.si]), q = s.qs[st.qi], a = st.ans[q.id] || {};
+    var intro = st.qi === 0 ? '<p class="voice">次は「' + esc(s.name) + '」。' + esc(s.sub) + "だよ。</p>" : "";
+    $app.innerHTML = head() + aisi("", intro + '<p class="voice">お客さんには、こう聞こうと思ってるんだ。</p>' +
+      (q.lead ? '<p class="lead">' + esc(q.lead) + "</p>" : "") + '<div class="qbox">' + esc(q.q) + "</div>" +
+      (q.opts ? '<ul class="opts">' + q.opts.map(function(o){ return "<li>" + esc(o) + "</li>"; }).join("") + "</ul>" : "") +
+      (q.what ? '<p class="what">この質問で見分けたいこと：' + esc(q.what) + "</p>" : "") +
+      '<p class="voice">プロから見て、この' + (q.opts ? "聞き方と選択肢" : "聞き方") + "でいい？</p>") +
+      '<div class="choices" id="ch">' + [["ok","このままでOK"],["change","言い方を変えたい"],["drop","聞かなくていい"],["unsure","よく分からない"]].map(function(x){
+        return '<button type="button" class="choice' + (a.v === x[0] ? " picked" : "") + '" data-v="' + x[0] + '">' + x[1] + "</button>"; }).join("") + "</div>" +
+      '<div class="field" id="fix" hidden><label for="fx">じゃあ、お客さんにはどう聞く？</label><textarea id="fx" maxlength="300" placeholder="例）白髪は気になりますか？ 気になるなら、ぼかしたいか隠したいかも聞きたい"></textarea></div>' +
+      '<div class="field"><label for="cm">ひとこと<small>気になることがあれば（なくてOK）</small></label><input type="text" id="cm" maxlength="200"></div>' +
+      '<div class="choices"><button type="button" class="choice primary" id="ok" disabled>答えを選んでね</button></div><p class="err" id="err"></p>' +
+      '<button type="button" class="back" id="bk">← 前に戻る</button>';
+    var v = a.v || "", fix = document.getElementById("fix"), ok = document.getElementById("ok");
+    document.getElementById("fx").value = a.fix || ""; document.getElementById("cm").value = a.cm || "";
+    var upd = function(){ fix.hidden = v !== "change"; ok.disabled = !v; ok.textContent = v ? "これで決定 →" : "答えを選んでね"; };
+    $app.querySelectorAll("#ch .choice").forEach(function(b){ b.onclick = function(){
+      v = b.dataset.v; $app.querySelectorAll("#ch .choice").forEach(function(x){ x.classList.toggle("picked", x === b); }); upd();
+      if (v === "change") document.getElementById("fx").focus(); else ok.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }; });
+    ok.onclick = function(){
+      var fx = document.getElementById("fx").value.trim(), cm = document.getElementById("cm").value.trim();
+      if (v === "change" && !fx) return document.getElementById("err").textContent = "どう聞くかを書いてね（ざっくりで大丈夫）";
+      st.ans[q.id] = { v: v, fix: v === "change" ? fx : "", cm: cm };
+      send({ step: "answer", sec: s.name, qid: q.id, q: q.q + (q.opts ? "\n選択肢：" + q.opts.join("／") : ""), v: { ok: "このままでOK", change: "言い方を変えたい", drop: "聞かなくていい", unsure: "よく分からない" }[v], fix: st.ans[q.id].fix, cm: cm });
+      st.qi++; save(); render();
+    };
+    document.getElementById("bk").onclick = back;
+    upd(); window.scrollTo(0, 0);
+  }
+
+  /* メニューの最後：ほかに必ず聞くことは？ */
+  function extra(){
+    var s = secOf(st.secs[st.si]);
+    $app.innerHTML = head() + aisi("", '<p class="voice">「' + esc(s.name) + '」はこれで全部。ありがとう！<br>最後にひとつ。<b>カウンセリングで、ほかに必ず聞くこと</b>ってある？</p><p class="lead">思いつくだけ、1行に1つずつ書いてね。</p>') +
+      '<div class="field"><textarea id="ex" maxlength="1000" placeholder="例）前回のカラーからどれくらい経っているか&#10;例）普段のスタイリング剤"></textarea></div>' +
+      '<div class="choices"><button type="button" class="choice primary" id="ok">これで決定 →</button><button type="button" class="choice" id="no">特にない</button></div>' +
+      '<button type="button" class="back" id="bk">← 前に戻る</button>';
+    document.getElementById("ex").value = st.extra[s.k] || "";
+    var fin = function(t){ st.extra[s.k] = t; if (t) send({ step: "extra", sec: s.name, qid: "extra_" + s.k, q: "（ほかに必ず聞くこと）", v: "追加したい質問", fix: t, cm: "" }); st.si++; st.qi = 0; save(); render(); };
+    document.getElementById("ok").onclick = function(){ fin(document.getElementById("ex").value.trim()); };
+    document.getElementById("no").onclick = function(){ fin(""); };
+    document.getElementById("bk").onclick = back;
+    window.scrollTo(0, 0);
+  }
+  function back(){
+    if (st.qi > 0) st.qi--;
+    else if (st.si > 0) { st.si--; st.qi = secOf(st.secs[st.si]).qs.length; }
+    else return start();
+    save(); render();
+  }
+  function done(){
+    if (!st.done) { st.done = true; save(); send({ step: "done" }); }
+    $app.innerHTML = '<div class="done">' + aisi("", '<p class="voice">全部おわり！<br>ありがとう、' + esc(st.name) + ' さん。<br>運営に届けたよ。質問をもっとよくしておくね。</p>') +
+      '<ul class="secs">' + st.secs.map(function(k){ var s = secOf(k); var n = s.qs.filter(function(q){ return st.ans[q.id] && st.ans[q.id].v !== "ok"; }).length; return "<li>✓ " + esc(s.name) + "（直したい・いらない：" + n + "問）</li>"; }).join("") + "</ul>" +
+      '<div class="choices"><button type="button" class="choice" id="more">ほかのところも見る</button></div></div>';
+    document.getElementById("more").onclick = function(){ st.done = false; save(); start(); };
+  }
+  function render(){
+    if (!st.secs.length) return start();
+    if (st.si >= st.secs.length) return done();
+    var s = secOf(st.secs[st.si]);
+    if (st.qi < s.qs.length) return question();
+    return extra();
+  }
+  render();
+})();
+</script>
+</body>
+</html>
