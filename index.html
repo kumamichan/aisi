@@ -102,7 +102,10 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .voice .tc{opacity:0;animation:tcIn .22s ease-out forwards}
 @keyframes tcIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 /* 押した答えだけ色が変わる（最初はどれも同じ色） */
-.choices .choice.picked,.choices .choice.picked:hover{background:var(--accent);color:var(--accent-ink);font-weight:700;transform:scale(1.02)}
+.choices .choice.picked,.choices .choice.picked:hover{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 0 0 3px var(--accent),0 3px 0 rgba(0,0,0,.25)}
+.choices .choice.picked::before{content:"✓ ";color:var(--accent-ink)}
+.choices.okrow{margin-top:4px}
+.choices.okrow .choice[disabled]{opacity:.45;cursor:default;transform:none}
 .choices.locked .choice:not(.picked){opacity:.45;pointer-events:none}
 .chips.aff.locked{pointer-events:none}
 .chips.aff.locked .chip:not(.on){opacity:.45}
@@ -1140,7 +1143,7 @@ function renderIntro(prevSay){
         ${it.none?`<button type="button" class="chip ${noneOn?"on":""}" data-v="__none" aria-pressed="${!!noneOn}">${esc(it.none)}</button>`:""}
       </div>
       ${it.date?`<label class="datel" for="cDate">日付で指定 <input type="date" id="cDate" value="${d.date}"></label>`:""}
-      ${it.kind==="many"?`<div class="choices"><button class="choice primary" type="button" id="introNext"></button></div>`:""}
+<div class="choices"><button class="choice primary" type="button" id="introNext"></button></div>
       <button class="back" type="button" id="introBack">← ${introIdx?"前の質問に戻る":"テーマ選択に戻る"}</button>
     </div>
   </section>`;
@@ -1148,16 +1151,18 @@ function renderIntro(prevSay){
   const box = document.getElementById("introChips");
   const nextBtn = document.getElementById("introNext");
   const refresh = () => { if (!nextBtn) return;
+    if (it.kind==="one"){ nextBtn.disabled = !d[it.key]; nextBtn.textContent = d[it.key] ? "これで決定 →" : "答えを選んでね"; return; }
     const any = it.key==="menus" ? (d.menus.length || d.menuFree) : true;
     nextBtn.disabled = !any;
-    nextBtn.textContent = it.key==="menus" && !any ? "やりたいメニューを選んでね" : (it.key==="days" && d.date) || (val()||[]).length || (it.key==="menus" && d.menuFree) ? "これで決定" : (it.none || "次へ"); };
+    nextBtn.textContent = it.key==="menus" && !any ? "やりたいメニューを選んでね" : (it.key==="days" && d.date) || (val()||[]).length || (it.key==="menus" && d.menuFree) ? "これで決定 →" : (it.none || "次へ"); };
   box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
     if (box.classList.contains("locked")) return;
     const v = b.dataset.v;
-    if (it.kind==="one"){
+    if (it.kind==="one"){       // 1つ選ぶ質問も、選んでから「これで決定」で進む（選び直せる）
       d[it.key] = v==="__none" ? "__none" : v;
       box.querySelectorAll(".chip").forEach(x=>{ x.classList.toggle("on", x===b); x.setAttribute("aria-pressed", x===b); });
-      return introGo(v==="__none" ? "maybeNo" : "yes", it.say ? it.say(v) : "");
+      refresh(); try { nextBtn.scrollIntoView({block:"nearest", behavior:"smooth"}); } catch (e) {}
+      return;
     }
     if (v==="__none"){
       if (it.key==="menus"){ d.menuFree = !d.menuFree; if (d.menuFree) d.menus = []; }
@@ -1173,7 +1178,9 @@ function renderIntro(prevSay){
   });
   const di = document.getElementById("cDate");
   if (di) di.onchange = e => { d.date = e.target.value; if (d.date){ d.days = []; box.querySelectorAll(".chip").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); } refresh(); };
-  if (nextBtn){ refresh(); nextBtn.onclick = () => { const empty = !(val()||[]).length && !(it.key==="days" && d.date) && !(it.key==="menus" && d.menuFree); introGo(empty ? "maybeNo" : "yes", ""); }; }
+  if (nextBtn){ refresh(); nextBtn.onclick = () => {
+    if (it.kind==="one"){ const v = d[it.key]; if (!v) return; return introGo(v==="__none" ? "maybeNo" : "yes", it.say && v!=="__none" ? it.say(v) : ""); }
+    const empty = !(val()||[]).length && !(it.key==="days" && d.date) && !(it.key==="menus" && d.menuFree); introGo(empty ? "maybeNo" : "yes", ""); }; }
   document.getElementById("introBack").onclick = () => { if (introIdx) { introIdx--; renderIntro(); } else renderTheme(); };
 }
 /* 選んだらAISIが反応して、少し待ってから次へ */
@@ -1227,6 +1234,19 @@ function asideFor(n){
 }
 
 /* ============ 質問画面 ============ */
+/* 選んでから「これで決定」で進む（押すまでは選び直せる）。どの質問も同じ動きにそろえる */
+const OK_ROW = `<div class="choices okrow"><button class="choice primary" type="button" id="okBtn" disabled>答えを選んでね</button></div>`;
+function pickConfirm(sel, onOk){
+  const btns = [...$app.querySelectorAll(sel)], ok = document.getElementById("okBtn"); let cur = -1;
+  const upd = () => { ok.disabled = cur < 0; ok.textContent = cur < 0 ? "答えを選んでね" : "これで決定 →"; };
+  btns.forEach((b, i) => { b.setAttribute("aria-pressed", "false"); b.onclick = () => {
+    if ($app.querySelector(".choices.locked")) return;
+    cur = i; btns.forEach(x => { x.classList.toggle("picked", x === b); x.setAttribute("aria-pressed", x === b); }); upd();
+    try { ok.scrollIntoView({block:"nearest", behavior:"smooth"}); } catch (e) {}      // 決定ボタンが画面の外なら見える位置まで動かす
+  }; });
+  ok.onclick = () => { if (cur < 0 || $app.querySelector(".choices.locked")) return; btns[cur].closest(".choices").classList.add("locked"); ok.disabled = true; onOk(cur); };
+  upd();
+}
 /* 前の答えによって、質問の言い方を変える */
 function qText(q){
   if (q.after) for (const [k,[f,t]] of Object.entries(q.after)){ if (S.answers[k]!=null && f(S.answers[k])) return t; }
@@ -1249,15 +1269,14 @@ function renderQ(){
       <div class="choices">
         ${ANSWERS.map(([l],i)=>`<button class="choice" type="button" data-i="${i}">${l}</button>`).join("")}
       </div>
+      ${OK_ROW}
       <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
     </div>
   </section>`;
   S.say = "";
   typeVoice($app.querySelector(".bubble .voice"));
-  $app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{
-    if ($app.querySelector(".choices.locked")) return;
-    const v = ANSWERS[+b.dataset.i][1];
-    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+  pickConfirm("[data-i]", i => {
+    const v = ANSWERS[i][1];
     document.getElementById("backBtn").disabled = true;
     aisiReact(reactKind(v));
     setTimeout(()=>answer(v), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
@@ -1562,7 +1581,7 @@ function renderAff(){
       </div>
       <div class="chips aff">${opts.map(o=>`<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>
       ${a.name?`<label class="datel oshiname" for="affName" hidden>推しの名前（任意）<input type="text" id="affName" maxlength="40" placeholder="グループ名・チーム名など"></label>`:""}
-      <div class="choices"><button class="choice primary" type="button" id="affNext">${a.multi?"これで決定":"次へ"}</button><button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
+      <div class="choices"><button class="choice primary" type="button" id="affNext">これで決定 →</button><button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
     </div>
   </section>`;
   const box = $app.querySelector(".chips.aff");
@@ -1931,15 +1950,14 @@ function renderFollow(qid){
         <p class="voice">${esc(f.q)}</p>
       </div>
       <div class="choices">${f.opts.map((o,i)=>`<button class="choice" type="button" data-f="${i}">${esc(o.label)}</button>`).join("")}</div>
+      ${OK_ROW}
       <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   typeVoice($app.querySelector(".bubble .voice"));
-  $app.querySelectorAll("[data-f]").forEach(b => b.onclick = () => {
-    if ($app.querySelector(".choices.locked")) return;
-    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+  pickConfirm("[data-f]", i => {
     document.getElementById("backBtn").disabled = true;
-    S.fol[qid] = +b.dataset.f; S.say = f.opts[+b.dataset.f].say; S.need = buildNeed();
+    S.fol[qid] = i; S.say = f.opts[i].say; S.need = buildNeed();
     aisiReact("yes");
     setTimeout(next, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
   });
@@ -1971,17 +1989,16 @@ function renderTalk(){
         <p class="voice">${esc(t.q)}</p>
       </div>
       <div class="choices">${t.opts.map((o,i)=>`<button class="choice" type="button" data-t="${i}">${esc(o.label)}</button>`).join("")}</div>
+      ${OK_ROW}
       <button class="back" type="button" id="backBtn" ${talkIdx?"":"disabled"}>← 前の質問に戻る</button>
       ${talkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います。</p>`:""}
     </div>
   </section>`;
   typeVoice($app.querySelector(".bubble .voice"));
-  $app.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
-    if ($app.querySelector(".choices.locked")) return;
-    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+  pickConfirm("[data-t]", ti => {
     document.getElementById("backBtn").disabled = true;
-    const o = t.opts[+b.dataset.t];
-    S.talk[t.id] = +b.dataset.t; S.say = o.say; S.need = buildNeed();
+    const o = t.opts[ti];
+    S.talk[t.id] = ti; S.say = o.say; S.need = buildNeed();
     const top = scoreAll(S.answers, S.theme)[0].score;   /* 価値が重なるほど、マッチ率が少しずつ上がる */
     S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL + 6, S.meter + (Math.min(99.9, top) - S.meter) / (talkQ.length - talkIdx + 1)));
     aisiReact(Object.keys(o.need).length ? "yes" : "maybeNo");
@@ -2016,6 +2033,7 @@ function renderJikkuri(){
         <p class="voice">${esc(q.q)}</p>
       </div>
       <div class="choices">${q.opts.map((o,i)=>`<button class="choice" type="button" data-j="${i}">${esc(o.label)}</button>`).join("")}</div>
+      ${OK_ROW}
       <button class="choice" type="button" id="jkSkip" style="opacity:.8">答えずに次へ</button>
       <button class="back" type="button" id="backBtn" ${jkIdx?"":"disabled"}>← 前の質問に戻る</button>
       ${jkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います（お店に伝えるかどうかは、予約のときに選べます）。</p>`:""}
@@ -2023,12 +2041,10 @@ function renderJikkuri(){
   </section>`;
   typeVoice($app.querySelector(".bubble .voice"));
   const go = (kind, after) => { aisiReact(kind); setTimeout(() => { jkIdx++; jkIdx < jkQ.length ? renderJikkuri() : startPersonal(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650); };
-  $app.querySelectorAll("[data-j]").forEach(b => b.onclick = () => {
-    if ($app.querySelector(".choices.locked")) return;
-    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+  pickConfirm("[data-j]", ji => {
     document.getElementById("backBtn").disabled = true; document.getElementById("jkSkip").disabled = true;
-    const o = q.opts[+b.dataset.j];
-    S.jk[q.id] = +b.dataset.j; S.say = o.say; S.need = buildNeed();
+    const o = q.opts[ji];
+    S.jk[q.id] = ji; S.say = o.say; S.need = buildNeed();
     const top = scoreAll(S.answers, S.theme)[0].score;
     S.meter = Math.max(S.meter, Math.min(PHASE1_GOAL + 8, S.meter + (Math.min(99.9, top) - S.meter) / (jkQ.length - jkIdx + 2)));
     go(o.s ? "yes" : "maybeNo");
