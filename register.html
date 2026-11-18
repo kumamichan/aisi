@@ -41,6 +41,12 @@ textarea{min-height:84px;resize:vertical}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font:inherit;font-size:.84rem;border:1px solid #cfc9bd;background:#fff;color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
 .chip.on{background:var(--night-2);border-color:var(--night-2);color:#fff;font-weight:700}
+/* 個人のこと「もう少しくわしく」（お客さまの診断の共通点に使う） */
+.dblock{border:1px solid var(--line,#e4ded2);border-radius:10px;padding:10px 12px;margin-top:8px;background:#fff;display:grid;gap:8px}
+.dblock .dq{margin:0;font-weight:700;font-size:.9rem}
+.dblock input{width:100%;font:inherit;font-size:16px;padding:9px 10px;border:1px solid #cfc9bd;border-radius:8px}
+.dblock .mic{justify-self:start;font:inherit;font-size:.82rem;border:1px solid #cfc9bd;background:#fff;border-radius:99px;padding:5px 12px;cursor:pointer}
+.dblock .mic.rec{background:#c0392b;color:#fff;border-color:#c0392b}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #cfc9bd;border-radius:6px;overflow:hidden}
 .seg.s5{grid-template-columns:repeat(5,1fr)}
 .seg button{font:inherit;font-size:.8rem;border:0;border-right:1px solid #e3ded3;background:#fff;padding:7px 2px;cursor:pointer;color:var(--ink)}
@@ -235,6 +241,7 @@ main:has(.wiz){max-width:1040px}
 }
 </style>
 <script src="js/bx.js"></script>
+<script src="js/aff_detail.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </head>
 <body>
@@ -651,10 +658,15 @@ function renderStaff(){
     <div class="f"><b class="fl">趣味 ${pubBox("趣味")}</b>${chips("hobby", OPT.hobby, D["趣味"], true)}</div>
     <div class="f"><b class="fl">休日の過ごし方 ${pubBox("休日の過ごし方")}</b>${chips("holiday", OPT.holiday, D["休日の過ごし方"], true)}</div>
     <div class="f"><b class="fl">好きな音楽 ${pubBox("好きな音楽")}</b>${chips("music", OPT.music, D["好きな音楽"], true)}</div>
+    <div class="f" id="detailBox"></div>
   </section>
   </details>`;
   wire();
   wirePhotos("staff");
+  DET = (D["くわしく"] && typeof D["くわしく"] === "object") ? D["くわしく"] : {};
+  renderDetail();
+  ["music","hobby","pets"].forEach(id => { const b = document.querySelector(`[data-chips="${id}"]`); if (b) b.addEventListener("click", () => setTimeout(() => { collectDetail(); renderDetail(); }, 0)); });
+  ["oshiG","home"].forEach(id => { if ($(id)) $(id).addEventListener("change", () => { collectDetail(); renderDetail(); }); });
   $("specTap").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{ const v = $("spec").value.trim(), t = b.textContent;
     if (v.split(/[・、,]/).includes(t)) return; $("spec").value = (v ? v + "・" : "") + t; dirty(); });
   $("q3save").onclick = async () => { if (await doSave(false)) refreshStaff(); };
@@ -697,6 +709,34 @@ function previewStaff(){
       <div class="pc-btn">${esc(D.name)}さんで予約する</div>
     </div></article>`;
 }
+/* 個人のこと「もう少しくわしく」：J-POP → 好きなアーティスト、釣り → よく行く場所 など（お客さまの答えと同じだと共通点になる） */
+let DET = {};
+function detailKeys(){
+  const k = [], add = (c, v) => { if (window.AFF_DETAIL && v && AFF_DETAIL.D[c + ":" + v]) k.push(c + ":" + v); };
+  chipVal("music").forEach(v => add("music", v)); if ($("oshiG")) add("oshi", $("oshiG").value);
+  chipVal("hobby").forEach(v => add("hobby", v)); chipVal("pets").forEach(v => add("pets", v)); if ($("home")) add("home", $("home").value);
+  return k;
+}
+function collectDetail(){
+  document.querySelectorAll("#detailBox [data-dk]").forEach(bl => {
+    const sel = [...bl.querySelectorAll(".chip.on")].map(b => b.dataset.v);
+    const t = bl.querySelector("input").value.split(/[、,，]+/).map(x => x.trim()).filter(Boolean);
+    DET[bl.dataset.dk] = sel.concat(t.filter(x => !sel.includes(x))).slice(0, 8);
+  });
+  return DET;
+}
+function renderDetail(){
+  const box = $("detailBox"); if (!box) return;
+  const ks = detailKeys();
+  box.innerHTML = ks.length ? `<b class="fl">もう少しくわしく<small style="font-weight:400;display:block">お客さまと同じものが好きだと、診断結果に「共通点」として出ます。いくつでも選べます</small></b>` + ks.map(k => {
+    const d = AFF_DETAIL.D[k], cur = DET[k] || [];
+    return `<div class="dblock" data-dk="${esc(k)}"><p class="dq">${esc(d.q)}</p>${d.opts.length ? `<div class="chips">${d.opts.map(o => `<button type="button" class="chip ${cur.includes(o) ? "on" : ""}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>` : ""}
+      <input type="text" maxlength="80" placeholder="${d.opts.length ? "ほかにあれば名前を入れてね（「、」で区切る）" : "名前を入れてね（「、」で区切る）"}" value="${esc(cur.filter(x => !d.opts.includes(x)).join("、"))}">
+      ${AFF_DETAIL.canVoice() ? `<button type="button" class="mic">🎤 話して入力</button>` : `<small style="color:#6b7280">キーボードのマイクのボタンでも入力できます</small>`}</div>`; }).join("") : "";
+  box.querySelectorAll(".dblock .chip").forEach(b => b.onclick = () => { b.classList.toggle("on"); collectDetail(); dirty(); });
+  box.querySelectorAll(".dblock input").forEach(i => i.addEventListener("input", () => { collectDetail(); dirty(); }));
+  box.querySelectorAll(".dblock .mic").forEach(m => m.onclick = () => AFF_DETAIL.voice(m.parentNode.querySelector("input"), m));
+}
 function collectStaff(){
   return {
     agree: $("agree").checked, "歴（年）":$("years").value, "得意なこと":$("spec").value, "AISIのひとこと":$("line").value, "ホットペッパー予約URL":$("hpb").value,
@@ -706,6 +746,7 @@ function collectStaff(){
     "ペット":chipVal("pets"), "趣味":chipVal("hobby"), "休日の過ごし方":chipVal("holiday"), "好きな音楽":chipVal("music"),
     "ホットペッパー スタイルURL":$("hpbStyle").value.trim(), "得意な悩み":chipVal("worry").join("、"), "喜ばれること":chipVal("please").join("、"), "大事にしていること":chipVal("value").join("、"), "ホームケア提案":chipVal("homecare")[0]||"",
     hidden: [...document.querySelectorAll("[data-pub]")].filter(c=>!c.checked).map(c=>c.dataset.pub),
+    detail: (()=>{ collectDetail(); const o = {}; detailKeys().forEach(k => { if ((DET[k]||[]).length) o[k] = DET[k]; }); return o; })(),
     wz: D.wz && typeof D.wz === "object" ? D.wz : undefined
   };
 }

@@ -108,6 +108,13 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 .choices.okrow .choice[disabled]{opacity:.45;cursor:default;transform:none}
 .choices.locked .choice:not(.picked){opacity:.45;pointer-events:none}
 .chips.aff.locked{pointer-events:none}
+.affother{display:grid;gap:6px;max-width:420px;margin:10px 0 0 24px}
+.affother label{font-size:.85rem;color:var(--paper)}
+.affother input{width:100%;font:inherit;font-size:16px;padding:11px 12px;border-radius:6px;border:1.5px solid rgba(243,241,236,.4);background:rgba(243,241,236,.96);color:var(--ink)}
+.affother .mic{justify-self:start;background:transparent;color:var(--paper);border:1.5px solid rgba(243,241,236,.5);border-radius:99px;padding:6px 14px;font:inherit;font-size:.85rem;cursor:pointer}
+.affother .mic.rec{background:#c0392b;border-color:#c0392b}
+.affother small{color:var(--silver);font-size:.75rem}
+@media (max-width:860px){.affother{margin-left:0}}
 .chips.aff.locked .chip:not(.on){opacity:.45}
 @media (prefers-reduced-motion:reduce){
   .aisi .sway,.aisi .hop,.aisi .hop.nod,.aisi img.enter,.fxs.in,.voice .tc{animation:none!important;opacity:1}
@@ -368,6 +375,7 @@ th{color:var(--silver);font-weight:500;font-size:.75rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <script src="js/bx.js"></script>
+<script src="js/aff_detail.js"></script>
 </head>
 <body>
 <header class="top">
@@ -1448,7 +1456,7 @@ async function analyzePhoto(url){
  上位のお店が同じくらいのとき、スタッフとの共通点を聞いて、担当者まで決める */
 const AFF_Q = [
   {key:"pets",    q:"ちょっと聞いてもいい？ ペットは飼ってる？（飼いたい、でもOK）", multi:true,  none:"いない"},
-  {key:"oshiGenre",q:"推しはいる？", multi:false, none:"いない", name:true},
+  {key:"oshiGenre",q:"推しはいる？", multi:false, none:"いない"},
   {key:"club",    q:"学生時代、部活は何をしてた？", multi:false, none:"帰宅部"},
   {key:"home",    q:"出身はどこ？", multi:false, none:"それ以外"},
   {key:"hobbies", q:"好きなこと・趣味は？（いくつでも）", multi:true, none:"ほかにない"},
@@ -1497,6 +1505,7 @@ function affinity(st, A){
   const hm = (A.hobbies||[]).filter(x=>(p.hobbies||[]).includes(x)).slice(0,2); if (hm.length){ score+=hm.length; common.push(`趣味が同じ（${hm.join("・")}）`); }
   const dm = (A.holiday||[]).filter(x=>(p.holiday||[]).includes(x)); if (dm.length){ score+=.75; common.push(`休日の過ごし方が似ている（${dm[0]}）`); }
   const mm = (A.music||[]).filter(x=>(p.music||[]).includes(x)).slice(0,2); if (mm.length){ score+=.75*mm.length; common.push(`好きな音楽が同じ（${mm.join("・")}）`); }
+  if (window.AFF_DETAIL && A.detail && p.detail){ const dm2 = AFF_DETAIL.match(A.detail, p.detail); if (dm2.score){ score += dm2.score; common.unshift(...dm2.common); } }
   return {score:Math.min(1, score/4), common};
 }
 /* 技術・接客の理由 */
@@ -1595,26 +1604,33 @@ function renderAff(){
   prog();
   view="aff";
   const a = affQueue[affIdx];
-  const opts = a.opts.concat([a.none]);
+  const OTHER = "その他（名前を入れる）";
+  const opts = a.detail ? a.opts.concat(a.opts.length ? [OTHER] : []) : a.opts.concat([a.none]);
+  const prev = a.detail && S.aff.detail && S.aff.detail[a.dk] || [];
   $app.innerHTML = `
   <section class="stage">
     <div class="aisi">${aisiImg(affIdx%2?"peace":"think")}</div>
     <div class="panel">
       ${meterHTML(S.meter)}
       <div class="bubble">
-        <p class="qno">個人的な質問 ${affIdx+1} / ${affQueue.length}</p>
-        ${affIdx===0?`<p class="aside">答えたくなければ、飛ばしていいよ。</p>`:""}
+        <p class="qno">${a.detail ? "もう少しくわしく" : "個人的な質問"} ${affIdx+1} / ${affQueue.length}</p>
+        ${affIdx===0?`<p class="aside">答えたくなければ、飛ばしていいよ。</p>`:a.detail?`<p class="aside">同じものが好きな担当${ROLE()}がいたら、話が弾むからね。いくつでも選んでね。</p>`:""}
         <p class="voice">${esc(a.q)}</p>
       </div>
-      <div class="chips aff">${opts.map(o=>`<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>
+      <div class="chips aff">${opts.map(o=>`<button type="button" class="chip${prev.includes(o)?" on":""}" data-v="${esc(o)}" aria-pressed="${prev.includes(o)}">${esc(o)}</button>`).join("")}</div>
+      ${a.detail?`<div class="affother" id="affOther" ${a.opts.length?"hidden":""}><label for="affText">${a.opts.length?"ほかには？":"名前を入れてね"}（いくつかあるときは「、」で区切ってね）</label><input type="text" id="affText" maxlength="80" placeholder="例）${esc((a.opts[0]||"〇〇")+"、"+(a.opts[1]||"△△"))}" value="${esc(prev.filter(x=>!a.opts.includes(x)).join("、"))}">
+        ${window.AFF_DETAIL && AFF_DETAIL.canVoice()?`<button type="button" class="mic" id="affMic">🎤 話して入力</button>`:`<small>キーボードのマイクのボタンを押すと、話して入力できるよ</small>`}</div>`:""}
       ${a.name?`<label class="datel oshiname" for="affName" hidden>推しの名前（任意）<input type="text" id="affName" maxlength="40" placeholder="グループ名・チーム名など"></label>`:""}
-      <div class="choices">${a.multi || a.name ? `<button class="choice primary" type="button" id="affNext">これで決定 →</button>` : ""}<button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
+      <div class="choices">${a.multi || a.name || a.detail ? `<button class="choice primary" type="button" id="affNext">これで決定 →</button>` : ""}<button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
       <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   const box = $app.querySelector(".chips.aff");
   box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
     const v = b.dataset.v;
+    if (a.detail){ b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on"));
+      if (v === OTHER){ const o = document.getElementById("affOther"); o.hidden = !b.classList.contains("on"); if (!o.hidden) document.getElementById("affText").focus(); }
+      return; }
     if (!a.multi || v===a.none) box.querySelectorAll(".chip").forEach(x=>{ if(x!==b){ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); } });
     else box.querySelector(`.chip[data-v="${CSS.escape(a.none)}"]`)?.classList.remove("on");
     b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on"));
@@ -1623,8 +1639,10 @@ function renderAff(){
     /* 個人的な質問は、選んだあと「次へ」を押して進む（部活・出身も、ほかの質問とそろえて勝手に進まない） */
   });
   document.getElementById("backBtn").onclick = () => { if (affIdx > 0) { affIdx--; renderAff(); } else backToPersonalIntro(); };
+  if (a.detail){ const prevOther = prev.some(x=>!a.opts.includes(x)); if (prevOther && a.opts.length){ document.getElementById("affOther").hidden = false; const oc = box.querySelector(`.chip[data-v="${CSS.escape(OTHER)}"]`); if (oc) oc.classList.add("on"); }
+    const mic = document.getElementById("affMic"); if (mic) mic.onclick = () => AFF_DETAIL.voice(document.getElementById("affText"), mic); }
   if (document.getElementById("affNext")) document.getElementById("affNext").onclick=()=>{
-    const any = [...box.querySelectorAll(".chip.on")].some(x => x.dataset.v !== a.none);
+    const any = [...box.querySelectorAll(".chip.on")].some(x => x.dataset.v !== a.none) || (a.detail && (document.getElementById("affText")||{}).value);
     affGo(any ? "yes" : "maybeNo");
   };
   typeVoice($app.querySelector(".bubble .voice"));
@@ -1638,10 +1656,30 @@ function affGo(kind){
   aisiReact(kind);
   setTimeout(affNext, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
 }
+/* 個人的な質問の答えから、「もう少しくわしく」の質問を作る（J-POP → 好きなアーティスト、釣り → よく行く場所 など） */
+const AFF_CAT = {music:"music", oshiGenre:"oshi", hobbies:"hobby", pets:"pets", home:"home"};
+function affDetailItems(a, sel){
+  const cat = AFF_CAT[a.key]; if (!cat || !window.AFF_DETAIL) return [];
+  return sel.map(v => cat + ":" + v).filter(k => AFF_DETAIL.D[k]).slice(0, 3)
+    .map(k => ({key:"d:" + k, dk:k, parent:a.key, detail:true, multi:true, q:AFF_DETAIL.D[k].q, opts:AFF_DETAIL.D[k].opts}));
+}
 function affNext(){
   const a = affQueue[affIdx];
+  if (a.detail){
+    const OTHER = "その他（名前を入れる）";
+    const sel = [...$app.querySelectorAll(".chips.aff .chip.on")].map(b=>b.dataset.v).filter(v=>v!==OTHER);
+    const t = String((document.getElementById("affText")||{}).value || "").split(/[、,，\n]+/).map(x=>x.trim()).filter(Boolean).slice(0, 5);
+    S.aff.detail = S.aff.detail || {}; S.aff.detail[a.dk] = sel.concat(t.filter(x=>!sel.includes(x))).slice(0, 8);
+    if (a.dk.indexOf("oshi:") === 0 && S.aff.detail[a.dk][0]) S.aff.oshi = S.aff.detail[a.dk][0];
+    affIdx++;
+    return affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone();
+  }
   const sel = [...$app.querySelectorAll(".chips.aff .chip.on")].map(b=>b.dataset.v).filter(v=>v!==a.none);
   if (a.multi) S.aff[a.key] = sel; else if (sel[0]) S.aff[a.key] = sel[0];
+  /* くわしく聞く質問を、この質問のすぐあとに入れる（前に入れたものは入れ替え） */
+  while (affQueue[affIdx+1] && affQueue[affIdx+1].parent === a.key) affQueue.splice(affIdx+1, 1);
+  if (S.aff.detail) Object.keys(S.aff.detail).forEach(k => { if (k.indexOf((AFF_CAT[a.key]||"-") + ":") === 0 && !sel.includes(k.split(":")[1])) delete S.aff.detail[k]; });
+  affQueue.splice(affIdx+1, 0, ...affDetailItems(a, sel));
   if (a.name){ const n = (document.getElementById("affName")||{}).value; if (n) S.aff.oshi = n.trim(); }
   affIdx++;
   affIdx < affQueue.length ? (personalMeter(), renderAff()) : personalDone();
@@ -2091,7 +2129,7 @@ function finish(){
   S.results = ranked.slice(0,3);
   S.code = S.code || newCode();
   const top = S.results[0].score;
-  send("finish", {qCount:S.n + Object.keys(S.fol).length + Object.keys(S.talk).length + Object.keys(S.jk).length + (S.affAsked||[]).length, course:courseLabel(S.course), code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.values(S.aff).flat().filter(Boolean).map(v=>"相性:"+v):[]).join("・"),
+  send("finish", {qCount:S.n + Object.keys(S.fol).length + Object.keys(S.talk).length + Object.keys(S.jk).length + (S.affAsked||[]).length, course:courseLabel(S.course), code:S.code, reached85: top>=GOAL, photo:S.photo||"", wants:wantsOf(S.answers).concat(S.aff?Object.entries(S.aff).filter(([k])=>k!=="detail").map(([k,v])=>v).flat().concat(Object.values(S.aff.detail||{}).flat()).filter(x=>typeof x==="string"&&x).map(v=>"相性:"+v):[]).join("・"),
     answers:S.answers, results:S.results.map(r=>({id:r.salon.id, name:r.salon.name, score:r.score}))});
   view="result"; renderResult();
 }
