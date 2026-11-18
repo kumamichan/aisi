@@ -349,7 +349,7 @@ async function doSave(silent){
   if (r && r.ok){ m.className="msg ok"; m.textContent="保存しました。診断結果にすぐ反映されます。";
     if (r.done!=null){ D["プロフィール充実度"]=r.done; if (MODE==="staff") staffMeter(); }
     if (r.near) m.textContent = "保存しました。住所の近くに、先に登録しているサロンがあるため、診断に出る前に運営から確認のご連絡をします。";
-    else if (r.outside) m.textContent = "保存しました。2027年2月15日までは札幌市中央区のお店だけを紹介しています。運営から確認のご連絡をします。";
+    else if (r.outside) m.textContent = "保存しました。2027年2月15日までのお申し込みは、札幌市中央区のお店だけを受け付けています。運営から確認のご連絡をします。";
     return true; }
   m.className="msg err"; m.textContent="保存できませんでした。電波の良いところで、もう一度お試しください。"; return false;
 }
@@ -418,7 +418,7 @@ function renderSalon(){
       <label class="f">オーナーのお名前<small>必須</small><input type="text" id="ownerN" maxlength="30" value="${esc(D["オーナーのお名前"])}"></label>
       <label class="f">屋号・運営会社名<small>請求書の宛名。店名と同じなら空欄</small><input type="text" id="yago" maxlength="60" value="${esc(D["屋号・運営会社名"])}"></label>
     </div>`) + `
-    <label class="f">${D.solo ? "施術する場所の住所" : "お店の住所"}<small>番地・建物名まで（お客さまには見せません）${D.pre?"。2027年2月15日までは、札幌市中央区のお店だけを紹介しています":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
+    <label class="f">${D.solo ? "施術する場所の住所" : "お店の住所"}<small>番地・建物名まで（お客さまには見せません）${D.pre?"。2027年2月15日までのお申し込みは、札幌市中央区のお店だけを受け付けています":""}</small><input type="text" id="addr" maxlength="100" autocomplete="street-address" placeholder="例：札幌市中央区南1条西5丁目1-1 〇〇ビル3F" value="${esc(D["住所"])}"></label>
     <div class="row2">
       <label class="f">エリア<select id="zone">${opts(OPT.zone, D["エリア区分"], "選ぶ")}</select></label>
       <label class="f">エリアの表示<small>例：大通、円山</small><input type="text" id="area" value="${esc(D["エリア表示"])}"></label>
