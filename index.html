@@ -1159,7 +1159,7 @@ function renderIntro(prevSay){
         ${it.none?`<button type="button" class="chip ${noneOn?"on":""}" data-v="__none" aria-pressed="${!!noneOn}">${esc(it.none)}</button>`:""}
       </div>
       ${it.date?`<label class="datel" for="cDate">日付で指定 <input type="date" id="cDate" value="${d.date}"></label>`:""}
-<div class="choices"><button class="choice primary" type="button" id="introNext"></button></div>
+${it.kind==="many"?`<div class="choices"><button class="choice primary" type="button" id="introNext"></button></div>`:""}
       <button class="back" type="button" id="introBack">← ${introIdx?"前の質問に戻る":"テーマ選択に戻る"}</button>
     </div>
   </section>`;
@@ -1174,11 +1174,10 @@ function renderIntro(prevSay){
   box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
     if (box.classList.contains("locked")) return;
     const v = b.dataset.v;
-    if (it.kind==="one"){       // 1つ選ぶ質問も、選んでから「これで決定」で進む（選び直せる）
+    if (it.kind==="one"){       // 1つ選ぶ質問は、押したらそのまま次へ
       d[it.key] = v==="__none" ? "__none" : v;
       box.querySelectorAll(".chip").forEach(x=>{ x.classList.toggle("on", x===b); x.setAttribute("aria-pressed", x===b); });
-      refresh(); try { nextBtn.scrollIntoView({block:"nearest", behavior:"smooth"}); } catch (e) {}
-      return;
+      return introGo(v==="__none" ? "maybeNo" : "yes", it.say && v!=="__none" ? it.say(v) : "");
     }
     if (v==="__none"){
       if (it.key==="menus"){ d.menuFree = !d.menuFree; if (d.menuFree) d.menus = []; }
@@ -1250,18 +1249,15 @@ function asideFor(n){
 }
 
 /* ============ 質問画面 ============ */
-/* 選んでから「これで決定」で進む（押すまでは選び直せる）。どの質問も同じ動きにそろえる */
-const OK_ROW = `<div class="choices okrow"><button class="choice primary" type="button" id="okBtn" disabled>答えを選んでね</button></div>`;
+/* 1つ選ぶ質問は、押したらそのまま次へ（いくつでも選ぶ質問だけ「これで決定」）。戻るは「← 前の質問に戻る」 */
+const OK_ROW = "";
 function pickConfirm(sel, onOk){
-  const btns = [...$app.querySelectorAll(sel)], ok = document.getElementById("okBtn"); let cur = -1;
-  const upd = () => { ok.disabled = cur < 0; ok.textContent = toneText(cur < 0 ? "答えを選んでね" : "これで決定 →"); };
-  btns.forEach((b, i) => { b.setAttribute("aria-pressed", "false"); b.onclick = () => {
+  const btns = [...$app.querySelectorAll(sel)];
+  btns.forEach((b, i) => b.onclick = () => {
     if ($app.querySelector(".choices.locked")) return;
-    cur = i; btns.forEach(x => { x.classList.toggle("picked", x === b); x.setAttribute("aria-pressed", x === b); }); upd();
-    try { ok.scrollIntoView({block:"nearest", behavior:"smooth"}); } catch (e) {}      // 決定ボタンが画面の外なら見える位置まで動かす
-  }; });
-  ok.onclick = () => { if (cur < 0 || $app.querySelector(".choices.locked")) return; btns[cur].closest(".choices").classList.add("locked"); ok.disabled = true; onOk(cur); };
-  upd();
+    b.classList.add("picked"); b.closest(".choices").classList.add("locked");
+    onOk(i);
+  });
 }
 /* 前の答えによって、質問の言い方を変える */
 function qText(q){
@@ -1286,7 +1282,7 @@ function renderQ(){
         ${ANSWERS.map(([l],i)=>`<button class="choice" type="button" data-i="${i}">${l}</button>`).join("")}
       </div>
       ${OK_ROW}
-      <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   S.say = "";
@@ -1324,7 +1320,8 @@ function next(){
   S.current = nq; renderQ();
 }
 function back(){
-  const h = S.history.pop(); if (!h) return;
+  const h = S.history.pop();
+  if (!h){ introTheme = S.theme === "spashop" ? "spashop" : "salon"; introIdx = introList().length - 1; return renderIntro(); }   // 最初の質問からは、はじめの質問（時間帯）へ
   S.answers = h.answers; S.n = h.n; if (h.meter != null) S.meter = h.meter;
   if (h.q) delete S.fol[h.q.id]; S.say = ""; S.need = buildNeed();
   if (h.photo){ S.photo = null; return renderPhoto(); }
@@ -1348,7 +1345,7 @@ function renderPhoto(msg){
         <button class="choice" type="button" id="noPhoto">持ってない</button>
       </div>
       <p class="note">写真はこのスマホの中だけで分析します。どこにも送信・保存しません。</p>
-      <button class="back" type="button" id="backBtn" ${S.history.length?"":"disabled"}>← 前の質問に戻る</button>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   document.getElementById("photoIn").onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(f) runPhoto(f); };
@@ -1550,12 +1547,24 @@ function startPersonal(){
         <p class="voice">……だいたい分かった。<br>ここからは、君の担当${ROLE()}を決めたい。<br>ちょっと、個人的なこと聞いていい？</p>
       </div>
       <div class="choices"><button class="choice primary" type="button" id="pYes">いいよ</button><button class="choice" type="button" id="pNo">聞かずに結果を見る</button></div>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
       <p class="note">答えた内容は、担当${ROLE()}との共通点を探すためだけに使います。</p>
     </div>
   </section>`;
   aisiReact("personal"); typeVoice($app.querySelector(".bubble .voice"));
   document.getElementById("pYes").onclick=()=>{ S.aff = S.aff || {}; S.affAsked = asked.concat(qs.map(a=>a.key)); renderAff(); };
+  document.getElementById("backBtn").onclick=()=>{ S.affDone = false; backBeforePersonal(); };
   document.getElementById("pNo").onclick=()=>{ if (S.aff && !Object.keys(S.aff).length) S.aff = null; finish(); };
+}
+/* 「← 前の質問に戻る」：個人的な質問の前（じっくり質問 → AISIが先に聞くこと → 本編の質問）へ */
+function backBeforePersonal(){
+  if (S.jkDone && jkQ.length){ jkIdx = jkQ.length - 1; delete S.jk[jkQ[jkIdx].id]; S.say = ""; S.need = buildNeed(); return renderJikkuri(); }
+  if (S.talkDone && talkQ.length){ talkIdx = talkQ.length - 1; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); return renderTalk(); }
+  S.talkDone = false; S.jkDone = false; back();
+}
+function backToPersonalIntro(){
+  const keys = affQueue.map(a => a.key);
+  S.affAsked = (S.affAsked || []).filter(k => keys.indexOf(k) < 0); S.affDone = false; startPersonal();
 }
 /* 第2段階のマッチ率：答えるたびに、最終の点数に向かって上がる */
 function personalMeter(){
@@ -1575,10 +1584,12 @@ function personalDone(){
       ${meterHTML(S.meter)}
       <div class="bubble"><p class="voice">分かった、ありがとう。<br>じゃあ、君に合うお店と、担当${ROLE()}を伝えるね。</p></div>
       <div class="choices"><button class="choice primary" type="button" id="pShow">結果を見る</button></div>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   aisiReact("thanks"); typeVoice($app.querySelector(".bubble .voice"));
   document.getElementById("pShow").onclick=finish;
+  document.getElementById("backBtn").onclick=()=>{ if (!affQueue.length) return backBeforePersonal(); affIdx = affQueue.length - 1; renderAff(); };
 }
 function renderAff(){
   prog();
@@ -1597,7 +1608,8 @@ function renderAff(){
       </div>
       <div class="chips aff">${opts.map(o=>`<button type="button" class="chip" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join("")}</div>
       ${a.name?`<label class="datel oshiname" for="affName" hidden>推しの名前（任意）<input type="text" id="affName" maxlength="40" placeholder="グループ名・チーム名など"></label>`:""}
-      <div class="choices"><button class="choice primary" type="button" id="affNext">これで決定 →</button><button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
+      <div class="choices">${a.multi || a.name ? `<button class="choice primary" type="button" id="affNext">これで決定 →</button>` : ""}<button class="choice" type="button" id="affSkip">答えずに次へ</button></div>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
     </div>
   </section>`;
   const box = $app.querySelector(".chips.aff");
@@ -1607,9 +1619,11 @@ function renderAff(){
     else box.querySelector(`.chip[data-v="${CSS.escape(a.none)}"]`)?.classList.remove("on");
     b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on"));
     if (a.name){ const on = box.querySelector(".chip.on"); $app.querySelector(".oshiname").hidden = !(on && on.dataset.v!==a.none); }
+    if (!a.multi && !a.name) affGo(v === a.none ? "maybeNo" : "yes");     // 1つ選ぶ質問は、押したらそのまま次へ
     /* 個人的な質問は、選んだあと「次へ」を押して進む（部活・出身も、ほかの質問とそろえて勝手に進まない） */
   });
-  document.getElementById("affNext").onclick=()=>{
+  document.getElementById("backBtn").onclick = () => { if (affIdx > 0) { affIdx--; renderAff(); } else backToPersonalIntro(); };
+  if (document.getElementById("affNext")) document.getElementById("affNext").onclick=()=>{
     const any = [...box.querySelectorAll(".chip.on")].some(x => x.dataset.v !== a.none);
     affGo(any ? "yes" : "maybeNo");
   };
@@ -1620,7 +1634,7 @@ function renderAff(){
 function affGo(kind){
   if ($app.querySelector(".chips.aff.locked")) return;
   $app.querySelector(".chips.aff").classList.add("locked");
-  $app.querySelectorAll("#affNext,#affSkip").forEach(x => x.disabled = true);
+  $app.querySelectorAll("#affNext,#affSkip,#backBtn").forEach(x => x.disabled = true);
   aisiReact(kind);
   setTimeout(affNext, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
 }
@@ -2006,7 +2020,7 @@ function renderTalk(){
       </div>
       <div class="choices">${t.opts.map((o,i)=>`<button class="choice" type="button" data-t="${i}">${esc(o.label)}</button>`).join("")}</div>
       ${OK_ROW}
-      <button class="back" type="button" id="backBtn" ${talkIdx?"":"disabled"}>← 前の質問に戻る</button>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
       ${talkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います。</p>`:""}
     </div>
   </section>`;
@@ -2020,7 +2034,7 @@ function renderTalk(){
     aisiReact(Object.keys(o.need).length ? "yes" : "maybeNo");
     setTimeout(() => { talkIdx++; talkIdx < talkQ.length ? renderTalk() : startPersonal(); }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 650);
   });
-  document.getElementById("backBtn").onclick = () => { if (!talkIdx) return; talkIdx--; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); renderTalk(); };
+  document.getElementById("backBtn").onclick = () => { if (!talkIdx) { S.talkDone = false; S.say = ""; return back(); } talkIdx--; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); renderTalk(); };
 }
 
 /* じっくり質問（本気で探すコース） */
@@ -2051,7 +2065,7 @@ function renderJikkuri(){
       <div class="choices">${q.opts.map((o,i)=>`<button class="choice" type="button" data-j="${i}">${esc(o.label)}</button>`).join("")}</div>
       ${OK_ROW}
       <button class="choice" type="button" id="jkSkip" style="opacity:.8">答えずに次へ</button>
-      <button class="back" type="button" id="backBtn" ${jkIdx?"":"disabled"}>← 前の質問に戻る</button>
+      <button class="back" type="button" id="backBtn">← 前の質問に戻る</button>
       ${jkIdx===0?`<p class="note">答えた内容は、合う担当者を選ぶためと、予約が決まったあとにお店へ伝えるためだけに使います（お店に伝えるかどうかは、予約のときに選べます）。</p>`:""}
     </div>
   </section>`;
@@ -2066,7 +2080,7 @@ function renderJikkuri(){
     go(o.s ? "yes" : "maybeNo");
   });
   document.getElementById("jkSkip").onclick = () => { if ($app.querySelector(".choices.locked")) return; $app.querySelector(".choices").classList.add("locked"); go("idk"); };
-  document.getElementById("backBtn").onclick = () => { if (!jkIdx) return; jkIdx--; delete S.jk[jkQ[jkIdx].id]; S.say = ""; S.need = buildNeed(); renderJikkuri(); };
+  document.getElementById("backBtn").onclick = () => { if (!jkIdx) { S.jkDone = false; if (talkQ.length) { talkIdx = talkQ.length - 1; delete S.talk[talkQ[talkIdx].id]; S.say = ""; S.need = buildNeed(); return renderTalk(); } S.talkDone = false; return back(); } jkIdx--; delete S.jk[jkQ[jkIdx].id]; S.say = ""; S.need = buildNeed(); renderJikkuri(); };
 }
 
 /* ============ 結果 ============ */

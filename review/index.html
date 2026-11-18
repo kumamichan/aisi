@@ -120,18 +120,20 @@ textarea{min-height:96px;resize:vertical}
       (q.opts ? '<ul class="opts">' + q.opts.map(function(o){ return "<li>" + esc(o) + "</li>"; }).join("") + "</ul>" : "") +
       (q.what ? '<p class="what">この質問で見分けたいこと：' + esc(q.what) + "</p>" : "") +
       '<p class="voice">プロから見て、この' + (q.opts ? "聞き方と選択肢" : "聞き方") + "でいい？</p>") +
+      '<div class="field"><label for="cm">ひとこと<small>気になることがあれば、先に書いてから選んでね（なくてOK）</small></label><input type="text" id="cm" maxlength="200"></div>' +
       '<div class="choices" id="ch">' + [["ok","このままでOK"],["change","言い方を変えたい"],["drop","聞かなくていい"],["unsure","よく分からない"]].map(function(x){
         return '<button type="button" class="choice' + (a.v === x[0] ? " picked" : "") + '" data-v="' + x[0] + '">' + x[1] + "</button>"; }).join("") + "</div>" +
-      '<div class="field" id="fix" hidden><label for="fx">じゃあ、お客さんにはどう聞く？</label><textarea id="fx" maxlength="300" placeholder="例）白髪は気になりますか？ 気になるなら、ぼかしたいか隠したいかも聞きたい"></textarea></div>' +
-      '<div class="field"><label for="cm">ひとこと<small>気になることがあれば（なくてOK）</small></label><input type="text" id="cm" maxlength="200"></div>' +
-      '<div class="choices"><button type="button" class="choice primary" id="ok" disabled>答えを選んでね</button></div><p class="err" id="err"></p>' +
+      '<div id="fix" hidden><div class="field"><label for="fx">じゃあ、お客さんにはどう聞く？</label><textarea id="fx" maxlength="300" placeholder="例）白髪は気になりますか？ 気になるなら、ぼかしたいか隠したいかも聞きたい"></textarea></div>' +
+      '<div class="choices"><button type="button" class="choice primary" id="ok">これで決定 →</button></div></div><p class="err" id="err"></p>' +
       '<button type="button" class="back" id="bk">← 前に戻る</button>';
     var v = a.v || "", fix = document.getElementById("fix"), ok = document.getElementById("ok");
     document.getElementById("fx").value = a.fix || ""; document.getElementById("cm").value = a.cm || "";
-    var upd = function(){ fix.hidden = v !== "change"; ok.disabled = !v; ok.textContent = v ? "これで決定 →" : "答えを選んでね"; };
+    var upd = function(){ fix.hidden = v !== "change"; };
+    /* 「このままでOK」「聞かなくていい」「よく分からない」は、押したらそのまま次へ。「言い方を変えたい」だけ、書いてから「これで決定」 */
     $app.querySelectorAll("#ch .choice").forEach(function(b){ b.onclick = function(){
       v = b.dataset.v; $app.querySelectorAll("#ch .choice").forEach(function(x){ x.classList.toggle("picked", x === b); }); upd();
-      if (v === "change") document.getElementById("fx").focus(); else ok.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      if (v === "change") { document.getElementById("fx").focus(); fix.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+      else ok.onclick();
     }; });
     ok.onclick = function(){
       var fx = document.getElementById("fx").value.trim(), cm = document.getElementById("cm").value.trim();
