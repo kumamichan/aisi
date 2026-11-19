@@ -294,6 +294,72 @@ const FEATS = [
   ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","時短"],["walkin","当日・前日の予約に強い"]]]
 ];
 const LEVELS = [[1,"得意"],[0.5,"ふつう"],[0,"していない"]];
+/* ---------------- 業種（お店で選ぶ）ごとの、スタッフへの質問 ----------------
+ *  hair＝美容室（いままでの質問のまま）。ほかの業種は、技術・悩み・喜ばれること・大事にしていることの選択肢を入れ替え、
+ *  髪の質問（お客さまの「じっくり質問」とつながるj01〜j18）の代わりに、その業種の深掘りの質問（d_〜）を聞く */
+const BIZ_LIST = [["hair","美容室"],["spa","ヘッドスパ"],["nail","ネイルサロン"],["eye","まつげ・アイブロウ"],["esthe","エステ"]];
+const OPT_HAIR = {tech: OPT.tech, worry: OPT.worry, please: OPT.please, value: OPT.value};
+const D1 = (key, q, opts, say) => ({key, g:"tech", q, type:"one", opts:opts.map(x=>[x,x]), say: say || (v => "なるほど。")});
+const DM = (key, q, opts, say) => ({key, g:"tech", q: q + "（いくつでも）", type:"many", opts:opts.map(x=>[x,x]), say: say || (a => "了解。")});
+const BIZ = {
+  hair: {job:"美容師", spec:"例：透明感カラー・くせ毛カット", line:"例：くせ毛で悩んでいる人ほど、ぜひ一度。乾かすだけでまとまる髪を一緒につくります。"},
+  spa: {job:"スパニスト", spec:"例：寝落ちするドライヘッドスパ・眼精疲労ケア", line:"例：頭が重い、眠りが浅い…そんな方にこそ。力加減を合わせながら、ゆっくりほぐします。",
+    tech:["ドライヘッドスパ","ウェットヘッドスパ（シャンプー台）","炭酸泉・クレンジングスパ","頭皮クレンジング","眼精疲労ケア","首・肩のほぐし","デコルテ・フェイスライン","ヘッドマッサージ（ハンドのみ）","アロマ・リラクゼーション","寝落ち・睡眠ケア","頭皮診断（マイクロスコープ）","育毛・頭皮環境ケア","白髪予防ケア","メンズヘッドスパ","特別な日の前のケア"],
+    worry:["眠りが浅い・寝つけない","目の疲れ・目の奥の重さ","首こり・肩こり","頭が重い・こわばる","頭皮のべたつき・におい","頭皮の乾燥・かゆみ","抜け毛・ボリュームが気になる","白髪が気になる","顔のたるみ・むくみ","気持ちが休まらない・リフレッシュしたい"],
+    please:["ぐっすり眠れた","目がすっきりした","頭が軽くなった","力加減がちょうどいい","頭皮がすっきりした","フェイスラインが上がった","香りに癒された","特別な時間を過ごせた"],
+    value:["最初に力加減と好みを確認する","施術中は話しかけすぎない","頭皮の状態を正直に伝える","寝てしまっても大丈夫な雰囲気をつくる","無理なすすめはしない","家でできるセルフケアを教える","最初から最後まで自分が担当する","衛生・清潔を徹底する"],
+    deep:[
+      DM("d_pressure","得意な力加減は？",["ソフト・やさしめ","ふつう","しっかり・強め","お客さまに合わせて細かく調整"], a => "力加減の好みが合うお客さまとつなぐね。"),
+      DM("d_style","どんな施術が得意？",["寝落ちするほど静かな施術","こりをしっかりほぐす施術","頭皮ケア・クレンジング重視","リフトアップなど美容重視"], a => `「${a[0]}」が得意、と。`),
+      D1("d_time","いちばん多いコースの時間は？",["30分以内","45〜60分","70〜90分","90分以上"], v => "時間の希望に合うお客さまの参考にするね。"),
+      DM("d_tool","施術で使う道具・機器は？",["ハンドのみ","炭酸泉","マイクロスコープ","スチーマー","ホットストーン・温め","オイル・アロマ"]),
+      D1("d_sleep","施術中に寝てしまうお客さまには？",["そのまま寝てもらう","ポイントだけ声をかける","起きている前提で進める"], v => /寝てもらう/.test(v) ? "ゆっくり休みたい人には、うれしい人だね。" : "了解。"),
+      DM("d_cert","持っている資格・受けた講習は？",["美容師免許","ヘッドスパの民間資格","リラクゼーション系の資格","アロマの資格","メーカー・ディーラーの講習","特になし"], a => "了解。安心材料として伝えるね。")]},
+  nail: {job:"ネイリスト", spec:"例：ニュアンスネイル・自爪にやさしいジェル", line:"例：爪が薄くて悩んでいた方ほど、ぜひ。持ちと爪の健康、どちらも大事にします。",
+    tech:["ジェル（ワンカラー）","グラデーション","フレンチ","手描きアート","ニュアンスネイル","マグネットネイル","ストーン・パーツ","3Dアート","長さ出し（スカルプ・チップ）","フィルイン","ケア（甘皮・ファイル）","フットネイル","メンズネイル","自爪育成","ブライダルネイル"],
+    worry:["爪が薄い・割れやすい","二枚爪","すぐ浮く・取れる","深爪","爪が小さい・短い","手元を上品に見せたい","仕事で派手にできない","オフで爪が傷んだ","デザインが決められない","足の爪が気になる"],
+    please:["持ちがいい","デザインがかわいい","爪にやさしい","オフが丁寧","提案が上手","仕上がりがきれい","施術が早い","手元が上品になる"],
+    value:["デザインを写真で確認してから始める","爪の状態を正直に伝える","削りすぎない","持ちを考えた長さ・形を提案する","追加料金は事前に説明する","無理なすすめはしない","家でのケア方法を教える","道具の消毒・衛生を徹底する"],
+    deep:[
+      DM("d_taste","得意なデザインの雰囲気は？",["シンプル・オフィス向け","トレンド・ニュアンス","かわいい・ガーリー","派手・個性的","上品・大人っぽい","韓国風"], a => `「${a[0]}」が好きなお客さまとつなぐね。`),
+      D1("d_time","ワンカラーの施術時間は？",["60分以内","60〜90分","90分以上"]),
+      D1("d_offother","ほかのお店のジェルのオフは？",["対応する","爪の状態を見て相談","していない"]),
+      D1("d_trouble","浮き・欠けのお直しは？",["期間内は無料で直す","内容によって相談","していない"], v => "了解。安心材料になるね。"),
+      DM("d_foot","フットや特別な日のネイルは？",["フットネイル","ブライダル","成人式・卒業式","イベント・推し活ネイル"]),
+      DM("d_cert","持っている資格は？",["ネイリスト技能検定","ジェルネイル技能検定","ネイルサロン衛生管理士","特になし"], a => "了解。安心材料として伝えるね。")]},
+  eye: {job:"アイリスト", spec:"例：自然に盛れるまつげパーマ・似合わせ眉", line:"例：すっぴんに自信が持てるように。目元の形に合わせて、自然に仕上げます。",
+    tech:["まつげエクステ（シングル）","ボリュームラッシュ","フラットラッシュ","カラーエクステ","まつげパーマ（ラッシュリフト）","下まつげ","眉ワックス","眉カット・眉スタイリング","眉毛パーマ（ブロウリフト）","メンズ眉","まつげ・眉のケア提案"],
+    worry:["まつげが少ない・短い","まつげが下向き","一重・奥二重","目が小さく見える","左右差が気になる","眉の形が決まらない","眉が薄い","すっぴんに自信がない","すぐ取れる・持ちが悪い","目元が敏感"],
+    please:["自然な仕上がり","持ちがいい","目が大きく見える","似合わせのデザイン","施術中の安心感","メイクの時間が短くなった","左右がそろう","しみない・痛くない"],
+    value:["最初にデザインを一緒に決める","目元の状態を正直に伝える","まつげの負担を考えた本数・長さにする","しみない・痛くない施術","無理なすすめはしない","家でのケア方法を教える","道具の消毒・衛生を徹底する","肌に合うかの確認を大事にする"],
+    deep:[
+      DM("d_taste","得意な仕上がりは？",["ナチュラル","キュート（丸目）","クール（切れ長）","華やか・ボリューム","韓国風"], a => `「${a[0]}」が好きなお客さまとつなぐね。`),
+      D1("d_first","まつげエクステ・パーマが初めてのお客さまには？",["流れと注意点をしっかり説明する","少なめの本数から提案する","写真で仕上がりを見せる"], v => "初めての人も安心だね。"),
+      D1("d_time","いちばん多い施術時間は？",["45分以内","45〜60分","60〜90分","90分以上"]),
+      D1("d_sensitive","目元が敏感なお客さまには？",["低刺激の材料に変える","事前に確認して相談する","特に変えていない"]),
+      DM("d_brow","眉の施術は？",["眉ワックス","眉毛パーマ","眉カット","メンズ眉","していない"]),
+      DM("d_cert","持っている資格・受けた講習は？",["美容師免許","まつげエクステの技術認定","アイブロウの技術認定","メーカー講習","特になし"], a => "了解。安心材料として伝えるね。")]},
+  esthe: {job:"エステティシャン", spec:"例：毛穴ケアのフェイシャル・むくみケア", line:"例：鏡を見るのが少し楽しみになるように。肌の状態を見ながら、無理なくケアします。",
+    tech:["フェイシャル","毛穴ケア","エイジングケア","リフトアップ","ハーブピーリング","痩身・ボディ","リンパの流れを意識した手技","脱毛","ブライダルエステ","メンズエステ","デコルテ","マタニティ"],
+    worry:["毛穴・黒ずみ","くすみ","乾燥","ニキビあとが気になる","たるみ・ほうれい線","むくみ","セルライト","体型が気になる","ムダ毛","肌がゆらぎやすい"],
+    please:["肌のトーンが上がった","むくみがすっきりした","変化を実感できた","手技が気持ちいい","リラックスできた","肌の悩みを分かってもらえた","無理な勧誘がない","通いやすい"],
+    value:["最初に肌・体の状態を確認する","変化を大げさに言わない","無理な勧誘・回数券はすすめない","家でのケア方法を教える","肌の状態を正直に伝える","最初から最後まで自分が担当する","衛生・清潔を徹底する","施術内容と料金を先に説明する"],
+    deep:[
+      DM("d_style","施術のスタイルは？",["ハンド中心","機器も使う","ハンドと機器の両方"]),
+      DM("d_pressure","得意な力加減は？",["ソフト・やさしめ","ふつう","しっかり・強め","お客さまに合わせて調整"]),
+      D1("d_course","通う回数の提案は？",["1回ごとに相談","目安の回数を伝える","回数券・コースを案内する"], v => /1回ごと/.test(v) ? "気軽に試したいお客さまには安心だね。" : "了解。"),
+      D1("d_time","いちばん多い施術時間は？",["60分以内","60〜90分","90分以上"]),
+      DM("d_target","得意なお客さまは？",["はじめてのエステ","敏感肌","メンズ","ブライダル前","産後"]),
+      DM("d_cert","持っている資格は？",["エステティシャンの認定資格","美容師免許","アロマの資格","特になし"], a => "了解。安心材料として伝えるね。")]}
+};
+let BZ = BIZ.hair, BIZ_KEY = "hair";
+function setBiz(k){
+  BIZ_KEY = BIZ[k] ? k : "hair"; BZ = BIZ[BIZ_KEY];
+  ["tech","worry","please","value"].forEach(o => OPT[o] = BZ[o] || OPT_HAIR[o]);
+  WZ = BIZ_KEY === "hair" ? WZ_HAIR : bizWZ(BZ);
+  WZ_TOTAL = WZ.length;
+  WZ_HINT.tech = BIZ_KEY === "hair" ? WZ_HINT_TECH_HAIR : "答えると、技術や悩みで探すお客さまに「〇〇が得意」と出やすくなるよ。";
+}
 
 const q = new URLSearchParams(location.search);
 const MODE = q.get("s") ? "salon" : q.get("p") ? "staff" : "";
@@ -402,7 +468,7 @@ function renderSalon(){
       ${D.photos&&D.photos[i]?`<button class="btn sub" type="button" data-del="${i+1}">削除</button>`:""}
     </div>`).join("")}</div>
     <p class="tip">人の顔が写っていない写真にしてください。横長の写真がきれいに出ます。</p>`)}
-  ${panel("basic", (D.solo ? `
+  ${panel("basic", `<label class="f">業種<small>スタッフへの質問が、業種に合わせて変わります</small><select id="biz">${opts(BIZ_LIST, D["業種"] || (spaShop() ? "spa" : "hair"))}</select></label>` + (D.solo ? `
     <div class="solo-note">個人として掲載しています（${esc(D["個人の活動名"]||"")}さん）。予約はあなたのLINEに届きます。</div>
     <div class="row2">
       <label class="f">本名<small>契約と請求の相手（お客さまには見せません）</small><input type="text" id="ownerN" maxlength="30" value="${esc(D["オーナーのお名前"])}"></label>
@@ -502,7 +568,7 @@ function renderSalon(){
   refreshSalon();
 }
 /* ヘッドスパのお店（一押しメニューが全部ヘッドスパ）は、スタッフの人数を「スパニスト・受付」だけにする */
-function spaShop(){ const ms = (D.menus||[]).filter(m=>m.name); return ms.length > 0 && ms.every(m => (m.cats||[]).length && m.cats.every(c => c === "spa")); }
+function spaShop(){ if (D["業種"]) return D["業種"] === "spa"; const ms = (D.menus||[]).filter(m=>m.name); return ms.length > 0 && ms.every(m => (m.cats||[]).length && m.cats.every(c => c === "spa")); }
 /* スタッフの状態：[色, ラベル, 説明] */
 function staffState(s){
   if (s.line === "none") return ["inv", "招待中", "まだLINEで登録していません。招待メッセージを送ってください。"];
@@ -568,7 +634,7 @@ function collectSalon(){
     "アピール：立地":$("ap1").value, "アピール：オーナーの考え方":$("ap2").value, "アピール：スタッフ・雰囲気":$("ap3").value,
     f, menus:[0,1,2].map(i=>({name:$(`m${i}n`).value, price:$(`m${i}p`).value, desc:$(`m${i}d`).value, min:$(`m${i}t`).value, cats:chipVal("mc"+i).map(l=>MENU_CATS.find(c=>c[1]===l)[0])})),
     staffOn: D.staff.map((s,i)=>({name:s.name, on: document.querySelector(`[data-on="${i}"]`) ? document.querySelector(`[data-on="${i}"]`).checked : s.on})),
-    "オーナーのお名前": $("ownerN").value, "屋号・運営会社名": $("yago").value,
+    "オーナーのお名前": $("ownerN").value, "屋号・運営会社名": $("yago").value, "業種": $("biz") ? $("biz").value : "",
     ...(D.solo ? {"電話番号": $("tel").value, "勤務先の確認": $("work").value, "美容師免許番号": $("lic").value, "本人確認URL": $("purl").value} : {})
   };
 }
@@ -577,12 +643,13 @@ function collectSalon(){
 function pubBox(key){ const off=(D.hidden||[]).includes(key); return `<label class="pub"><input type="checkbox" data-pub="${key}" ${off?"":"checked"}> 公開</label>`; }
 /* 章ごとの「答えると、どうなるか」 */
 const WZ_HINT = {
-  tech:"答えると、技術や髪の悩みで探すお客さまに「〇〇が得意」と出やすくなるよ。",
+  tech:"答えると、技術や髪の悩みで探すお客さまに「〇〇が得意」と出やすくなるよ。",  /* 業種で setBiz() が差し替える */
   work:"お客さまが大事にしていることと重なると、「すすめる理由」にあなたの考え方が出るよ。",
   serve:"「静かに過ごしたい」「提案してほしい」など、過ごし方の合うお客さまとつながりやすくなるよ。",
   guest:"あなたが得意なタイプのお客さまと、マッチしやすくなるよ。",
   you:"出身・部活・推しなどの共通点で、「話しやすい担当」として選ばれやすくなるよ。"
 };
+const WZ_HINT_TECH_HAIR = WZ_HINT.tech;
 const wzSaved = () => (D.wz && typeof D.wz === "object") ? D.wz : {};
 const wzHas = (A, st) => { const v = A[st.key]; return Array.isArray(v) || (v != null && v !== ""); };
 function staffMeter(){
@@ -592,7 +659,8 @@ function staffMeter(){
 }
 function quickDone(){ return { photo: !!D.photo, spec: !!($("spec") && $("spec").value.trim()), line: !!($("line") && $("line").value.trim()), agree: !!($("agree") && $("agree").checked) }; }
 function renderStaff(){
-  $("kind").textContent="スタッフ"; $("title").textContent=D.name+" さん（"+D.salon+"）";
+  setBiz(D.biz);
+  $("kind").textContent = BIZ_KEY === "hair" ? "スタッフ" : "スタッフ（" + (BIZ_LIST.find(b=>b[0]===BIZ_KEY)||["",""])[1] + "）"; $("title").textContent=D.name+" さん（"+D.salon+"）";
   staffMeter();
   const A = wzSaved();
   const groups = Object.keys(WZ_GROUPS).map(g => { const qs = WZ.filter(st => st.g === g); return {g, n: qs.length, done: qs.filter(st => wzHas(A, st)).length}; });
@@ -607,10 +675,10 @@ function renderStaff(){
         <div class="face-act"><label class="btn sub" for="faceIn">${D.photo?"入れ替える":"写真を選ぶ"}</label><input type="file" id="faceIn" accept="image/*" hidden>
           ${D.photo?`<button class="btn sub" type="button" id="faceDel">削除</button>`:""}${pubBox("顔写真")}<small class="tip">明るくて、顔がはっきり分かる写真がおすすめ。</small></div></div></div>
       <div class="q3i"><b><i>2</i>得意なこと<small>タップで入れられます</small></b>
-        <input type="text" id="spec" maxlength="60" placeholder="例：透明感カラー・くせ毛カット" value="${esc(D["得意なこと"])}">
+        <input type="text" id="spec" maxlength="60" placeholder="${esc(BZ.spec)}" value="${esc(D["得意なこと"])}">
         <div class="chips sm" id="specTap">${OPT.tech.map(t=>`<button type="button" class="chip">${esc(t)}</button>`).join("")}</div></div>
       <div class="q3i"><b><i>3</i>お客さまへのひとこと<small>120字まで</small></b>
-        <textarea id="line" maxlength="120" placeholder="例：くせ毛で悩んでいる人ほど、ぜひ一度。乾かすだけでまとまる髪を一緒につくります。">${esc(D["AISIのひとこと"])}</textarea>
+        <textarea id="line" maxlength="120" placeholder="${esc(BZ.line)}">${esc(D["AISIのひとこと"])}</textarea>
         <small class="tip">思いつかなければ空けておいて大丈夫。AISIとの会話の最後に、AISIが文章をつくるよ。</small></div>
     </div>
     <div class="nav"><span class="q3s" id="q3s"></span><button class="btn" type="button" id="q3save">保存する</button></div>
@@ -629,12 +697,12 @@ function renderStaff(){
 
   <details class="full"><summary>くわしく直す（フォームで入力）</summary>
   <section><h2>技術</h2>
-    <label class="f">美容師歴（年）<input type="number" id="years" min="0" max="60" value="${esc(D["歴（年）"])}"></label>
+    <label class="f">${esc(BZ.job)}歴（年）<input type="number" id="years" min="0" max="60" value="${esc(D["歴（年）"])}"></label>
     <div class="f"><b class="fl">得意な技術（いくつでも）</b>${chips("tech", OPT.tech, D["得意な技術"], true)}</div>
     <label class="f">自分のホットペッパー予約ページのURL（任意）<input type="url" id="hpb" value="${esc(D["ホットペッパー予約URL"])}"></label>
     <label class="f">ホットペッパーの「スタッフページ」のURL（スタイル写真）<small>診断結果に「〇〇さんのスタイル写真を見る」ボタンが出ます。サロンボードではなく、お客さまが見るページのURLです。<br>開き方：ホットペッパービューティーでお店のページ →「スタイリスト」→ 自分の名前 → 上のアドレスをコピー</small><input type="url" id="hpbStyle" placeholder="https://beauty.hotpepper.jp/slnH…/stylist/T…/" value="${esc(D["ホットペッパー スタイルURL"])}"><small id="hpbStyleMsg" class="warnline" hidden></small></label>
   </section>
-  <section><h2>美容師としてのあなた</h2>
+  <section><h2>${esc(BZ.job)}としてのあなた</h2>
     <div class="f"><b class="fl">得意な悩み（いくつでも）</b>${chips("worry", OPT.worry, D["得意な悩み"], true)}</div>
     <div class="f"><b class="fl">いちばん喜ばれること（3つまでがおすすめ）</b>${chips("please", OPT.please, D["喜ばれること"], true)}</div>
     <div class="f"><b class="fl">必ず大事にしていること</b>${chips("value", OPT.value, D["大事にしていること"], true)}</div>
@@ -767,7 +835,7 @@ const jkSay = a => a.length ? `「${a[0].replace(/のお客さん$|お客さん$
 const JQ = (id, g, q) => ({key:id, g, q: q + "（いくつでも）", type:"many", jk:1, none:"どれも当てはまらない", opts:()=>STAFF_JK[id].map(([k,l])=>[l,k]), say:jkSay});
 const O1 = (key, g, q, opts, say, extra) => Object.assign({key, g, q, type:"one", opts:opts.map(x=>[x,x]), say: say || (v => "なるほど。")}, extra||{});
 const OM = (key, g, q, opts, say, extra) => Object.assign({key, g, q, type:"many", opts:opts.map(x=>[x,x]), say: say || (a => "了解。")}, extra||{});
-const WZ = [
+const WZ_HAIR = [
   /* ===== 技術と得意（12） ===== */
   {key:"years", g:"tech", q:"まずは基本から。美容師になって、何年？", type:"one",
    opts:[["1〜2年",2],["3〜5年",4],["6〜9年",7],["10〜14年",12],["15年以上",16]],
@@ -850,7 +918,38 @@ const WZ = [
   {key:"hpbStyle", g:"you", q:"最後に、あなたのスタイル写真を見せたい。ホットペッパービューティーの、あなたのスタッフページのURLを貼って。", type:"url", skip:true,
    say:v => "ありがとう。マッチしたお客さんが、あなたのスタイルを見てから予約できるようにするね。"}
 ];
-const WZ_TOTAL = WZ.length;
+let WZ = WZ_HAIR, WZ_TOTAL = WZ.length;
+/* 美容室以外：髪の質問を外し、言葉を業種に合わせ、技術の章に深掘りの質問を入れる */
+function bizWZ(B){
+  const job = B.job, rw = t => String(t).replace(/美容師/g, job).replace(/美容室/g, "サロン").replace(/髪の相談/g, "相談").replace(/特別な日の相談/g, "特別な日の前の相談");
+  const over = {
+    years: {q:`まずは基本から。${job}になって、何年？`, say:v => v>=10 ? "たくさんのお客さんを見てきた人だね。その経験、ちゃんと伝わるようにする。" : v>=6 ? "腕も感覚も、いちばん乗ってくる時期だね。" : "お客さんと一緒に成長していける人、ってことだね。"},
+    b_why: {opts:["人を笑顔にしたかった","人を癒やしたかった","身近な人に憧れた","美容が好きだった","ほかの仕事から転身した"]},
+    b_motto: {opts:["一人ひとりに丁寧に","似合うを一緒に見つける","無理をさせない","来たときより笑顔で帰ってもらう","正直に、誠実に"]},
+    b_redo: {q:"ほかのお店でうまくいかなかったお客さまの相談は？"},
+    b_goal: {opts:[`指名で通い続けてもらえる${job}`,"専門の技術を極める","お店や後輩を育てる","自分のお店を持つ"]},
+    b_type: {opts:["悩みを根本から解決したい人","自分へのごほうびを楽しみたい人","忙しくて時間がない人","長く通ってくれる人"]},
+    b_model: {q:"練習・作品撮りのモデル募集は？"},
+    b_event: {q:"結婚式や大事な予定の前の相談は？"},
+    prop: {q:"メニューや仕上がりの決め方は、どっちに近い？"},
+    b_nervous: {q:"サロンが初めて・緊張しているお客さんには？"}
+  };
+  const out = [];
+  WZ_HAIR.forEach(st => {
+    if (st.jk || st.key === "hpbStyle") return;            /* 髪の「じっくり質問」は美容室だけ */
+    const o = over[st.key] || {}, c = Object.assign({}, st);
+    c.q = o.q || rw(st.q);
+    if (o.opts) c.opts = o.opts.map(x => [x, x]);
+    else if (Array.isArray(st.opts)) c.opts = st.opts.map(([l, v]) => [rw(l), typeof v === "string" ? rw(v) : v]);
+    if (o.say) c.say = o.say;
+    else if (st.say) { const f = st.say; c.say = x => rw(f(x)); }
+    out.push(c);
+    if (st.key === "worry") (B.deep || []).forEach(d => out.push(d));
+  });
+  out.push({key:"hpbStyle", g:"you", q:"最後に、あなたの施術の写真を見せたい。ホットペッパービューティーの、あなたのスタッフページのURLを貼って。（なければ飛ばしてOK）", type:"url", skip:true,
+    say:v => "ありがとう。マッチしたお客さんが、あなたの写真を見てから予約できるようにするね。"});
+  return out;
+}
 let wzI = 0, wzA = {}, wzOnly = "";
 const wzAnswered = () => WZ.filter(st => { const v = wzA[st.key]; return Array.isArray(v) ? true : v != null && v !== ""; }).length;
 function wzLog(html, me){ const log = $("wzLog"); const d = document.createElement("div");
@@ -965,7 +1064,7 @@ async function wzSave(silent){
 /* 第三者から見た紹介文（120字まで）。答えた内容だけで組み立てる */
 function wzBio(){
   const A = wzA, parts = [];
-  const head = (A.years>=10 ? "経験豊富な" : A.years>=6 ? "腕の確かな" : A.years ? "お客さんと一緒に成長していく" : "") + "美容師。";
+  const head = (A.years>=10 ? "経験豊富な" : A.years>=6 ? "腕の確かな" : A.years ? "お客さんと一緒に成長していく" : "") + BZ.job + "。";
   const sub = [];
   if ((A.worry||[]).length) sub.push(`${A.worry[0]}の悩みが得意`);
   if ((A.please||[]).length) sub.push(`「${A.please[0]}」で喜ばれている`);

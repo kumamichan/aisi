@@ -720,6 +720,9 @@ const SPA_QUESTIONS = [
  {id:"sp_budget", t:"1回の予算は、7,000円以内にしたい？", fn:budgetFit, w:2.2, hard:1, label:"予算7,000円以内"},
  {id:"sp_regular", cat:"spa", wide:1, t:"定期的に通いたい？（回数券など）", kw:"回数券|定期|サブスク|通い放題|会員|継続", w:1.2, label:"定期的に通いやすい", need:"定期的に通いたい"},
  {id:"sp_first", cat:"spa", wide:1, t:"ヘッドスパは、初めて？", kw:"初めて|はじめて|初回|カウンセリング", w:1, label:"初めてでも安心", need:"初めてのヘッドスパ"},
+ /* スパニスト本人の答え（力加減・寝てしまってもいいか）とつなぐ質問 */
+ {id:"sp_press", sym:1, staff:1, t:"力加減は、しっかり強めがいい？\n（「いいえ」なら、やさしめが得意なスパニストを探すよ）", sfn:st => pressOf(st), w:1.3, label:"力加減"},
+ {id:"sp_sleepok", staff:1, t:"施術中に、そのまま寝てしまいたい？", sfn:st => sleepOf(st), w:1.2, label:"寝てしまっても大丈夫"},
  {id:"sp_shop", sym:1, t:"ヘッドスパの専門店がいい？\n（「いいえ」なら、美容室の中にあるスパを探すよ）", fn:specialtyFit, w:1.6, label:"ヘッドスパ専門店"}
 ];
 SPA_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
@@ -757,7 +760,20 @@ function kwFit(s, q){
 /* 質問ごとの「お店の特徴の値」 */
 function featOf(s, q){ return q.fn ? q.fn(s) : q.kw ? kwFit(s, q) : s.f[q.sf]; }
 /* スタッフの得意技術に、深掘りの言葉があるか */
-function staffKw(st, q){ return q.re ? q.re.test([st.spec].concat((st.p&&st.p.tech)||[]).join(" ")) : false; }
+function staffKw(st, q){
+  if (!q.re) return false;
+  const p = st.p || {}, d = p.wzd || {};
+  const extra = S && S.theme === "spashop" ? [].concat(p.worry || [], d.d_style || [], d.d_tool || []) : [];   /* ヘッドスパ：得意な悩み・施術スタイル・道具も見る */
+  return q.re.test([st.spec].concat(p.tech || [], extra).join(" "));
+}
+/* スパニストの答えを数値に（答えていなければ null） */
+function pressOf(st){ const a = ((st.p||{}).wzd||{}).d_pressure || []; if (!a.length) return null;
+  const strong = a.includes("しっかり・強め"), soft = a.includes("ソフト・やさしめ"), adj = a.includes("お客さまに合わせて細かく調整");
+  return strong && soft ? .5 : strong ? (adj ? .8 : 1) : soft ? (adj ? .2 : 0) : .5; }
+function sleepOf(st){ const d = (st.p||{}).wzd||{}, v = d.d_sleep, sty = [].concat(d.d_style||[]);
+  const base = v === "そのまま寝てもらう" ? 1 : v === "ポイントだけ声をかける" ? .6 : v === "起きている前提で進める" ? .1 : null;
+  if (sty.some(x => /寝落ち/.test(x))) return Math.max(base == null ? 0 : base, .9);
+  return base; }
 /* 髪についての質問（優先して聞く） */
 const HAIR_Q = ["q_color","q_design","q_gray","q_kusege","q_change","q_short","q_perm","q_damage","q_volume","q_thin","q_bangs","q_easy","q_long","q_gentle"];
 const ANSWERS = [["はい",1],["いいえ",0],["わからない",null],["たぶんそう",.75],["たぶん違う",.25]];
@@ -817,6 +833,7 @@ function staffFit(st, answers, theme){
   for (const q of QUESTIONS){
     /* 深掘りで「はい」と答えた技術を、得意技術に持っている担当者を上げる */
     if ((q.deep || (q.wide && q.kw)) && answers[q.id] >= .75){ const w = q.w * .6; num += w * (staffKw(st, q) ? 1 : .45); den += w; continue; }
+    if (q.sfn){ const a = answers[q.id], v = a == null ? null : q.sfn(st); if (v == null) continue; const w = qWeight(q, theme); num += w*(1-Math.abs(a-v)); den += w; continue; }
     if (!q.tf) continue;
     const a = answers[q.id]; if (a==null) continue;
     let v = q.tf==="young" ? ageNear(st) : st[q.tf]; if (q.tinv) v = 1 - v;
@@ -872,6 +889,7 @@ function eligible(q, answers){
     const done = QUESTIONS.filter(x => x.deep && x.id in answers);
     if (done.length >= DEEP_MAX || done.filter(x => x.cat === q.cat).length >= DEEP_PER_CAT) return false;
   }
+  if (q.sfn && !SALONS.some(sl => sl.staff.some(st => q.sfn(st) != null))) return false;     /* 答えているスパニストがいないときは聞かない */
   if (q.skipIf) for (const [k,f] of Object.entries(q.skipIf)){ if (answers[k]!=null && f(answers[k])) return false; }
   if (q.req) for (const k in q.req){ if (!(answers[k]!=null && answers[k]>=q.req[k])) return false; }
   return true;
@@ -888,6 +906,7 @@ function nextQuestion(answers, theme, n){
     if (!eligible(q, answers)) continue;
     let vals;
     if (hasFeat(q)) vals = cands.map(r=>featOf(r.salon, q));
+    else if (q.sfn) vals = cands.flatMap(r=>r.salon.staff.map(st=>{ const v = q.sfn(st); return v == null ? .5 : v; }));
     else vals = cands.flatMap(r=>r.salon.staff.map(st=>q.tinv?1-st[q.tf]:st[q.tf]));
     const m = vals.reduce((a,b)=>a+b,0)/vals.length;
     const variance = vals.reduce((a,b)=>a+(b-m)**2,0)/vals.length;
@@ -1521,6 +1540,13 @@ function staffReasons(st, ans){
     if (!(ans[qid]>=.75)) continue;
     const w = words.find(x=>text.includes(x)); if (w){ const q=QUESTIONS.find(z=>z.id===qid); out.push(`${q.label}が得意`+(q.label.includes(w)?"":`（${w}）`)); }
     if (out.length>=2) break;
+  }
+  if (S && S.theme === "spashop"){
+    const pr = pressOf(st), sl = sleepOf(st), cert = [].concat(((st.p||{}).wzd||{}).d_cert || []);
+    if (ans.sp_press >= .75 && pr != null && pr >= .75) out.push("しっかり強めの力加減が得意");
+    if (ans.sp_press != null && ans.sp_press <= .25 && pr != null && pr <= .25) out.push("やさしい力加減が得意");
+    if (ans.sp_sleepok >= .75 && sl != null && sl >= .75) out.push("寝てしまっても大丈夫");
+    if (cert.some(c => /ヘッドスパ/.test(c))) out.push("ヘッドスパの資格を持っている");
   }
   if (ans.q_quiet>=.75 && st.talk<=.3) out.push("静かに過ごしたい人の接客が得意");
   if (ans.q_quiet!=null && ans.q_quiet<=.25 && st.talk>=.7) out.push("会話を楽しめるタイプ");
