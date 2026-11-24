@@ -2528,7 +2528,7 @@ document.getElementById("vForm").onsubmit=async(e)=>{
   try{
     const res = await fetch(CONFIG.GAS_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body});
     const j = await res.json(); ok = !!j.ok; rid = j.rid || "";
-    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err(j.error==="blocked" ? "前の無断キャンセルや、前日・当日のキャンセルが3回あったため、いまはぴたリストからの予約をご利用いただけません。事情がある場合は、ぴたリストの公式LINEからご連絡ください。" : j.error==="busy" ? "送信が続いたため、いったん受付を止めています。時間をおいてお試しください。" : "送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
+    if (!ok){ btn.disabled=false; btn.textContent="リクエストを送る"; return err(j.error==="blocked" ? "前の無断キャンセルや、前日・当日のキャンセルが3回あったため、いまはぴたリストからの予約をご利用いただけません。事情がある場合は、ぴたリストの公式LINEからご連絡ください。" : j.error==="busy" ? "送信が続いたため、いったん受付を止めています。時間をおいてお試しください。" : j.error==="diag" ? "診断の記録が見つかりませんでした。お手数ですが、もう一度診断してから送ってください。" : "送信できませんでした。入力内容を確認して、もう一度お試しください。"); }
   }catch(ex){
     /* 返事が読めなくても届いていることが多いので、届かなかった場合に備えて案内する */
     try{ await fetch(CONFIG.GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body}); ok = true; }catch(ex2){}
