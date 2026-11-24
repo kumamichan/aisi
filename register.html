@@ -294,6 +294,23 @@ const FEATS = [
   ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","時短"],["walkin","当日・前日の予約に強い"]]]
 ];
 const LEVELS = [[1,"得意"],[0.5,"ふつう"],[0,"していない"]];
+/* お店の「得意なこと」：業種ごとに見せる項目と呼び方を変える（キーは診断アプリと同じものを使う。美容室は FEATS のまま） */
+const STAY = ["お店の過ごし方", [["quiet","静かに過ごせる"],["casual","初めてでも入りやすい"],["private","個室・半個室・少人数"],["lux","上質な空間"],["kids","子連れOK"]]];
+const FEATS_BY = {
+  spa: [["施術", [["care","頭皮ケア・クレンジング"],["thin","抜け毛・ボリュームのケア"],["treat","髪のツヤ・うるおいケア"],["gentle","低刺激の材料"],["mens","メンズ"]]],
+    STAY, ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","短い時間のコースがある"],["walkin","当日・前日の予約に強い"]]]],
+  nail: [["施術", [["gentle","爪にやさしい施術"],["trend","トレンドのデザイン"],["design","アート・デザイン"],["mens","メンズ"]]],
+    STAY, ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","短い時間で仕上がる"],["walkin","当日・前日の予約に強い"]]]],
+  eye: [["施術", [["gentle","しみにくい・低刺激"],["trend","トレンドのデザイン"],["mens","メンズ"]]],
+    STAY, ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","短い時間で仕上がる"],["walkin","当日・前日の予約に強い"]]]],
+  esthe: [["施術", [["gentle","敏感肌にやさしい"],["care","リラクゼーション・ほぐし"],["mens","メンズ"]]],
+    STAY, ["便利さ", [["parking","駐車場"],["cheap","1万円以内で収まる"],["fast","短い時間のコースがある"],["walkin","当日・前日の予約に強い"]]]]
+};
+function salonBiz(){ return ($("biz") && $("biz").value) || D["業種"] || (spaShop() ? "spa" : "hair"); }
+function featList(){ return FEATS_BY[salonBiz()] || FEATS; }
+function featHtml(){ return featList().map(([g,items])=>`<p class="grp">${g}</p><div class="fzs">${items.map(([k,l])=>featChip(k, l, D.f[k])).join("")}</div>`).join(""); }
+function wireFeats(){ document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ const n = {"":"1","1":"0","0":""}[b.dataset.v]; b.dataset.v = n;
+    b.classList.toggle("on", n==="1"); b.classList.toggle("off", n==="0"); dirty(); }); }
 /* ---------------- 業種（お店で選ぶ）ごとの、スタッフへの質問 ----------------
  *  hair＝美容室（いままでの質問のまま）。ほかの業種は、技術・悩み・喜ばれること・大事にしていることの選択肢を入れ替え、
  *  髪の質問（お客さまの「じっくり質問」とつながるj01〜j18）の代わりに、その業種の深掘りの質問（d_〜）を聞く */
@@ -338,6 +355,9 @@ const BIZ = {
       D1("d_time","いちばん多い施術時間は？",["45分以内","45〜60分","60〜90分","90分以上"]),
       D1("d_sensitive","目元が敏感なお客さまには？",["低刺激の材料に変える","事前に確認して相談する","特に変えていない"]),
       DM("d_brow","眉の施術は？",["眉ワックス","眉毛パーマ","眉カット","メンズ眉","していない"]),
+      D1("d_hitoe","一重・奥二重のお客さまの似合わせは？",["一重・奥二重の似合わせが得意","対応できる","あまり経験がない"], v => /得意/.test(v) ? "一重・奥二重で悩んでいる人に、うれしい人だね。" : "了解。"),
+      DM("d_lasting","持ちをよくするために、していることは？",["持ちのいいグルー・材料を選ぶ","コーティングをすすめる","まつげの状態に合わせて本数を調整","家でのケアを伝える"], a => "持ちを大事にしたいお客さまの参考にするね。"),
+      D1("d_room","施術する場所は？",["個室","半個室","オープンスペース"]),
       DM("d_cert","持っている資格・受けた講習は？",["美容師免許","まつげエクステの技術認定","アイブロウの技術認定","メーカー講習","特になし"], a => "了解。安心材料として伝えるね。")]},
   esthe: {job:"エステティシャン", spec:"例：毛穴ケアのフェイシャル・むくみケア", line:"例：鏡を見るのが少し楽しみになるように。肌の状態を見ながら、無理なくケアします。",
     tech:["フェイシャル","毛穴ケア","エイジングケア","リフトアップ","ハーブピーリング","痩身・ボディ","リンパの流れを意識した手技","脱毛","ブライダルエステ","メンズエステ","デコルテ","マタニティ"],
@@ -350,6 +370,9 @@ const BIZ = {
       D1("d_course","通う回数の提案は？",["1回ごとに相談","目安の回数を伝える","回数券・コースを案内する"], v => /1回ごと/.test(v) ? "気軽に試したいお客さまには安心だね。" : "了解。"),
       D1("d_time","いちばん多い施術時間は？",["60分以内","60〜90分","90分以上"]),
       DM("d_target","得意なお客さまは？",["はじめてのエステ","敏感肌","メンズ","ブライダル前","産後"]),
+      DM("d_machine","使える機器は？",["ラジオ波","キャビテーション","EMS","光（フォト）","スチーマー・吸引","機器は使わない"]),
+      DM("d_skin","とくに得意な肌の悩みは？",["毛穴・黒ずみ","乾燥・くすみ","ニキビ・肌荒れ","たるみ・ほうれい線","敏感肌"], a => `「${a[0]}」で悩んでいるお客さまとつなぐね。`),
+      D1("d_room","施術する場所は？",["個室","半個室","オープンスペース"]),
       DM("d_cert","持っている資格は？",["エステティシャンの認定資格","美容師免許","アロマの資格","特になし"], a => "了解。安心材料として伝えるね。")]}
 };
 let BZ = BIZ.hair, BIZ_KEY = "hair";
@@ -506,7 +529,7 @@ function renderSalon(){
     <label class="f">お店のひとこと（コンセプト）<small>200字まで。診断結果にそのまま出ます</small><textarea id="concept" maxlength="200" placeholder="例：大通の路地裏にある、マンツーマンの小さなサロン。くせ毛を活かしたカットが得意です。">${esc(D["コンセプト"])}</textarea></label>
     <div class="f"><b class="fl">お店の雰囲気<small>いくつでも</small></b>${chips("mood", OPT.mood, D["お店の雰囲気"], true)}</div>`)}
   ${panel("feat", `<p class="legend"><span class="fz on">得意</span> 1回タップ　<span class="fz off">していない</span> 2回タップ　<span class="fz">ふつう</span> 何もしない</p>` +
-    FEATS.map(([g,items])=>`<p class="grp">${g}</p><div class="fzs">${items.map(([k,l])=>featChip(k, l, D.f[k])).join("")}</div>`).join(""))}
+    `<div id="featBox">${featHtml()}</div>`)}
   ${panel("more", `
     <details class="more" open><summary>一押しメニュー 2・3</summary>${[1,2].map(i=>`<div class="menu"><b>一押しメニュー ${i+1}</b>
       <label class="f">メニュー名<input type="text" id="m${i}n" maxlength="40" value="${esc(m[i].name)}"></label>
@@ -547,8 +570,9 @@ function renderSalon(){
   </div>`;
   wire();
   wirePhotos("salon");
-  document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ const n = {"":"1","1":"0","0":""}[b.dataset.v]; b.dataset.v = n;
-    b.classList.toggle("on", n==="1"); b.classList.toggle("off", n==="0"); dirty(); });
+  wireFeats();
+  /* 業種を変えたら、「得意なこと」の項目をその業種のものに入れ替える（つけた印は残す） */
+  if ($("biz")) $("biz").addEventListener("change", () => { Object.entries(featVals()).forEach(([k,v]) => { if (v !== "") D.f[k] = v; }); D["業種"] = $("biz").value; $("featBox").innerHTML = featHtml(); wireFeats(); dirty(); });
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>goStep(+b.dataset.go, b.closest(".nav")));
   document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{
     try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent="コピーしました"; }catch(e){ prompt("このリンクをコピーしてください", b.dataset.copy); }
@@ -607,7 +631,7 @@ function previewSalon(){
   const H = k => hl===k ? " hl" : "";
   const closed = chipVal("closed"), f = featVals();
   /* 技術・髪の悩みは「〇〇が得意」、過ごし方・便利さはそのまま */
-  const good = FEATS.flatMap(([g,it],gi)=>it.map(x=>[x[0], gi<2 ? x[1]+"が得意" : x[1]])).filter(([k])=>f[k]===1).map(([,l])=>l);
+  const good = featList().flatMap(([g,it],gi)=>it.map(x=>[x[0], gi<2 ? x[1]+"が得意" : x[1]])).filter(([k])=>f[k]===1).map(([,l])=>l);
   const cats = chipVal("mc0"), mood = chipVal("mood"), st = (D.staff||[])[0];
   const photo = D.photos && D.photos[0];
   $("pv").innerHTML = `<article class="pc">

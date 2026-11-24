@@ -104,6 +104,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
 /* 押した答えだけ色が変わる（最初はどれも同じ色） */
 .choices .choice.picked,.choices .choice.picked:hover{background:#fff;color:var(--ink);font-weight:700;box-shadow:0 0 0 3px var(--accent),0 3px 0 rgba(0,0,0,.25)}
 .choices .choice.picked::before{content:"✓ ";color:var(--accent-ink)}
+button,.chip,.choice{touch-action:manipulation}
 .choices.okrow{margin-top:4px}
 .choices.okrow .choice[disabled]{opacity:.45;cursor:default;transform:none}
 .choices.locked .choice:not(.picked){opacity:.45;pointer-events:none}
@@ -726,16 +727,79 @@ const SPA_QUESTIONS = [
  {id:"sp_shop", sym:1, t:"ヘッドスパの専門店がいい？\n（「いいえ」なら、美容室の中にあるスパを探すよ）", fn:specialtyFit, w:1.6, label:"ヘッドスパ専門店"}
 ];
 SPA_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
+
+/* ===== まつげ・アイブロウ（テーマ eyeshop）／エステ（テーマ esthe）専用の質問 =====
+   kw＝お店のメニュー・タグ・コンセプト・スタッフの得意から探す言葉。fn＝お店の情報から計算。sfn＝担当者本人の答え（register.html の d_〜）から計算
+   ok／ng：担当者の答えが合ったときに「すすめる理由」に出す言葉（はい／いいえ） */
+const bizText = s => [(s.menus||[]).map(m=>(m.name||"")+" "+(m.desc||"")).join(" "), (s.tags||[]).join(" "), s.concept||""].join(" ");
+const allMenus = s => (s.menus||[]).filter(m => m.name);
+function minsFit(s, lim){ const mins = allMenus(s).map(m => m.min||0).filter(Boolean); if (!mins.length) return .5; const mn = Math.min(...mins); return mn <= lim ? 1 : mn <= lim + 15 ? .5 : .1; }
+function priceFit(s, lim){ const ps = allMenus(s).map(m => Number(String(m.price||"").replace(/[^0-9]/g,""))).filter(n => n >= 500); if (!ps.length) return (s.f && s.f.cheap != null) ? s.f.cheap : .5; const mn = Math.min(...ps); return mn <= lim ? 1 : mn <= lim * 1.25 ? .5 : .1; }
+const wz = (st, k) => ((st.p||{}).wzd||{})[k];
+const wzHas = (st, k, re) => { const v = wz(st, k); return v == null ? null : [].concat(v).some(x => re.test(x)); };
+function eyeExtFit(s){ const t = bizText(s), e = /エクステ|マツエク|ラッシュ（?エクステ|ボリュームラッシュ|フラット/.test(t), pm = /パーマ|リフト|カール/.test(t); return e && !pm ? 1 : pm && !e ? 0 : e && pm ? .6 : .5; }
+function estheFaceFit(s){ const t = bizText(s), f = /フェイシャル|毛穴|小顔|肌/.test(t), b = /痩身|ボディ|セルライト|脚|背中/.test(t); return f && !b ? 1 : b && !f ? 0 : f && b ? .6 : .5; }
+const EYE_QUESTIONS = [
+ {id:"ey_ext", sym:1, t:"まつげエクステをつけたい？\n（「いいえ」なら、まつげパーマを中心に探すよ）", fn:eyeExtFit, w:1.8, label:"まつげエクステ"},
+ {id:"ey_down", wide:1, t:"まつげが下向きで、上げたい？", kw:"パーマ|リフト|カール|上向き", w:1.6, label:"まつげを上向きに", need:"まつげが下向き"},
+ {id:"ey_natural", sym:1, staff:1, t:"仕上がりは、ナチュラルがいい？\n（「いいえ」なら、華やかに仕上げるのが得意な担当を探すよ）", sfn:st => { const a = [].concat(wz(st,"d_taste")||[]); if (!a.length) return null; const n = a.some(x=>/ナチュラル/.test(x)), h = a.some(x=>/華やか|ボリューム|韓国/.test(x)); return n && !h ? 1 : h && !n ? 0 : .5; }, w:1.4, label:"仕上がりの好み", ok:"ナチュラルな仕上がりが得意", ng:"華やかな仕上がりが得意"},
+ {id:"ey_volume", wide:1, t:"ボリュームのある、華やかな目元にしたい？", kw:"ボリューム|フラット|華やか|カラーエクステ", w:1.3, label:"華やかな目元", need:"華やかにしたい"},
+ {id:"ey_korean", wide:1, t:"韓国風の目元に興味ある？", kw:"韓国", w:1.1, label:"韓国風", need:"韓国風"},
+ {id:"ey_brow", wide:1, t:"眉も一緒に整えたい？", kw:"眉|アイブロウ|ブロウ|ワックス", staff:1, sfn:st => { const a = [].concat(wz(st,"d_brow")||[]); return !a.length ? null : a.some(x=>/していない/.test(x)) ? 0 : 1; }, w:1.5, label:"眉のスタイリング", need:"眉を整えたい", ok:"眉の施術も得意"},
+ {id:"ey_hitoe", wide:1, t:"一重・奥二重で、似合うデザインが心配？", kw:"一重|奥二重|似合わせ|デザイン|骨格", w:1.4, label:"一重・奥二重の似合わせ", need:"一重・奥二重"},
+ {id:"ey_sensitive", wide:1, t:"目元が敏感で、しみたりかゆくなったりしやすい？", kw:"低刺激|敏感|しみ|ノンストレス|オーガニック", sf:"gentle", staff:1, sfn:st => { const v = wz(st,"d_sensitive"); return v == null ? null : /低刺激/.test(v) ? 1 : /相談/.test(v) ? .7 : .2; }, w:1.6, label:"目元が敏感でも安心", need:"目元が敏感", ok:"目元が敏感な人への配慮が得意"},
+ {id:"ey_first", wide:1, t:"まつげエクステやパーマは、初めて？", kw:"初めて|はじめて|初回|カウンセリング", staff:1, sfn:st => wz(st,"d_first") == null ? null : .9, w:1.1, label:"初めてでも安心", need:"初めて", ok:"初めての人にていねいに説明してくれる"},
+ {id:"ey_lasting", wide:1, t:"持ちのよさを、いちばん重視したい？", kw:"持ち|長持ち|コーティング|接着", w:1.3, label:"持ちのよさ", need:"持ちを重視"},
+ {id:"ey_mens", t:"メンズの眉やまつげを、お願いしたい？", kw:"メンズ|男性", sf:"mens", w:1.2, label:"メンズ対応"},
+ {id:"q_quiet", sym:1, t:"施術中は、話さずに静かに過ごしたい？", sf:"quiet", tf:"talk", tinv:1, w:1.6, label:"静かに過ごしたい"},
+ {id:"ey_private", sym:1, wide:1, t:"個室や半個室で、人目を気にせず過ごしたい？", kw:"個室|半個室|プライベート|マンツーマン", sf:"private", w:1.3, label:"個室・プライベート空間", need:"人目が気になる"},
+ {id:"ey_short", t:"施術は、1時間以内で済ませたい？", fn:s => minsFit(s, 60), w:1.3, label:"1時間以内"},
+ {id:"ey_night", t:"仕事帰りなど、夜に行きたい？", fn:nightFit, w:1.5, hard:1, label:"夜も行ける"},
+ {id:"ey_budget", t:"1回の予算は、6,000円以内にしたい？", fn:s => priceFit(s, 6000), w:2, hard:1, label:"予算6,000円以内"}
+];
+const ESTHE_QUESTIONS = [
+ {id:"es_face", sym:1, t:"いちばんケアしたいのは、顔（フェイシャル）？\n（「いいえ」なら、ボディを中心に探すよ）", fn:estheFaceFit, w:1.8, label:"フェイシャル"},
+ {id:"es_pore", wide:1, t:"毛穴や黒ずみが気になる？", kw:"毛穴|黒ずみ|ピーリング|クレンジング|角栓", w:1.6, label:"毛穴のケア", need:"毛穴・黒ずみ"},
+ {id:"es_dry", wide:1, t:"乾燥やくすみが気になる？", kw:"乾燥|保湿|くすみ|透明感|うるおい", w:1.4, label:"乾燥・くすみのケア", need:"乾燥・くすみ"},
+ {id:"es_aging", wide:1, t:"たるみやほうれい線など、エイジングケアをしたい？", kw:"エイジング|たるみ|リフト|ハリ|ほうれい", w:1.6, label:"エイジングケア", need:"たるみ・ほうれい線"},
+ {id:"es_acne", wide:1, t:"ニキビやニキビあとが気になる？", kw:"ニキビ|肌荒れ|ピーリング", w:1.4, label:"ニキビ・肌荒れのケア", need:"ニキビ・肌荒れ"},
+ {id:"es_sensitive", wide:1, t:"肌が敏感で、刺激が心配？", kw:"敏感|低刺激|やさしい|ゆらぎ", sf:"gentle", w:1.5, label:"敏感肌でも安心", need:"敏感肌"},
+ {id:"es_slim", wide:1, t:"むくみやセルライト、体型が気になる？", kw:"痩身|むくみ|セルライト|ボディ|リンパ|キャビ|ラジオ波", w:1.6, label:"むくみ・ボディのケア", need:"むくみ・体型"},
+ {id:"es_hair", wide:1, t:"脱毛もしたい？", kw:"脱毛", w:1.3, label:"脱毛", need:"脱毛"},
+ {id:"es_hand", sym:1, staff:1, t:"機械よりも、手でのケア（ハンド）がいい？\n（「いいえ」なら、機器も使える担当を探すよ）", sfn:st => { const a = [].concat(wz(st,"d_style")||[]); if (!a.length) return null; return a.some(x=>/両方/.test(x)) ? .5 : a.some(x=>/ハンド/.test(x)) ? 1 : a.some(x=>/機器/.test(x)) ? 0 : .5; }, w:1.3, label:"ハンドのケア", ok:"ハンドでのケアが得意", ng:"機器を使ったケアもできる"},
+ {id:"es_noforce", staff:1, t:"回数券などをすすめられるのは、苦手？", kw:"勧誘なし|勧誘しない|1回から|都度払い", sfn:st => { const v = wz(st,"d_course"); return v == null ? null : /1回ごと/.test(v) ? 1 : /目安/.test(v) ? .6 : .1; }, w:1.6, label:"無理な勧誘がない", ok:"1回ごとに相談できて、無理にすすめない"},
+ {id:"es_bridal", wide:1, t:"結婚式など、大事な日の前のケア？", kw:"ブライダル|花嫁|結婚式", staff:1, sfn:st => wzHas(st, "d_target", /ブライダル/) ? 1 : null, w:1.2, label:"大事な日の前のケア", need:"大事な日の前", ok:"ブライダル前のケアが得意"},
+ {id:"es_first", wide:1, t:"エステは初めて？", kw:"初めて|はじめて|初回|カウンセリング", staff:1, sfn:st => wzHas(st, "d_target", /はじめて/) ? 1 : null, w:1.1, label:"初めてでも安心", need:"初めてのエステ", ok:"初めての人の担当が得意"},
+ {id:"es_relax", wide:1, t:"とにかく、リラックスしたい？", kw:"リラックス|癒|アロマ|ほぐ", sf:"quiet", w:1.3, label:"リラックスできる", need:"リラックスしたい"},
+ {id:"es_mens", t:"メンズエステを探してる？", kw:"メンズ|男性", sf:"mens", w:1.2, label:"メンズ対応"},
+ {id:"q_quiet", sym:1, t:"施術中は、話さずに静かに過ごしたい？", sf:"quiet", tf:"talk", tinv:1, w:1.5, label:"静かに過ごしたい"},
+ {id:"es_private", sym:1, wide:1, t:"個室で、人目を気にせず過ごしたい？", kw:"個室|プライベート|マンツーマン|完全予約", sf:"private", w:1.4, label:"個室"},
+ {id:"es_long", t:"90分くらい、ゆっくり時間をとりたい？", fn:s => { const mins = allMenus(s).map(m => m.min||0).filter(Boolean); if (!mins.length) return .5; return Math.max(...mins) >= 90 ? 1 : Math.max(...mins) >= 60 ? .5 : .15; }, w:1.1, label:"90分以上のコース"},
+ {id:"es_night", t:"仕事帰りなど、夜に行きたい？", fn:nightFit, w:1.5, hard:1, label:"夜も行ける"},
+ {id:"es_budget", t:"1回の予算は、8,000円以内にしたい？", fn:s => priceFit(s, 8000), w:2, hard:1, label:"予算8,000円以内"}
+];
+EYE_QUESTIONS.concat(ESTHE_QUESTIONS).forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
+/* 美容室以外のテーマ（業種）：質問・気持ちの選択肢・担当の呼び方・お店の選び方 */
+const isEyeShop = s => s.biz === "eye" || /まつげ|まつ毛|マツエク|ラッシュ|アイブロウ/.test(bizText(s));
+const isEstheShop = s => s.biz === "esthe" || /エステ|フェイシャル|痩身|脱毛/.test((s.menus||[]).map(m=>m.name||"").join(" ") + " " + (s.tags||[]).join(" "));
+const BIZ_THEME = {
+  spashop: {biz:"spa", role:"スパニスト", Q:()=>SPA_QUESTIONS, shop:s=>isSpaShop(s), what:"ヘッドスパ", sub:"眠り・疲れ・頭皮の悩みから探す"},
+  eyeshop: {biz:"eye", role:"アイリスト", Q:()=>EYE_QUESTIONS, shop:isEyeShop, what:"まつげ・眉のお店", talk:{light:[], normal:["t_talk"], deep:["t_talk","t_price"]}, sub:"まつげエクステ・まつげパーマ・眉を、仕上がりの好みから探す",
+    tens:[["lifelong","ずっと通える、行きつけのアイリストを見つけたい"],["casual","気軽に行ける、まつげ・眉のお店を探したい"],["explore","初めて試したい・いつもと違うお店も見たい"]]},
+  esthe: {biz:"esthe", role:"エステティシャン", Q:()=>ESTHE_QUESTIONS, shop:isEstheShop, what:"エステ", talk:{light:[], normal:["t_talk"], deep:["t_talk","t_price"]}, sub:"肌や体の悩み・すすめられ方の好みから探す",
+    tens:[["lifelong","長く任せられる、行きつけのエステを見つけたい"],["casual","気になったときに、気軽に行けるお店を探したい"],["explore","エステを試してみたい・いつもと違うお店も見たい"]]}
+};
+const bizTheme = t => BIZ_THEME[t] || null;
 let QUESTIONS = HAIR_QUESTIONS;
 /* 今のテーマで比べるお店：ヘッドスパのテーマはスパができるお店だけ。美容室のテーマでは、スパだけのお店は「ヘッドスパ」を選んだ人にだけ出す */
 function salonsFor(theme){
-  if (theme === "spashop") return SALONS.filter(isSpaShop);
+  if (bizTheme(theme)) return SALONS.filter(bizTheme(theme).shop);
   const wantSpa = COND && (COND.menus||[]).includes("spa");
   return SALONS.filter(s => wantSpa || !spaOnly(s));
 }
 const hasFeat = q => !!(q.sf || q.kw || q.fn);
 /* 担当の呼び方：ヘッドスパのテーマでは「スパニスト」、それ以外は「スタッフ」 */
-const ROLE = () => (typeof S !== "undefined" && S && S.theme === "spashop") ? "スパニスト" : "スタッフ";
+const ROLE = () => (typeof S !== "undefined" && S && bizTheme(S.theme)) ? bizTheme(S.theme).role : "スタッフ";
 /* 深掘りの言葉を、正規表現にしておく */
 HAIR_QUESTIONS.forEach(q=>{ if (q.kw && typeof q.kw==="string") q.re = new RegExp(q.kw); });
 const DEEP_COVERS = { q_short:["d_cut_short"], q_gray:["d_col_gray"], q_design:["d_col_bright","d_col_inner"], q_fast:["d_cut_quick"],
@@ -763,7 +827,7 @@ function featOf(s, q){ return q.fn ? q.fn(s) : q.kw ? kwFit(s, q) : s.f[q.sf]; }
 function staffKw(st, q){
   if (!q.re) return false;
   const p = st.p || {}, d = p.wzd || {};
-  const extra = S && S.theme === "spashop" ? [].concat(p.worry || [], d.d_style || [], d.d_tool || []) : [];   /* ヘッドスパ：得意な悩み・施術スタイル・道具も見る */
+  const extra = S && bizTheme(S.theme) ? [].concat(p.worry || [], ...Object.values(d).map(v => [].concat(v))) : [];   /* 美容室以外：得意な悩み・業種の深掘りの答えも見る */
   return q.re.test([st.spec].concat(p.tech || [], extra).join(" "));
 }
 /* スパニストの答えを数値に（答えていなければ null） */
@@ -783,7 +847,9 @@ const THEMES = {
   salon:{label:"美容室を探す",boost:{}},
   staff:{label:"担当スタッフを探す",boost:{staff:1.5}},
   spa:{label:"ヘッドスパ・髪質ケアを探す",boost:{q_care:1.8,q_damage:1.4,q_quiet:1.2}},
-  spashop:{label:"ヘッドスパのお店を探す",boost:{}}
+  spashop:{label:"ヘッドスパのお店を探す",boost:{}},
+  eyeshop:{label:"まつげ・眉のお店を探す",boost:{}},
+  esthe:{label:"エステを探す",boost:{}}
 };
 const GOAL = 85;
 /* ===== 熱量で選ぶ質問コース =====
@@ -801,7 +867,7 @@ function courseLabel(k){ const c = COURSES[k]; return c ? `${c.label}（${c.n}�
 /* ヘッドスパのテーマ：髪の履歴などの質問（じっくり質問・髪の深掘り）は聞かず、会話・体のことだけ先に聞く */
 const SPA_TALK = { light:[], normal:["t_talk","t_body"], deep:["t_talk","t_price","t_body"] };
 function C(){ const k = (S && S.course) || "normal", c = COURSES[k];
-  return S && S.theme === "spashop" ? Object.assign({}, c, {jk:0, fol:0, talk:SPA_TALK[k] || []}) : c; }
+  return S && bizTheme(S.theme) ? Object.assign({}, c, {jk:0, fol:0, talk:(bizTheme(S.theme).talk || SPA_TALK)[k] || []}) : c; }
 /* やりたいメニューで答えが分かった分だけ、最低質問数を減らす（最大3問） */
 function minQ(){ return Math.max(4, C().min - Math.min(3, ((S && S.preset) || []).length)); }
 const MAX_Q = 25;
@@ -1030,7 +1096,13 @@ function toneText(s){
   return t.replace(/君の/g,"あなたの").replace(/君に/g,"あなたに").replace(/君が/g,"あなたが").replace(/君は/g,"あなたは").replace(/君を/g,"あなたを").replace(/君、/g,"").replace(/君/g,"あなた").replace(/俺/g,"私");
 }
 (function(){ const d = Object.getOwnPropertyDescriptor(Element.prototype, "innerHTML");
-  Object.defineProperty($app, "innerHTML", { configurable:true, get(){ return d.get.call(this); }, set(v){ d.set.call(this, toneText(v)); } }); })();
+  Object.defineProperty($app, "innerHTML", { configurable:true, get(){ return d.get.call(this); }, set(v){ d.set.call(this, toneText(v)); window.__shownAt = Date.now(); } }); })();
+/* 画面が切り替わった直後（0.35秒）のタップは受け付けない。
+   前の質問で2回タップしたり、反応を待たずにもう一度押したときに、次の質問まで勝手に答えてしまうのを防ぐ */
+$app.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("button");
+  if (b && Date.now() - (window.__shownAt || 0) < 350){ e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
 let view="theme", S=null;
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function aisiImg(key){
@@ -1109,7 +1181,8 @@ function renderTheme(){
       <p class="note" style="font-size:.85rem;color:var(--paper)">次は、何を見つけようか。</p>
       <div class="choices">
         <button class="choice" type="button" data-theme="salon">${THEMES.salon.label}</button>
-        <button class="choice" type="button" data-theme="spashop">${THEMES.spashop.label}<small style="display:block;font-size:.72rem;opacity:.75;font-weight:400">眠り・疲れ・頭皮の悩みから探す</small></button>
+        ${Object.keys(BIZ_THEME).map(k => bizReady(k) ? `<button class="choice" type="button" data-theme="${k}">${THEMES[k].label}<small style="display:block;font-size:.72rem;opacity:.75;font-weight:400">${BIZ_THEME[k].sub}</small></button>`
+          : `<button class="choice soon" type="button" disabled aria-disabled="true">${THEMES[k].label}<span>COMING SOON</span></button>`).join("")}
         ${SOON.map(l=>`<button class="choice soon" type="button" disabled aria-disabled="true">${l}<span>COMING SOON</span></button>`).join("")}
       </div>
       <p class="note">性格診断や適性診断のように、質問に答えていくだけ。どのくらい答えるかは「ちょっと見る（約10問）」「ちゃんと探す（約25問）」「本気で探す（約50問）」から選べます。マッチ率85%以上を目指して、AISIが3軒とおすすめの担当者を選びます。</p>
@@ -1118,7 +1191,11 @@ function renderTheme(){
     </div>
   </section>`;
   $app.querySelectorAll("[data-theme]").forEach(b=>b.onclick=()=>renderCond(b.dataset.theme));
+  /* お店のデータが届いたら、掲載のある業種だけ押せるように描き直す */
+  if (!renderTheme.waited && dataReady){ renderTheme.waited = true; dataReady.then(() => { if (view === "theme") renderTheme(); }); }
 }
+/* その業種のお店があるか（データを読み込む前は、ヘッドスパだけ押せる） */
+function bizReady(k){ return typeof SALONS !== "undefined" && SALONS.length ? SALONS.some(BIZ_THEME[k].shop) : k === "spashop"; }
 
 const AGES = ["10代","20代","30代","40代","50代以上"];
 /* 美容室を探すときの「気持ち」。お店にも、予約が確定したら伝わる */
@@ -1133,7 +1210,8 @@ const SPA_TENSIONS = [
   ["casual","疲れたときに、気軽に行けるお店を探したい"],
   ["explore","ヘッドスパを試してみたい・いつもと違うお店も見たい"]
 ];
-function tensionLabel(k){ return ((introTheme === "spashop" ? SPA_TENSIONS : TENSIONS).find(x=>x[0]===k)||[,""])[1]; }
+function themeTensions(t){ return t === "spashop" ? SPA_TENSIONS : bizTheme(t) ? bizTheme(t).tens : TENSIONS; }
+function tensionLabel(k){ return (themeTensions(introTheme).find(x=>x[0]===k)||[,""])[1]; }
 let draft = {tension:"", course:"", menus:[], menuFree:false, when:"", zones:[], days:[], slots:[], date:"", age:""};
 
 /* ============ はじめの質問（AISIとの会話で1問ずつ） ============ */
@@ -1157,13 +1235,13 @@ const INTRO = [
 let introIdx = 0, introTheme = "salon";
 /* テーマごとの「はじめの質問」：ヘッドスパはメニューを聞かない（ヘッドスパに決まっているので） */
 function introList(){
-  if (introTheme !== "spashop") return INTRO;
+  if (!bizTheme(introTheme)) return INTRO;
   return INTRO.filter(it => it.key !== "menus").map(it => it.key !== "tension" ? it : Object.assign({}, it, {
-    q:"じゃあ、聞かせて。\n今回は、どんな気持ちでヘッドスパを探してる？", opts:()=>SPA_TENSIONS,
+    q:`じゃあ、聞かせて。\n今回は、どんな気持ちで${bizTheme(introTheme).what}を探してる？`, opts:()=>themeTensions(introTheme),
     say:v=>({lifelong:"いいね。通うほど楽になる、相性のいいお店を選ぶよ。", casual:"了解。疲れたときに、すっと行けるお店にする。", explore:"いいね。初めてでも安心できるお店を選ぶよ。"})[v] || "" }));
 }
 function renderCond(theme){ introTheme = theme; introIdx = 0;
-  if (theme === "spashop" && !SALONS.some(isSpaShop)){ return dataReady.then(()=>{ if (!SALONS.some(isSpaShop)) { introTheme = "salon"; return renderTheme(); } renderIntro(); }); }
+  if (bizTheme(theme) && !SALONS.some(bizTheme(theme).shop)){ return dataReady.then(()=>{ if (!SALONS.some(bizTheme(theme).shop)) { introTheme = "salon"; return renderTheme(); } renderIntro(); }); }
   renderIntro(); }
 function renderIntro(prevSay){
   view="cond";
@@ -1197,7 +1275,7 @@ ${it.kind==="many"?`<div class="choices"><button class="choice primary" type="bu
     if (it.kind==="one"){ nextBtn.disabled = !d[it.key]; nextBtn.textContent = toneText(d[it.key] ? "これで決定 →" : "答えを選んでね"); return; }
     const any = it.key==="menus" ? (d.menus.length || d.menuFree) : true;
     nextBtn.disabled = !any;
-    nextBtn.textContent = toneText(it.key==="menus" && !any ? "やりたいメニューを選んでね" : (it.key==="days" && d.date) || (val()||[]).length || (it.key==="menus" && d.menuFree) ? "これで決定 →" : (it.none || "次へ")); };
+    nextBtn.textContent = toneText(it.key==="menus" && !any ? "やりたいメニューを選んでね" : (it.key==="days" && d.date) || (val()||[]).length || (it.key==="menus" && d.menuFree) || d["_none_"+it.key] ? "これで決定 →" : (it.none || "次へ")); };
   box.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
     if (box.classList.contains("locked")) return;
     const v = b.dataset.v;
@@ -1208,18 +1286,18 @@ ${it.kind==="many"?`<div class="choices"><button class="choice primary" type="bu
     }
     if (v==="__none"){
       if (it.key==="menus"){ d.menuFree = !d.menuFree; if (d.menuFree) d.menus = []; }
-      else { d[it.key] = []; if (it.key==="days") d.date = ""; return introGo("maybeNo", ""); }
+      else { d[it.key] = []; if (it.key==="days") { d.date = ""; const di = document.getElementById("cDate"); if (di) di.value = ""; } d["_none_"+it.key] = !d["_none_"+it.key]; }
     } else {
-      if (it.key==="menus") d.menuFree = false;
+      if (it.key==="menus") d.menuFree = false; else d["_none_"+it.key] = false;
       const arr = it.key==="days" ? d.days : d[it.key], x = it.key==="days" ? +v : v, k = arr.indexOf(x);
       if (k>=0) arr.splice(k,1); else arr.push(x);
       if (it.key==="days") { d.date = ""; const di = document.getElementById("cDate"); if (di) di.value = ""; }
     }
-    box.querySelectorAll(".chip").forEach(x=>{ const on = x.dataset.v==="__none" ? (it.key==="menus" && d.menuFree) : (it.key==="days" ? d.days.includes(+x.dataset.v) : (d[it.key]||[]).includes(x.dataset.v)); x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+    box.querySelectorAll(".chip").forEach(x=>{ const on = x.dataset.v==="__none" ? (it.key==="menus" ? d.menuFree : !!d["_none_"+it.key]) : (it.key==="days" ? d.days.includes(+x.dataset.v) : (d[it.key]||[]).includes(x.dataset.v)); x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
     refresh();
   });
   const di = document.getElementById("cDate");
-  if (di) di.onchange = e => { d.date = e.target.value; if (d.date){ d.days = []; box.querySelectorAll(".chip").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); } refresh(); };
+  if (di) di.onchange = e => { d.date = e.target.value; if (d.date){ d.days = []; d._none_days = false; box.querySelectorAll(".chip").forEach(x=>{ x.classList.remove("on"); x.setAttribute("aria-pressed","false"); }); } refresh(); };
   if (nextBtn){ refresh(); nextBtn.onclick = () => {
     if (it.kind==="one"){ const v = d[it.key]; if (!v) return; return introGo(v==="__none" ? "maybeNo" : "yes", it.say && v!=="__none" ? it.say(v) : ""); }
     const empty = !(val()||[]).length && !(it.key==="days" && d.date) && !(it.key==="menus" && d.menuFree); introGo(empty ? "maybeNo" : "yes", ""); }; }
@@ -1242,7 +1320,8 @@ function introGo(kind, say){
 
 function start(theme, cond){
   if (theme === "spashop") cond.menus = ["spa"];
-  QUESTIONS = theme === "spashop" ? SPA_QUESTIONS : HAIR_QUESTIONS;
+  else if (bizTheme(theme)) cond.menus = [];
+  QUESTIONS = bizTheme(theme) ? bizTheme(theme).Q() : HAIR_QUESTIONS;
   COND = cond;
   S = {sid:newSid(), theme, cond, course:cond.course || "normal", answers:{}, history:[], n:0, extra:0, meter:0, code:null, results:null, viewed:[], photo:null, photoAsked:false, fol:{}, talk:{}, jk:{}, affAsked:[], say:"", need:null};
   let uid = ""; try { uid = localStorage.getItem("pt_uid") || ""; if (!uid){ uid = "u" + Math.random().toString(36).slice(2,12); localStorage.setItem("pt_uid", uid); } } catch (e) {}
@@ -1252,7 +1331,7 @@ function start(theme, cond){
     device: /iPhone|Android|Mobile/i.test(navigator.userAgent) ? "スマホ" : "PC",
     menu: cond.menus.length ? cond.menus.map(catLabel).join("、") : "まだ決めてない"});
   /* やりたいメニューで分かることは、質問しない */
-  if (cond.menus.length && theme !== "spashop"){
+  if (cond.menus.length && !bizTheme(theme)){
     const M = k=>cond.menus.includes(k);
     S.answers.q_color = M("color") ? 1 : 0;
     if (M("perm")) S.answers.q_perm = 1;
@@ -1339,7 +1418,7 @@ function answer(v){
 function next(){
   if (phase1Done(S.answers, S.theme, S.n - S.extra)) return startPersonal();
   /* 切り札：9問を過ぎてもまだ絞れていなければ、1回だけ写真を見せてもらう */
-  if (CONFIG.PHOTO && S.theme !== "spashop" && !S.photoAsked && S.n >= 9 && S.n <= C().max-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
+  if (CONFIG.PHOTO && !bizTheme(S.theme) && !S.photoAsked && S.n >= 9 && S.n <= C().max-3 && (scoreAll(S.answers, S.theme)[2]||{score:0}).score < PHASE1_GOAL){
     S.photoAsked = true; return renderPhoto();
   }
   const nq = nextQuestion(S.answers, S.theme, S.n);
@@ -1348,7 +1427,7 @@ function next(){
 }
 function back(){
   const h = S.history.pop();
-  if (!h){ introTheme = S.theme === "spashop" ? "spashop" : "salon"; introIdx = introList().length - 1; return renderIntro(); }   // 最初の質問からは、はじめの質問（時間帯）へ
+  if (!h){ introTheme = bizTheme(S.theme) ? S.theme : "salon"; introIdx = introList().length - 1; return renderIntro(); }   // 最初の質問からは、はじめの質問（時間帯）へ
   S.answers = h.answers; S.n = h.n; if (h.meter != null) S.meter = h.meter;
   if (h.q) delete S.fol[h.q.id]; S.say = ""; S.need = buildNeed();
   if (h.photo){ S.photo = null; return renderPhoto(); }
@@ -1363,7 +1442,7 @@ function renderPhoto(msg){
     <div class="aisi">${aisiImg("think")}</div>
     <div class="panel">
       <div class="bubble">
-        <p class="qno">質問 ${S.n+1}<span style="opacity:.6"> / 最大${MAX_Q} ・ 切り札</span></p>
+        <p class="qno">質問 ${S.n+1}<span style="opacity:.6"> / 最大${C().max} ・ 切り札</span></p>
         <p class="voice">${msg || "……あと一歩なんだ。<br>なりたい髪型の写真、持ってる？"}</p>
       </div>
       <div class="choices">
@@ -1535,7 +1614,9 @@ function staffReasons(st, ans){
   if (S && S.need){ const vf = valueFit(st, S.need); [...new Set(vf.hits.flatMap(h => h.tags.map(tagText)))].slice(0,2).forEach(t => out.push(t)); if (vf.home) out.push(vf.home); }
   const text = [st.spec].concat((st.p&&st.p.tech)||[]).join(" ");
   QUESTIONS.filter(q => q.deep && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`${q.label}が得意`));
-  if (S && S.theme === "spashop") QUESTIONS.filter(q => q.wide && q.kw && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`「${q.need||q.label}」に合う施術が得意`));
+  if (S && bizTheme(S.theme)) QUESTIONS.filter(q => q.wide && q.kw && ans[q.id] >= .75 && staffKw(st, q)).slice(0, 2).forEach(q => out.push(`「${q.need||q.label}」に合う施術が得意`));
+  if (S && bizTheme(S.theme)) QUESTIONS.filter(q => q.sfn && (q.ok || q.ng) && ans[q.id] != null).forEach(q => { const v = q.sfn(st); if (v == null) return;
+    if (ans[q.id] >= .75 && v >= .75 && q.ok) out.push(q.ok); else if (ans[q.id] <= .25 && v <= .25 && q.ng) out.push(q.ng); });
   for (const [qid, words] of Object.entries(TECH_WORDS)){
     if (!(ans[qid]>=.75)) continue;
     const w = words.find(x=>text.includes(x)); if (w){ const q=QUESTIONS.find(z=>z.id===qid); out.push(`${q.label}が得意`+(q.label.includes(w)?"":`（${w}）`)); }
@@ -2069,7 +2150,7 @@ function renderTalk(){
   prog();
   view = "talk";
   const t = talkQ[talkIdx];
-  const lead = t.lead && (!t.leadIf || t.leadIf()) ? t.lead : "";
+  const lead = t.lead && (!t.leadIf || t.leadIf()) ? (bizTheme(S.theme) ? t.lead.replace(/美容室/g, "お店") : t.lead) : "";
   const say = S.say; S.say = "";
   $app.innerHTML = `
   <section class="stage">
