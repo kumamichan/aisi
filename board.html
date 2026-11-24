@@ -61,6 +61,7 @@ main{max-width:1080px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-le
 .btn.arm{background:var(--warn);border-color:var(--warn);color:#fff}
 .btn:disabled{opacity:.5;cursor:default}
 .prop{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+select.adj{font:inherit;font-size:.82rem;border:1px solid #cfc9bd;border-radius:6px;padding:6px 6px;background:#fff;margin-left:6px}
 .prop input{font:inherit;font-size:.86rem;border:1px solid #cfc9bd;border-radius:6px;padding:6px 8px}
 .res{font-size:.82rem;margin:0}
 .res.ok{color:var(--ok)}.res.err{color:var(--warn)}
@@ -148,13 +149,19 @@ function render(){
   wire();
 }
 
+/* 「第n希望でOK」の時間の調整（前後の予約に合わせて、少し早く・遅く来てもらう） */
+const ADJ = [[0,"この時間のまま"],[-15,"15分早く"],[-30,"30分早く"],[-60,"1時間早く"],[15,"15分遅く"],[30,"30分遅く"]];
+function shiftIso(iso, m){ const d = toDate(iso); if (!d || isNaN(d)) return iso; const x = new Date(d.getTime() + m*60000), p = n => String(n).padStart(2,"0");
+  return `${x.getFullYear()}-${p(x.getMonth()+1)}-${p(x.getDate())}T${p(x.getHours())}:${p(x.getMinutes())}`; }
+function hm(iso){ const d = toDate(iso); return d && !isNaN(d) ? d.getHours() + ":" + String(d.getMinutes()).padStart(2,"0") : ""; }
 function card(q){
   const cls = q.state === ST.WAIT || q.state === ST.NOREPLY ? "s-wait" : q.state === ST.ASK ? "s-ask" : q.state === ST.OK ? "s-ok" : "s-done";
   const pill = q.state === ST.WAIT || q.state === ST.NOREPLY ? "wait" : q.state === ST.ASK ? "ask" : q.state === ST.OK || q.state === ST.VISIT ? "ok" : "";
   const when = q.state === ST.OK || q.state === ST.VISIT ? (q.when || fmt(q.at)) : q.state === ST.ASK ? fmt(q.prop) + "（お客様の確認待ち）" : "第1希望 " + fmt(q.wishes[0]);
   let acts = "";
   if (q.state === ST.WAIT || q.state === ST.NOREPLY) {
-    acts = `<div class="wishes">${q.wishes.map((w, i) => `<div class="acts"><button type="button" class="btn ok" data-act="ok" data-n="${i+1}" data-rid="${esc(q.rid)}">第${i+1}希望 ${esc(fmt(w))} でOK</button></div>`).join("")}</div>
+    acts = `<div class="wishes">${q.wishes.map((w, i) => `<div class="acts"><button type="button" class="btn ok" data-act="ok" data-n="${i+1}" data-rid="${esc(q.rid)}" data-w="${esc(w)}">第${i+1}希望 ${esc(fmt(w))} でOK</button>
+        <select class="adj" data-adj="${esc(q.rid)}-${i+1}" aria-label="第${i+1}希望の時間の調整">${ADJ.map(([m,l])=>`<option value="${m}">${esc(l)}${m ? "（" + esc(hm(shiftIso(w, m))) + "）" : ""}</option>`).join("")}</select></div>`).join("")}</div>
       <div class="prop"><input type="datetime-local" step="1800" aria-label="別の日時" data-dt="${esc(q.rid)}"><button type="button" class="btn sub" data-act="prop" data-rid="${esc(q.rid)}">この日時を提案</button></div>
       <div class="acts"><button type="button" class="btn ng" data-act="ng" data-rid="${esc(q.rid)}">受けられない</button></div>`;
   } else if (q.state === ST.OK) {
@@ -181,6 +188,10 @@ function card(q){
 
 /* ボタンは2回押しで実行（押し間違い防止）。1回目で「もう一度押して確定」に変わる */
 function wire(){
+  /* 時間の調整を選ぶと、ボタンの時刻も変わる */
+  document.querySelectorAll("select.adj").forEach(sel => sel.onchange = () => { const [rid, n] = [sel.dataset.adj.replace(/-\d+$/, ""), sel.dataset.adj.match(/\d+$/)[0]];
+    const b = document.querySelector(`[data-act="ok"][data-rid="${CSS.escape(rid)}"][data-n="${n}"]`); if (!b) return;
+    const m = Number(sel.value); b.classList.remove("arm"); b.textContent = `第${n}希望 ${m ? fmt(shiftIso(b.dataset.w, m)) + "（" + sel.selectedOptions[0].text.replace(/（.*/, "") + "）" : fmt(b.dataset.w)} でOK`; });
   document.querySelectorAll("[data-act]").forEach(b => b.onclick = async () => {
     if (!b.classList.contains("arm")) {
       document.querySelectorAll(".btn.arm").forEach(x => { x.classList.remove("arm"); x.textContent = x.dataset.label; });
@@ -190,6 +201,8 @@ function wire(){
     }
     const rid = b.dataset.rid, act = b.dataset.act, res = $("res-" + rid);
     const body = { type: "board", k: KEY, rid, act, n: b.dataset.n || "" };
+    if (act === "ok") { const sel = document.querySelector(`[data-adj="${CSS.escape(rid + "-" + b.dataset.n)}"]`), m = sel ? Number(sel.value) : 0;
+      if (m) { body.act = "prop"; body.dt = shiftIso(b.dataset.w, m); } }
     if (act === "prop") {
       const v = document.querySelector(`[data-dt="${CSS.escape(rid)}"]`).value;
       if (!v) { b.classList.remove("arm"); b.textContent = b.dataset.label; res.hidden = false; res.className = "res err"; res.textContent = "提案する日時を選んでください。"; return; }
